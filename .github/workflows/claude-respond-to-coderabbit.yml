@@ -8,6 +8,13 @@ name: Claude responds to CodeRabbit
 # author login prefix). On cap trip the PR is labelled `ai: escalated` and
 # handed off to a human reviewer — Claude does not run.
 #
+# Abuse guard: the workflow runs unconditionally for PRs authored by the
+# repository owner (hard-coded below). For PRs from any other author, the
+# workflow skips Claude entirely unless the PR carries the `ai: approved`
+# label — which only the owner adds after a manual trust check. This
+# prevents a third party from weaponising a CodeRabbit reply to coerce
+# Claude into editing arbitrary code on their PR.
+#
 # Prerequisites (one-time setup):
 # - `CLAUDE_CODE_OAUTH_TOKEN` repo secret — Claude Max subscription token
 #   generated via `claude setup-token` locally; Max subscription tokens are
@@ -15,8 +22,9 @@ name: Claude responds to CodeRabbit
 # - Claude GitHub App installed on `aletheia-works/vivarium` so that Claude's
 #   pushes are attributed to `claude[bot]` and re-trigger commitlint /
 #   labeler / other workflows that otherwise ignore `GITHUB_TOKEN` pushes.
-# - `ai: escalated` label exists — managed via `infra/github/labels.tf`,
-#   must be `tofu apply`-ed before this workflow fires for the first time.
+# - `ai: approved` and `ai: escalated` labels exist — managed via
+#   `infra/github/labels.tf`, must be `tofu apply`-ed before this workflow
+#   fires for the first time.
 
 on:
   pull_request_review:
@@ -57,7 +65,40 @@ jobs:
             }
             core.setOutput('number', n);
 
+      - name: Check authorisation (owner-or-approval gate)
+        id: auth
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const OWNER = 'JamBalaya56562';
+            const APPROVED_LABEL = 'ai: approved';
+
+            const pr = context.payload.pull_request ?? context.payload.issue;
+            const authorLogin = pr?.user?.login ?? '';
+            const labels = (pr?.labels || []).map(l => l.name);
+
+            const isOwner = authorLogin === OWNER;
+            const isApproved = labels.includes(APPROVED_LABEL);
+            const allowed = isOwner || isApproved;
+
+            core.info(`PR author: ${authorLogin}`);
+            core.info(`PR labels: ${labels.join(', ') || '(none)'}`);
+            core.info(`Is owner: ${isOwner}`);
+            core.info(`Has "${APPROVED_LABEL}" label: ${isApproved}`);
+            core.info(`Proceed with Claude response: ${allowed}`);
+
+            if (!allowed) {
+              core.notice(
+                `Skipping Claude response: PR author "${authorLogin}" is not the repository owner ` +
+                `and the "${APPROVED_LABEL}" label is not present. ` +
+                `The owner must add the label to authorise automated processing.`
+              );
+            }
+
+            core.setOutput('allowed', allowed ? 'true' : 'false');
+
       - name: Count Claude iterations on this PR (cap 5)
+        if: steps.auth.outputs.allowed == 'true'
         id: cap
         uses: actions/github-script@v7
         with:
@@ -90,7 +131,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Fetch PR head branch
-        if: steps.cap.outputs.stop != 'true'
+        if: steps.auth.outputs.allowed == 'true' && steps.cap.outputs.stop != 'true'
         id: meta
         uses: actions/github-script@v7
         with:
@@ -104,14 +145,14 @@ jobs:
             core.setOutput('head_sha', pr.head.sha);
 
       - name: Checkout PR branch
-        if: steps.cap.outputs.stop != 'true'
+        if: steps.auth.outputs.allowed == 'true' && steps.cap.outputs.stop != 'true'
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
           ref: ${{ steps.meta.outputs.head_ref }}
 
       - name: Let Claude address CodeRabbit feedback
-        if: steps.cap.outputs.stop != 'true'
+        if: steps.auth.outputs.allowed == 'true' && steps.cap.outputs.stop != 'true'
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
