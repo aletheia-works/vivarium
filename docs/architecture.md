@@ -83,7 +83,7 @@ ADRs once the bug being solved demands one.
 
 - Whole-project reproductions — the bug needs the project's actual
   dependency resolver to run against a real package index.
-- System-call dependent bugs — real `fork`, real sockets, real file
+- System-call-dependent bugs — real `fork`, real sockets, real file
   locking, real signals.
 - Toolchain-specific bugs — a particular GCC, a particular glibc, a
   particular kernel ABI quirk.
