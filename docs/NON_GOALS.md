@@ -39,7 +39,7 @@ of who or what wrote the original claim.
 ## We are not an IDE or editor
 
 There is no authoring UX in Vivarium. Reproduction inputs come from
-an Issue body, a PR diff, or a linked artefact — never from a live
+an Issue body, a PR diff, or a linked artifact — never from a live
 editor pane that we maintain.
 
 **Why:** Editors are a domain in themselves. The project would
