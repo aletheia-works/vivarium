@@ -1,29 +1,17 @@
 name: Tofu fmt autofix
 
-# Autofixes OpenTofu formatting on pull requests that touch infra/github/
-# by running `tofu fmt -recursive` and pushing the result back to the
-# PR head branch.
+# Thin caller for the org-wide reusable workflow at
+# aletheia-works/.github/.github/workflows/terraform-autofix.yml.
+# All the autofix logic — setup-opentofu, `tofu fmt -recursive`,
+# same-repo PR guard, commit-back to the PR head — lives there.
 #
 # This complements the fmt-check that the Terraform Plan workflow
-# already performs via the org-level reusable workflow; the check still
-# runs and still fails on formatting drift, but the drift gets healed
-# automatically here instead of requiring the contributor to re-run
-# `tofu fmt` locally.
+# already performs via its own reusable; the check still fails on
+# formatting drift, but the drift gets healed automatically here
+# instead of requiring the contributor to re-run `tofu fmt` locally.
 #
-# Lint (`tofu validate`) is not duplicated here — it already runs inside
-# Terraform Plan. If tflint-level linting is ever added, it would fit
-# alongside the fmt step below.
-#
-# Scope: only same-repo PRs. GITHUB_TOKEN is read-only on fork PRs, so
-# the commit-back would fail; fork contributors must run `tofu fmt`
-# locally. Phase 0 is solo development, so fork PRs are not expected.
-#
-# Loop safety: pushes made with the default GITHUB_TOKEN do not trigger
-# further workflow runs, so the autofix commit will not re-enter this
-# workflow.
-#
-# Promotion note: if a second repo adopts the same pattern, this should
-# move to aletheia-works/.github as a reusable workflow (AGENTS.md § 4.7).
+# Lint (`tofu validate`) is not duplicated here — it already runs
+# inside Terraform Plan.
 
 on:
   pull_request:
@@ -33,32 +21,14 @@ on:
 
 permissions:
   contents: write
-
-concurrency:
-  group: tofu-fmt-autofix-${{ github.event.pull_request.number }}
-  cancel-in-progress: true
+  pull-requests: read
 
 jobs:
-  fmt:
-    name: tofu fmt -recursive
-    if: github.event.pull_request.head.repo.full_name == github.repository
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout PR head
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        with:
-          ref: ${{ github.event.pull_request.head.ref }}
-
-      - name: Setup OpenTofu
-        uses: opentofu/setup-opentofu@fc711fa910b93cba0f3fbecaafc9f42fd0c411cb # v2.0.0
-        with:
-          tofu_wrapper: false
-
-      - name: Run tofu fmt
-        run: tofu fmt -recursive infra/github
-
-      - name: Commit and push if changed
-        uses: stefanzweifel/git-auto-commit-action@04702edda442b2e678b25b537cec683a1493fcb9 # v7.1.0
-        with:
-          commit_message: 'style(infra): tofu fmt -recursive'
-          file_pattern: 'infra/github/**'
+  autofix:
+    # Pinned by commit SHA (org enforces sha_pinning_required). Update
+    # this ref when the reusable workflow meaningfully changes.
+    uses: aletheia-works/.github/.github/workflows/terraform-autofix.yml@fafae94f3c7691a02e05746c53aa833b0489efab # main
+    with:
+      working_directory: infra/github
+      commit_message: 'style(infra): tofu fmt -recursive'
+    secrets: inherit
