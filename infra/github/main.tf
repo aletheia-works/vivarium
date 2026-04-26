@@ -42,6 +42,12 @@ resource "github_repository" "this" {
   lifecycle {
     # Guard against accidental deletion.
     prevent_destroy = true
+    # Pages is managed out-of-band by `pages.tf` via the gh CLI. Ignore
+    # the nested block so OpenTofu does not try to delete the live Pages
+    # configuration when reconciling the repository resource. Removing
+    # `pages.tf` and folding Pages back into a nested `pages {}` block
+    # is tracked as a follow-up to the v6.12 provider upgrade.
+    ignore_changes = [pages]
   }
 }
 
