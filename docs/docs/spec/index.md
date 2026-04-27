@@ -9,7 +9,7 @@ cannot run live in-page.
 ## Versions
 
 - [Contract v1](./contract-v1.md) — current; stable since Phase 1.
-- [`verdict.schema.json`](./verdict.schema.json) — JSON Schema
+- [`verdict.schema.json`](https://aletheia-works.github.io/vivarium/spec/verdict.schema.json) — JSON Schema
   (draft 2020-12) for the Layer 2 / Layer 3 verdict snapshot file
   defined by Contract v1.
 
