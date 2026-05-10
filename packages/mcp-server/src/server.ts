@@ -1,31 +1,6 @@
 // MCP server wiring — registers the v1 tools and connects a stdio
-// transport.
-//
-// Tool surface:
-//   list_recipes / get_recipe / lookup_verdict — ADR-0019 §3 (X.1, v0.1).
-//   match_error                                 — Phase 6 X.2, mirrors the
-//                                                 docs S.2 matcher
-//                                                 (ADR-0025 §Neutral).
-//   verify_branch_fix                           — Phase 7 B3, deep-link
-//                                                 helper for the AI-slop
-//                                                 verification loop
-//                                                 (ADR-0030).
-//   prepare_new_recipe                          — Tier 2, returns the full
-//                                                 authoring command bundle
-//                                                 (scaffold + verify +
-//                                                 facets/projects rows)
-//                                                 for a new upstream
-//                                                 issue.
-//   prepare_fix_candidate                       — Phase 8, registers a
-//                                                 fix-candidate spec on an
-//                                                 existing Layer 1 recipe
-//                                                 so the page runs the
-//                                                 fork branch's wheel
-//                                                 side-by-side with the
-//                                                 released build
-//                                                 (ADR-0040).
-//
-// See ADR-0019 §1 for the stdio-transport choice.
+// transport. The tool surface is documented in README.md; each tool
+// module owns its own description literal.
 
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
@@ -66,14 +41,14 @@ import {
 } from './tools/verify_branch_fix.js';
 
 const SERVER_NAME = 'vivarium-mcp';
-// Keep in sync with package.json + jsr.json. The MCP `initialize`
-// handshake exposes this string to clients, so unsynced values across
-// these three files produce a confusing client experience. Bump the
-// patch component for additive changes within v0.x (additional tools,
-// description / surface refinements) — the project is still pre-1.0
-// and `prepare_fix_candidate` (Phase 8 / ADR-0040) is meaningful but
-// fully opt-in, so a minor bump would overstate the impact.
-const SERVER_VERSION = '0.1.1';
+// Keep in sync with package.json + jsr.json. Updated by the publish
+// workflow on tag push; unsynced values produce a confusing client
+// experience (the MCP `initialize` response carries this string).
+// Stays at 0.1.0 across the Phase 7 A5 + B3 tool additions because
+// the package has not been published to JSR / npm yet — bumping a
+// pre-publish version literal only confuses clients that ever see
+// a development build.
+const SERVER_VERSION = '0.1.0';
 
 export function createServer(): Server {
   const server = new Server(
