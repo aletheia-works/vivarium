@@ -53,7 +53,12 @@
       "language": "python",
       "symptom": "solver-asymmetry-on-nonsingular-matrix",
       "severity": "bug",
-      "tags": ["numerical-linear-algebra", "qr-solve", "householder", "arbitrary-precision"]
+      "tags": [
+        "numerical-linear-algebra",
+        "qr-solve",
+        "householder",
+        "arbitrary-precision"
+      ]
     },
     "find-xargs-whitespace": {
       "language": "shell",
