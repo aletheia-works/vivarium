@@ -39,11 +39,10 @@ but valid type comments.
   assignment and function pathological type comments must not crash
   after the fix, while a deeply nested but valid type comment must
   still parse.
-- Reported against astroid 4.1.x. Latest release at authoring time
-  is 4.1.2 (2026-03-22) and the bug still reproduces there; pinning
-  in PEP 723 / `repro.ts` to that exact version locks the verdict
-  to a known-bad build, so the page flips to `unreproduced` only
-  when a new astroid release lands an actual fix.
+- Reported against astroid 4.1.x. Pinning PEP 723 / `repro.ts` to
+  `astroid==4.1.2` locks the verdict to a known-bad build, so the page
+  flips to `unreproduced` only when the pin is intentionally updated to
+  a fixed release.
 - Demonstrates Vivarium handles bugs in upstream projects whose
   packages are not pre-bundled in Pyodide — the page installs
   astroid from PyPI via `micropip` after the runtime bootstraps.
@@ -78,7 +77,7 @@ read each variant's outcome from the JSON inside its own `<pre>`
 (`crashed: true|false`, `skipped_pathological`,
 `valid_control_parsed`, and per-case details).
 
-The `result` field of `__VIVARIUM_RESULT__` keeps the legacy
+The `result` field of `__VIVARIUM_RESULT__` keeps the existing
 `nested_braces` / `exception_type` / `crashed` fields and additively
 gains `skipped_pathological`, `valid_control_parsed`, `cases`,
 `result.baseline`, and `result.fix_candidate`, with each variant's
