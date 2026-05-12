@@ -24,10 +24,7 @@ import {
     eyebrow="// 0 · 何が手に入るか"
     heading="自分のリポジトリの CI に Vivarium verdict が乗る。"
   >
-    <p>
-      この統合パスでは、自分のリポジトリ（フォークではなく、ふつうのプロジェクトリポジトリ）
-      に 2 つだけ追加します:
-    </p>
+    <p>この統合パスでは、自分のリポジトリ（フォークではなく、ふつうのプロジェクトリポジトリ） に 2 つだけ追加します:</p>
     <ul>
       <li>
         <code>.vivarium/manifest.toml</code> — Vivarium 互換再現の宣言ファイル
@@ -39,12 +36,7 @@ import {
         を <code>uses:</code> で呼ぶだけのジョブ。
       </li>
     </ul>
-    <p>
-      これだけで、対象のアップストリームバグが今でも再現するかどうかが、
-      自分の CI の green / red シグナルとして毎日（あるいは毎 PR で）勝手に検証されます。
-      アップストリームが修正を出荷した瞬間、CI が赤くなり、その瞬間が
-      「このバグはもう追跡しなくてよい」のシグナルになります。
-    </p>
+    <p>これだけで、対象のアップストリームバグが今でも再現するかどうかが、 自分の CI の green / red シグナルとして毎日（あるいは毎 PR で）勝手に検証されます。 アップストリームが修正を出荷した瞬間、CI が赤くなり、その瞬間が 「このバグはもう追跡しなくてよい」のシグナルになります。</p>
     <Callout>
       Vivarium 本体のソースをコピーしません。再利用可能ワークフローが Vivarium リポジトリ側で
       保守されているので、こちらは <code>uses:</code> のリンクだけ持っておけば、
@@ -56,21 +48,12 @@ import {
     eyebrow="// 1 · 検証したいバグを選ぶ"
     heading="既存のレシピなら、すぐ使えるスラッグを 1 つ控える。"
   >
-    <p>
-      Vivarium カタログにすでに存在するバグなら、
-      そのスラッグ（<code>&lt;project&gt;-&lt;issue&gt;</code> 形式）を控えるだけで進めます。
-      たとえば:
-    </p>
+    <p>Vivarium カタログにすでに存在するバグなら、 そのスラッグ（<code>&lt;project&gt;-&lt;issue&gt;</code> 形式）を控えるだけで進めます。 たとえば:</p>
     <ul>
       <li><code>bash-local-shadows-exit</code>（Layer 2 / bash）</li>
       <li><code>pandas-56679</code>（Layer 1 / pandas）</li>
     </ul>
-    <p>
-      <a href="/vivarium/ja/repro/">再現一覧</a> でファセット検索ができます。
-      自分が追跡しているエラーメッセージを起点にしたい場合は{' '}
-      <a href="/vivarium/ja/repro/match">エラーからレシピを探す</a> を使えば
-      候補がスコア順で出ます。
-    </p>
+    <p><a href="/vivarium/ja/repro/">再現一覧</a> でファセット検索ができます。 自分が追跡しているエラーメッセージを起点にしたい場合は{' '} <a href="/vivarium/ja/repro/match">エラーからレシピを探す</a> を使えば 候補がスコア順で出ます。</p>
     <Callout>
       アップストリームでまだ再現が無いバグの場合は、自分のフォークでレシピ自体を作る
       ルートになります。手順は{' '}
@@ -110,10 +93,7 @@ import {
     eyebrow="// 3 · CI に verdict ジョブを 1 つ追加する"
     heading="Layer 2 / 3 は再利用可能ワークフローを uses: するだけ。"
   >
-    <p>
-      <code>.github/workflows/check-bug.yml</code> として以下を保存します
-      （<code>slug:</code> は手順 1 で控えたものに置き換えてください）:
-    </p>
+    <p><code>.github/workflows/check-bug.yml</code> として以下を保存します （<code>slug:</code> は手順 1 で控えたものに置き換えてください）:</p>
     <pre><code>{`name: vivarium-check
 on:
   pull_request:
@@ -126,16 +106,8 @@ jobs:
     with:
       slug: bash-local-shadows-exit
 `}</code></pre>
-    <p>
-      これで <code>ghcr.io/aletheia-works/vivarium-bash-local-shadows-exit:latest</code>{' '}
-      がプルされ、レシピが実行され、Contract v1 準拠の <code>verdict.json</code>{' '}
-      がキャプチャされ、JSON Schema で検証されます。
-      verdict が <code>expected_verdict</code>（デフォルト <code>"reproduced"</code>）と
-      一致しなければジョブが赤くなります。
-    </p>
-    <p>
-      追跡したいバグが複数ある場合は、ジョブを並べるだけ:
-    </p>
+    <p>これで <code>ghcr.io/aletheia-works/vivarium-bash-local-shadows-exit:latest</code>{' '} がプルされ、レシピが実行され、Contract v1 準拠の <code>verdict.json</code>{' '} がキャプチャされ、JSON Schema で検証されます。 verdict が <code>expected_verdict</code>（デフォルト <code>"reproduced"</code>）と 一致しなければジョブが赤くなります。</p>
+    <p>追跡したいバグが複数ある場合は、ジョブを並べるだけ:</p>
     <pre><code>{`jobs:
   bash-issue:
     uses: aletheia-works/vivarium/.github/workflows/vivarium-verdict.yml@main

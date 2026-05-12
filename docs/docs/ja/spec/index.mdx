@@ -25,9 +25,7 @@ import {
     eyebrow="// 01 · 概要"
     heading="バージョン管理されたサーフェス。"
   >
-    <p>
-      Vivarium 仕様は、再現ページが自己宣言できるようにし、外部ツールが verdict を読めるようにし、外部リポジトリがカスタムのグルーなしで独自の再現を公開できるようにする小さなファイルセットだ。
-    </p>
+    <p>Vivarium 仕様は、再現ページが自己宣言できるようにし、外部ツールが verdict を読めるようにし、外部リポジトリがカスタムのグルーなしで独自の再現を公開できるようにする小さなファイルセットだ。</p>
 
     <Callout>
       再現ページは <code>&lt;meta name="vivarium-contract" content="v1"&gt;</code> でコンフォーマンスを宣言する。外部ツールは同じサーフェスを読んでページが今日も再現するかを知る。
@@ -60,9 +58,7 @@ import {
     eyebrow="// 02 · あなたの読みかた"
     heading="目的別、読むべき仕様の地図。"
   >
-    <p>
-      仕様は読み手によって入口が異なります。下のカードは「あなたがやろうとしていること」別の最短ルート——どこから読み始めても、必要な仕様だけにフォーカスできます。
-    </p>
+    <p>仕様は読み手によって入口が異なります。下のカードは「あなたがやろうとしていること」別の最短ルート——どこから読み始めても、必要な仕様だけにフォーカスできます。</p>
     <RouteCards
       cards={[
         {
@@ -92,38 +88,26 @@ import {
     heading="3 つの spec ドキュメント + 2 つのツールワークフロー。"
   >
     <h3>Contract v1 — verdict サーフェス</h3>
-    <p>
-      <a href="/vivarium/ja/spec/contract-v1">Contract v1</a> はすべての再現ページが約束することを定義する: <code>verdict</code> DOM バンド、<code>window.__VIVARIUM_RESULT__</code> 上の構造化結果エンベロープ、そして三つのレイヤー全体で同じ reproduced / unreproduced / pending セマンティクス。Layer 2 / 3 の verdict スナップショットファイルは <a href="https://github.com/aletheia-works/vivarium/blob/main/docs/public/spec/verdict.schema.json">verdict.schema.json</a>（JSON Schema draft 2020-12）に従う。
-    </p>
+    <p><a href="/vivarium/ja/spec/contract-v1">Contract v1</a> はすべての再現ページが約束することを定義する: <code>verdict</code> DOM バンド、<code>window.__VIVARIUM_RESULT__</code> 上の構造化結果エンベロープ、そして三つのレイヤー全体で同じ reproduced / unreproduced / pending セマンティクス。Layer 2 / 3 の verdict スナップショットファイルは <a href="https://github.com/aletheia-works/vivarium/blob/main/docs/public/spec/verdict.schema.json">verdict.schema.json</a>（JSON Schema draft 2020-12）に従う。</p>
 
     <h3>Manifest v1 — 公開サーフェス</h3>
-    <p>
-      <a href="/vivarium/ja/spec/manifest-v1">Manifest v1</a> は、外部リポジトリが <code>.vivarium/manifest.toml</code> に置いて Vivarium 実行可能な再現を宣言するための TOML マニフェストだ。スキーマ: <a href="https://github.com/aletheia-works/vivarium/blob/main/docs/public/spec/manifest.schema.json">manifest.schema.json</a>。
-    </p>
+    <p><a href="/vivarium/ja/spec/manifest-v1">Manifest v1</a> は、外部リポジトリが <code>.vivarium/manifest.toml</code> に置いて Vivarium 実行可能な再現を宣言するための TOML マニフェストだ。スキーマ: <a href="https://github.com/aletheia-works/vivarium/blob/main/docs/public/spec/manifest.schema.json">manifest.schema.json</a>。</p>
 
     <h3>Recipes index v1 — カタログエンドポイント</h3>
-    <p>
-      <a href="/vivarium/ja/spec/recipes-index-v1">Recipes index v1</a> は、このリポジトリがホストするすべての再現を機械的に生成した JSON リストだ。Vivarium MCP サーバおよびその他のプログラマティックなカタログツールが利用する。スキーマ: <a href="https://github.com/aletheia-works/vivarium/blob/main/docs/public/api/recipes.schema.json">recipes.schema.json</a>。
-    </p>
+    <p><a href="/vivarium/ja/spec/recipes-index-v1">Recipes index v1</a> は、このリポジトリがホストするすべての再現を機械的に生成した JSON リストだ。Vivarium MCP サーバおよびその他のプログラマティックなカタログツールが利用する。スキーマ: <a href="https://github.com/aletheia-works/vivarium/blob/main/docs/public/api/recipes.schema.json">recipes.schema.json</a>。</p>
 
     <h3>Consumer workflow（再利用可能 CI）</h3>
-    <p>
-      <a href="/vivarium/ja/spec/consumer-workflow">Consumer workflow</a> — 任意のリポジトリが <code>uses:</code> することで自分の CI 内で Vivarium ホスト型再現を検証できる再利用可能 GitHub Actions ワークフロー。
-    </p>
+    <p><a href="/vivarium/ja/spec/consumer-workflow">Consumer workflow</a> — 任意のリポジトリが <code>uses:</code> することで自分の CI 内で Vivarium ホスト型再現を検証できる再利用可能 GitHub Actions ワークフロー。</p>
 
     <h3>Branch-fix verdict パイプライン</h3>
-    <p>
-      <a href="/vivarium/ja/spec/branch-fix-pipeline">Branch-fix verdict パイプライン</a> — コントリビューターが提供したブランチフィックス Docker イメージの verdict をキャプチャし、デプロイ済みの元の verdict と並べてサイドバイサイド比較を提供する <code>workflow_dispatch</code> ワークフロー。Layer 1 のソース置換版 (Path A) は <a href="/vivarium/ja/repro/compare">/repro/compare</a> から直接実行できる。
-    </p>
+    <p><a href="/vivarium/ja/spec/branch-fix-pipeline">Branch-fix verdict パイプライン</a> — コントリビューターが提供したブランチフィックス Docker イメージの verdict をキャプチャし、デプロイ済みの元の verdict と並べてサイドバイサイド比較を提供する <code>workflow_dispatch</code> ワークフロー。Layer 1 のソース置換版 (Path A) は <a href="/vivarium/ja/repro/compare">/repro/compare</a> から直接実行できる。</p>
   </Section>
 
   <Section
     eyebrow="// 04 · スコープ"
     heading="この仕様の対象範囲。"
   >
-    <p>
-      仕様は <strong>verdict サーフェス</strong> を対象とする——再現ページが自己宣言する meta タグ + JSON エンベロープ、外部リポジトリの <code>manifest.toml</code>、機械可読カタログ、それを消費する CI ワークフロー。<strong>再現自体の構築方法は対象外</strong>（それはレイヤーの README に記述された各レイヤーの規約に属する）。Vivarium 内外を問わず、verdict サーフェスを満たすページは Vivarium 互換だ。
-    </p>
+    <p>仕様は <strong>verdict サーフェス</strong> を対象とする——再現ページが自己宣言する meta タグ + JSON エンベロープ、外部リポジトリの <code>manifest.toml</code>、機械可読カタログ、それを消費する CI ワークフロー。<strong>再現自体の構築方法は対象外</strong>（それはレイヤーの README に記述された各レイヤーの規約に属する）。Vivarium 内外を問わず、verdict サーフェスを満たすページは Vivarium 互換だ。</p>
   </Section>
 </Page>
 

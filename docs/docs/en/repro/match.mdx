@@ -20,18 +20,12 @@ import { ErrorRecipeMatcher } from '../../../components/ErrorRecipeMatcher';
     heading="Three patterns the matcher catches."
   >
     <h3>1. Robust to synonyms</h3>
-    <p>
-      Paste "<code>dtype mismatch</code>" and recipes mentioning "datatype", "dtypes", or "numpy.dtype" surface as candidates too. The matcher normalises pairs like <code>dtype⇄datatype</code>, <code>regex⇄regexp</code>, and <code>fork⇄spawn</code> to a single key — you don't have to guess the project's preferred spelling.
-    </p>
+    <p>Paste "<code>dtype mismatch</code>" and recipes mentioning "datatype", "dtypes", or "numpy.dtype" surface as candidates too. The matcher normalises pairs like <code>dtype⇄datatype</code>, <code>regex⇄regexp</code>, and <code>fork⇄spawn</code> to a single key — you don't have to guess the project's preferred spelling.</p>
 
     <h3>2. Robust to typos (fuzzy match)</h3>
-    <p>
-      A single-character typo like "<code>recursoin depth exceeded</code>" is absorbed via Levenshtein distance 1 (limited to tokens of length ≥ 6 to avoid false positives on short tokens, which stay strict). Fewer "I know there's a recipe for this but it isn't matching" surprises.
-    </p>
+    <p>A single-character typo like "<code>recursoin depth exceeded</code>" is absorbed via Levenshtein distance 1 (limited to tokens of length ≥ 6 to avoid false positives on short tokens, which stay strict). Fewer "I know there's a recipe for this but it isn't matching" surprises.</p>
 
     <h3>3. Mixed-language input is fine (multi-language stopwords)</h3>
-    <p>
-      Pasting "<code>pandas で empty DataFrame の dtype が変わる</code>" — Japanese meta-text mixed with English technical terms — works because Japanese stopwords ("で", "の", "が") and English stopwords ("the", "a", "is") are both stripped. Stack-traced log lines paste in as-is.
-    </p>
+    <p>Pasting "<code>pandas で empty DataFrame の dtype が変わる</code>" — Japanese meta-text mixed with English technical terms — works because Japanese stopwords ("で", "の", "が") and English stopwords ("the", "a", "is") are both stripped. Stack-traced log lines paste in as-is.</p>
   </Section>
 </Page>

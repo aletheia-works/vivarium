@@ -89,9 +89,7 @@ import {
     eyebrow="// 01 · LAYER 1"
     heading="WebAssembly、ページの中で。"
     intro={
-      <p>
-        ユーザーのブラウザタブの中で再現が直接実行される層です。アカウントもインストールも不要、ページを開けばすぐ動きます。Phase 0〜2 で <a href="/vivarium/repro/cpython/137205/">cpython#137205</a> や <a href="/vivarium/repro/pandas/56679/">pandas#56679</a> のように複数の Python / Ruby / PHP / Rust レシピを揃え、現在は最も「ブラウザだけで完結する」surface です。
-      </p>
+      <p>ユーザーのブラウザタブの中で再現が直接実行される層です。アカウントもインストールも不要、ページを開けばすぐ動きます。Phase 0〜2 で <a href="/vivarium/repro/cpython/137205/">cpython#137205</a> や <a href="/vivarium/repro/pandas/56679/">pandas#56679</a> のように複数の Python / Ruby / PHP / Rust レシピを揃え、現在は最も「ブラウザだけで完結する」surface です。</p>
     }
     cellLabels={{
       fits: '向くバグ',
@@ -139,9 +137,7 @@ import {
     eyebrow="// 02 · LAYER 2"
     heading="Docker / microVM、訪問者のマシン上で。"
     intro={
-      <p>
-        本物のファイルシステム、本物のプロセス、本物のネットワークが必要なバグのための層です。Vivarium 側で再現を実行するのではなく、訪問者自身の Docker（または Codespaces）で動かす<strong>カタログ型</strong>の配信モデルを採用しています。
-      </p>
+      <p>本物のファイルシステム、本物のプロセス、本物のネットワークが必要なバグのための層です。Vivarium 側で再現を実行するのではなく、訪問者自身の Docker（または Codespaces）で動かす<strong>カタログ型</strong>の配信モデルを採用しています。</p>
     }
     cellLabels={{
       fits: '向くバグ',
@@ -158,9 +154,7 @@ import {
       </ul>
     }
     startup={
-      <p>
-        各レシピページにはピン留めされた <code>Dockerfile</code> と、コピペ可能な <code>docker run …</code> コマンド、そして <code>ghcr.io/aletheia-works/vivarium-&lt;slug&gt;</code> に公開されたビルド済みイメージへのリンクが揃っています。CI で取得した verdict スナップショットがページ上に表示され、訪問者自身の <code>docker run</code> がライブ再現になります。Codespaces 対応のレシピには「Open in Codespaces」バッジも提供されます。
-      </p>
+      <p>各レシピページにはピン留めされた <code>Dockerfile</code> と、コピペ可能な <code>docker run …</code> コマンド、そして <code>ghcr.io/aletheia-works/vivarium-&lt;slug&gt;</code> に公開されたビルド済みイメージへのリンクが揃っています。CI で取得した verdict スナップショットがページ上に表示され、訪問者自身の <code>docker run</code> がライブ再現になります。Codespaces 対応のレシピには「Open in Codespaces」バッジも提供されます。</p>
     }
     cantReach={
       <ul>
@@ -185,9 +179,7 @@ import {
     eyebrow="// 03 · LAYER 3"
     heading="トレースを同梱、どこでも再生。"
     intro={
-      <p>
-        数回再実行しても再現する保証がない<strong>ハイゼンバグ</strong>のための層です。Vivarium 側であらかじめ録音したトレースを GHCR イメージに焼き込み、訪問者は<strong>再生だけ</strong>すれば済むようにしています。
-      </p>
+      <p>数回再実行しても再現する保証がない<strong>ハイゼンバグ</strong>のための層です。Vivarium 側であらかじめ録音したトレースを GHCR イメージに焼き込み、訪問者は<strong>再生だけ</strong>すれば済むようにしています。</p>
     }
     cellLabels={{
       fits: '向くバグ',
@@ -204,9 +196,7 @@ import {
       </ul>
     }
     startup={
-      <p>
-        各 Layer 3 レシピは、トレースを焼き込んだ自己完結 GHCR イメージとして配布されます。<code>rr replay</code> は PMU を必要としないため、訪問者と CI の再生はどちらも<strong>コモディティな Linux ホストで動作</strong>します。録音そのものは PMU を備えた Linux/x86_64 環境を要するため、レシピ追加時のオフライン作業として Vivarium 側で済ませてあります。
-      </p>
+      <p>各 Layer 3 レシピは、トレースを焼き込んだ自己完結 GHCR イメージとして配布されます。<code>rr replay</code> は PMU を必要としないため、訪問者と CI の再生はどちらも<strong>コモディティな Linux ホストで動作</strong>します。録音そのものは PMU を備えた Linux/x86_64 環境を要するため、レシピ追加時のオフライン作業として Vivarium 側で済ませてあります。</p>
     }
     cantReach={
       <ul>

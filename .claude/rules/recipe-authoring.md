@@ -59,16 +59,20 @@ docs/data/projects.json        ← add a row keyed by <project> (only if new)
 ```
 
 Then regenerate the public/api indices (these are tracked, so the
-diff shows them):
+diff shows them) and the project landing pages:
 
 ```bash
-cd docs && mise exec -- bun run generate-index && mise exec -- bun run generate-project-pages
+mise run recipes:index
+cd docs && mise exec -- bun run generate-project-pages
 ```
 
-The generators write `docs/public/api/{recipes,projects}.json` and
-the auto-generated `docs/docs/{en,ja}/repro/<project>/index.mdx`
-landing pages (the latter are gitignored — regenerated on every
-build).
+`mise run recipes:index` writes both `docs/public/api/recipes.json`
+(tracked) and `docs/data/site-stats.json` (gitignored — site KPI
+counts consumed by the roadmap MDX). `generate-project-pages`
+writes the auto-generated `docs/docs/{en,ja}/repro/<project>/index.mdx`
+landing pages (gitignored — regenerated on every build). Do not
+fall back to bare `bun run generate-index`: it skips the site-stats
+step and leaves the roadmap page's numbers stale on local preview.
 
 ### Scaffolding (Layer 2 only currently)
 

@@ -24,19 +24,8 @@ import {
     eyebrow="// 0 · このガイドが対象にするもの"
     heading="Layer 1（ブラウザ内 WASM）の最小レシピ。"
   >
-    <p>
-      Layer 1 は <a href="https://pyodide.org/">Pyodide</a>、
-      <a href="https://ruby.wasm.ie/">Ruby.wasm</a>、php-wasm、
-      Rust の <code>wasm32-wasip1</code> ターゲットなどで上流コードを
-      ブラウザに持ち込み、ページが開いた瞬間に再現スクリプトを走らせて
-      verdict を返す層です。インストール不要・サーバー不要なので、
-      Vivarium に最初に追加するレシピとして最もコストが低いです。
-    </p>
-    <p>
-      Layer 2（Docker）と Layer 3（record-replay）はそれぞれ
-      <a href="/vivarium/ja/architecture">アーキテクチャ</a>{' '}
-      に役割が書かれていますが、書き始めるならまず Layer 1 一択です。
-    </p>
+    <p>Layer 1 は <a href="https://pyodide.org/">Pyodide</a>、 <a href="https://ruby.wasm.ie/">Ruby.wasm</a>、php-wasm、 Rust の <code>wasm32-wasip1</code> ターゲットなどで上流コードを ブラウザに持ち込み、ページが開いた瞬間に再現スクリプトを走らせて verdict を返す層です。インストール不要・サーバー不要なので、 Vivarium に最初に追加するレシピとして最もコストが低いです。</p>
+    <p>Layer 2（Docker）と Layer 3（record-replay）はそれぞれ <a href="/vivarium/ja/architecture">アーキテクチャ</a>{' '} に役割が書かれていますが、書き始めるならまず Layer 1 一択です。</p>
     <Callout>
       このガイドは<strong>レシピを書く</strong>ところまでを対象にします。
       その先「どこに公開するか」は 2 分岐で、{' '}
@@ -49,15 +38,8 @@ import {
     eyebrow="// 1 · 再現したいバグを決める"
     heading="スラッグは <project>-<issue> 形式。"
   >
-    <p>
-      上流 Issue がある場合は <code>&lt;project&gt;-&lt;issue&gt;</code>
-      （例: <code>pandas-56679</code>）が標準。
-      ない場合は説明的なケバブケース（例: <code>bash-local-shadows-exit</code>）。
-      これがディレクトリ名でもあり、Manifest v1 の <code>slug</code> でもあります。
-    </p>
-    <p>
-      バグを選ぶときは、Layer 1 で完結するか確認するのがコツです:
-    </p>
+    <p>上流 Issue がある場合は <code>&lt;project&gt;-&lt;issue&gt;</code> （例: <code>pandas-56679</code>）が標準。 ない場合は説明的なケバブケース（例: <code>bash-local-shadows-exit</code>）。 これがディレクトリ名でもあり、Manifest v1 の <code>slug</code> でもあります。</p>
+    <p>バグを選ぶときは、Layer 1 で完結するか確認するのがコツです:</p>
     <ul>
       <li>外部 I/O（ネットワーク、ファイル、サブプロセス）を踏まない。</li>
       <li>verdict が <strong>1 つの真偽値</strong>に落ちる（例: 「2 つの値が等しいか」）。</li>
@@ -91,19 +73,13 @@ import {
     eyebrow="// 3 · index.html を書き換える"
     heading="差し替えるのは title、見出し、lede の 3 か所。"
   >
-    <p>
-      コピーした <code>index.html</code> の構造はそのまま使い、以下を上流バグに合わせて差し替えます:
-    </p>
+    <p>コピーした <code>index.html</code> の構造はそのまま使い、以下を上流バグに合わせて差し替えます:</p>
     <ul>
       <li><code>&lt;title&gt;</code> — タブに出るタイトル（例: <code>Vivarium · Reproducing &lt;project&gt;#&lt;issue&gt;</code>）。</li>
       <li><code>&lt;h1&gt;</code> — 見出し。上流 Issue へのリンクを含めます。</li>
       <li><code>&lt;p class="lede"&gt;</code> — 1〜2 文でバグを説明する lede。</li>
     </ul>
-    <p>
-      <strong>触ってはいけないもの</strong>: <code>&lt;meta name="vivarium-contract" content="v1"&gt;</code>、
-      <code>#verdict</code> 要素、<code>../_shared/style.css</code> へのリンク。
-      これらが Contract v1 を構成しているので、外すと verdict が機械的に読めなくなります。
-    </p>
+    <p><strong>触ってはいけないもの</strong>: <code>&lt;meta name="vivarium-contract" content="v1"&gt;</code>、 <code>#verdict</code> 要素、<code>../_shared/style.css</code> へのリンク。 これらが Contract v1 を構成しているので、外すと verdict が機械的に読めなくなります。</p>
     <Callout>
       Contract v1 の正典は{' '}
       <a href="/vivarium/ja/spec/contract-v1">Contract v1</a> にあります。
@@ -116,12 +92,7 @@ import {
     eyebrow="// 4 · repro.ts を書き換える"
     heading="再現ロジックだけ差し替える。helper はそのまま。"
   >
-    <p>
-      コピー元の <code>repro.ts</code> は <code>../_shared/loader.js</code> と{' '}
-      <code>../_shared/verdict.js</code> を import している部分が共通骨格です。
-      ここはそのまま残して、<strong>再現コード本体だけ</strong>差し替えます。
-      Python レシピなら以下のような形:
-    </p>
+    <p>コピー元の <code>repro.ts</code> は <code>../_shared/loader.js</code> と{' '} <code>../_shared/verdict.js</code> を import している部分が共通骨格です。 ここはそのまま残して、<strong>再現コード本体だけ</strong>差し替えます。 Python レシピなら以下のような形:</p>
     <pre><code>{`const REPRO_CODE = \`
 import pandas as pd
 # ↑ 上流バグを表す最小コード
@@ -133,13 +104,7 @@ result = {
 result
 \`.trim();
 `}</code></pre>
-    <p>
-      verdict 設定は helper が面倒を見ます: 比較が <code>true</code>（バグが再現した）なら
-      <code>setVerdict("reproduced", "...")</code>、そうでなければ
-      <code>setVerdict("unreproduced", "...")</code>。
-      <code>setResult({`{ contract: "v1", bug, runtime, result, timing }`})</code>{' '}
-      で <code>__VIVARIUM_RESULT__</code> envelope も書き出されます。
-    </p>
+    <p>verdict 設定は helper が面倒を見ます: 比較が <code>true</code>（バグが再現した）なら <code>setVerdict("reproduced", "...")</code>、そうでなければ <code>setVerdict("unreproduced", "...")</code>。 <code>setResult({`{ contract: "v1", bug, runtime, result, timing }`})</code>{' '} で <code>__VIVARIUM_RESULT__</code> envelope も書き出されます。</p>
   </Section>
 
   <Section
@@ -154,14 +119,7 @@ bun run build         # repro.ts → repro.js を生成
 python -m http.server -d src/layer1_wasm/<あなたの slug> 8765
 # ブラウザで http://localhost:8765/ を開く
 `}</code></pre>
-    <p>
-      ページが開き、上流ライブラリが CDN からロードされ、
-      verdict バッジが <code>pending</code> →{' '}
-      <code>reproduced</code> / <code>unreproduced</code> のどちらかに落ちます。
-      DevTools コンソールで <code>__VIVARIUM_VERDICT__</code> と
-      <code>__VIVARIUM_RESULT__</code> も同じ値が入っていれば、
-      Contract v1 上は OK です。
-    </p>
+    <p>ページが開き、上流ライブラリが CDN からロードされ、 verdict バッジが <code>pending</code> →{' '} <code>reproduced</code> / <code>unreproduced</code> のどちらかに落ちます。 DevTools コンソールで <code>__VIVARIUM_VERDICT__</code> と <code>__VIVARIUM_RESULT__</code> も同じ値が入っていれば、 Contract v1 上は OK です。</p>
     <Callout>
       Pyodide / Ruby.wasm / php-wasm はいずれも <code>SharedArrayBuffer</code>{' '}
       を使わない構成にしてあるので、COOP/COEP ヘッダは不要です。
@@ -174,12 +132,7 @@ python -m http.server -d src/layer1_wasm/<あなたの slug> 8765
     eyebrow="// 6 · ネイティブ再検証（任意）"
     heading="ブラウザ外でも同じバグが出ることを 1 行で確かめる。"
   >
-    <p>
-      Pyodide / Ruby.wasm 経由で観測できたバグが、本物の CPython /
-      MRI Ruby でも同じく再現することを示すと、レシピの説得力が上がります。
-      Python なら <a href="https://docs.astral.sh/uv/">uv</a> +{' '}
-      PEP 723 inline metadata で 1 ファイル完結に書けます:
-    </p>
+    <p>Pyodide / Ruby.wasm 経由で観測できたバグが、本物の CPython / MRI Ruby でも同じく再現することを示すと、レシピの説得力が上がります。 Python なら <a href="https://docs.astral.sh/uv/">uv</a> +{' '} PEP 723 inline metadata で 1 ファイル完結に書けます:</p>
     <pre><code>{`# /// script
 # requires-python = ">=3.13"
 # dependencies = ["pandas==2.3.3"]
@@ -187,33 +140,19 @@ python -m http.server -d src/layer1_wasm/<あなたの slug> 8765
 import pandas as pd
 # … 同じ再現ロジック …
 `}</code></pre>
-    <p>
-      <code>mise exec uv -- uv run repro.py</code> で ephemeral venv
-      が組まれて走ります。Ruby、PHP、Rust も同様で、既存レシピの
-      <code>repro.rb</code> / <code>repro.php</code> / <code>Cargo.toml</code>{' '}
-      が雛形になります。
-    </p>
+    <p><code>mise exec uv -- uv run repro.py</code> で ephemeral venv が組まれて走ります。Ruby、PHP、Rust も同様で、既存レシピの <code>repro.rb</code> / <code>repro.php</code> / <code>Cargo.toml</code>{' '} が雛形になります。</p>
   </Section>
 
   <Section
     eyebrow="// 7 · recipes.json を再生成"
     heading="ギャラリーに自分のレシピを並べる。"
   >
-    <p>
-      ギャラリー（<code>/repro/</code>）と MCP サーバが読む
-      <code>recipes.json</code> は、ビルド時に
-      <code>src/layer*/</code> をスキャンして自動生成されます。
-      手元での確認用には:
-    </p>
+    <p>ギャラリー（<code>/repro/</code>）と MCP サーバが読む <code>recipes.json</code> は、ビルド時に <code>src/layer*/</code> をスキャンして自動生成されます。 手元での確認用には:</p>
     <pre><code>{`mise run recipes:index
 # あるいは
 cd docs && bun run generate-index
 `}</code></pre>
-    <p>
-      生成された <code>docs/public/api/recipes.json</code> に
-      自分のスラッグが入っていれば成功です。
-      docs サイトをローカルで動かすと、ギャラリーにカードが現れます:
-    </p>
+    <p>生成された <code>docs/public/api/recipes.json</code> に 自分のスラッグが入っていれば成功です。 docs サイトをローカルで動かすと、ギャラリーにカードが現れます:</p>
     <pre><code>{`cd docs && bun run dev
 # http://localhost:3000/vivarium/ja/repro/`}</code></pre>
   </Section>

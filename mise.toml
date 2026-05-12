@@ -350,9 +350,10 @@ echo "  gh run watch --repo aletheia-works/vivarium <run-id>"
 # ── Recipes catalogue index ──────────────────────────────────────────────
 
 [tasks."recipes:index"]
-description = "Regenerate docs/public/api/recipes.json from src/layer*/"
+description = "Regenerate docs/public/api/recipes.json + docs/data/site-stats.json from src/layer*/"
 dir = "docs"
-run = "bun run generate-index"
+# `generate-site-stats` reads recipes.json, so it must run *after* generate-index.
+run = "bun run generate-index && bun run generate-site-stats"
 
 [tasks."recipes:new"]
 description = "Scaffold a new Layer 2 recipe directory from src/layer2_docker/_template/"
@@ -408,8 +409,8 @@ docker build -t "${tag}" "${recipe_dir}"
 echo "==> [3/6] docker run + capture verdict + schema-validate"
 bash scripts/capture_layer2_verdict.sh "${tag}" "${recipe_dir}/verdict.json"
 
-echo "==> [4/6] regenerate recipes / projects indices + biome check"
-(cd docs && bun run generate-index && bun run generate-project-pages)
+echo "==> [4/6] regenerate recipes / projects indices + site stats + biome check"
+(cd docs && bun run generate-index && bun run generate-project-pages && bun run generate-site-stats)
 mise run docs:check
 
 echo "==> [5/6] markdown lint"

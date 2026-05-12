@@ -24,14 +24,7 @@ import {
     eyebrow="// 0 · WHAT THIS LOOP IS FOR"
     heading="AI-slop verification — does this fix actually work?"
   >
-    <p>
-      An AI agent (Claude Code, Cursor, Cline, Continue, …) hands you a
-      candidate fix for an upstream bug. The honest question is "did it
-      actually fix the bug, or does it just look like a fix?" Vivarium's
-      branch-fix loop answers that with a <strong>mechanical verdict
-      flip</strong>: feed the fix through the recipe's runtime and check
-      whether the bug still triggers.
-    </p>
+    <p>An AI agent (Claude Code, Cursor, Cline, Continue, …) hands you a candidate fix for an upstream bug. The honest question is "did it actually fix the bug, or does it just look like a fix?" Vivarium's branch-fix loop answers that with a <strong>mechanical verdict flip</strong>: feed the fix through the recipe's runtime and check whether the bug still triggers.</p>
     <Callout>
       <strong>Verdict semantics.</strong> <code>reproduced</code> = the
       bug still triggers (your fix did not avoid it).{' '}
@@ -39,10 +32,7 @@ import {
       around the broken code path). A working fix flips the verdict from{' '}
       <code>reproduced</code> to <code>unreproduced</code>.
     </Callout>
-    <p>
-      Two paths share the same wire shape (Contract v1) and the same
-      comparison surface (<a href="/vivarium/repro/compare">/repro/compare</a>):
-    </p>
+    <p>Two paths share the same wire shape (Contract v1) and the same comparison surface (<a href="/vivarium/repro/compare">/repro/compare</a>):</p>
     <NumberedList
       items={[
         {
@@ -55,21 +45,14 @@ import {
         },
       ]}
     />
-    <p>
-      Layer dispatch is automatic — the recipe's catalogue entry already
-      knows which layer it is, and the MCP <code>verify_branch_fix</code>{' '}
-      tool returns the right scaffolding for both.
-    </p>
+    <p>Layer dispatch is automatic — the recipe's catalogue entry already knows which layer it is, and the MCP <code>verify_branch_fix</code>{' '} tool returns the right scaffolding for both.</p>
   </Section>
 
   <Section
     eyebrow="// 1 · PICK A RECIPE"
     heading="Find the bug in the catalogue."
   >
-    <p>
-      Two ways in, depending on whether you start from a known recipe or
-      from a paste of the error:
-    </p>
+    <p>Two ways in, depending on whether you start from a known recipe or from a paste of the error:</p>
     <NumberedList
       items={[
         {
@@ -88,12 +71,7 @@ import {
     eyebrow="// 2 · PATH A — LAYER 1"
     heading="Paste a fix on the recipe page; capture the verdict."
   >
-    <p>
-      Layer 1 recipes that opt into Path A render a <strong>"Try a
-      fix"</strong> panel underneath the baseline output. Today this is
-      shipped on <a href="/vivarium/repro/php/12167/"><code>php-12167</code></a>;
-      others follow as the shape proves out.
-    </p>
+    <p>Layer 1 recipes that opt into Path A render a <strong>"Try a fix"</strong> panel underneath the baseline output. Today this is shipped on <a href="/vivarium/repro/php/12167/"><code>php-12167</code></a>; others follow as the shape proves out.</p>
     <NumberedList
       items={[
         {
@@ -132,13 +110,7 @@ import {
     eyebrow="// 3 · PATH B — LAYER 2 / 3"
     heading="Build an image; run a workflow; drop the artefact."
   >
-    <p>
-      Layer 2 (Docker catalogue) and Layer 3 (record-replay) recipes can't
-      run in a browser tab — the bug needs a real OS, real sockets, real
-      filesystem. Path B shifts the build to your own infrastructure and
-      uses a GitHub Actions workflow to capture the verdict against your
-      pushed image.
-    </p>
+    <p>Layer 2 (Docker catalogue) and Layer 3 (record-replay) recipes can't run in a browser tab — the bug needs a real OS, real sockets, real filesystem. Path B shifts the build to your own infrastructure and uses a GitHub Actions workflow to capture the verdict against your pushed image.</p>
     <NumberedList
       items={[
         {
@@ -188,10 +160,7 @@ import {
     eyebrow="// 4 · READ THE VERDICT"
     heading="What `reproduced` and `unreproduced` mean here."
   >
-    <p>
-      The branch-fix verdict tells you exactly one thing: did the bug
-      trigger when the fix was in place?
-    </p>
+    <p>The branch-fix verdict tells you exactly one thing: did the bug trigger when the fix was in place?</p>
     <ul>
       <li>
         <strong>Original = <code>reproduced</code>, branch-fix ={' '}
