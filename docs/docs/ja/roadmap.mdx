@@ -12,6 +12,7 @@ import {
   NextCta,
   BottomNote,
 } from '../../components/PageChrome';
+import siteStats from '../../data/site-stats.json';
 
 <Page>
   <PageHero
@@ -22,10 +23,10 @@ import {
 
   <KpiStrip
     items={[
-      { value: '14', label: 'Recipes shipped', accent: 'teal' },
-      { value: '3', label: 'Execution layers', accent: 'violet' },
-      { value: '7', label: 'MCP tools', accent: 'coral' },
-      { value: '2', label: 'Locales (EN / JA)', accent: 'teal' },
+      { value: String(siteStats.recipes), label: 'Recipes shipped', accent: 'teal' },
+      { value: String(siteStats.layers), label: 'Execution layers', accent: 'violet' },
+      { value: String(siteStats.mcpTools), label: 'MCP tools', accent: 'coral' },
+      { value: String(siteStats.locales), label: 'Locales (EN / JA)', accent: 'teal' },
     ]}
   />
 
@@ -33,9 +34,7 @@ import {
     eyebrow="// 01 · NOW"
     heading="いま動いているもの。"
   >
-    <p>
-      おおむね機能が積み上がった順。それぞれは独立に触れます——「再現一覧」「ガイド」「仕様」のページから入って試すのが一番速いです。
-    </p>
+    <p>おおむね機能が積み上がった順。それぞれは独立に触れます——「再現一覧」「ガイド」「仕様」のページから入って試すのが一番速いです。</p>
 
     <h3>3 つの実行レイヤー</h3>
     <ul>
@@ -46,7 +45,7 @@ import {
 
     <h3>再現カタログ</h3>
     <ul>
-      <li>14 件のレシピを 3 つのレイヤーにわたって出荷。ブラウザ内 WASM ページから Docker、record-replay スナップショットまで揃っています。</li>
+      <li>{siteStats.recipes} 件のレシピを {siteStats.layers} つのレイヤーにわたって出荷。ブラウザ内 WASM ページから Docker、record-replay スナップショットまで揃っています。</li>
       <li>ファセット付きギャラリー、エラーメッセージ貼付による候補レシピ検索、プロジェクト別ランディングページ。</li>
     </ul>
 
@@ -59,7 +58,7 @@ import {
 
     <h3>AI エージェント連携</h3>
     <ul>
-      <li><strong>Vivarium MCP サーバ</strong> — 7 つのツール (<code>list_recipes</code> / <code>get_recipe</code> / <code>lookup_verdict</code> / <code>match_error</code> / <code>verify_branch_fix</code> / <code>prepare_new_recipe</code> / <code>prepare_fix_candidate</code>)。</li>
+      <li><strong>Vivarium MCP サーバ</strong> — {siteStats.mcpTools} 個のツールがレシピ探索 / verdict ルックアップ / エラー → レシピ照合 / branch-fix 検証 / 新規レシピ・修正候補のスキャフォルダーをカバー (全ラインナップは <a href="https://www.npmjs.com/package/@aletheia-works/vivarium-mcp">パッケージ README</a> を参照)。</li>
       <li><strong>AI-slop 検証フロー</strong> — エラーをマッチ → レシピを開く → 修正候補を貼って再実行 → verdict をサイドバイサイドで比較するエンドツーエンドの動線。</li>
     </ul>
 
@@ -78,9 +77,7 @@ import {
     <Callout>
       将来的に何を目指していくかは、メンテナーが現在整理中。詳細は別タイミングで追記します。
     </Callout>
-    <p>
-      現段階では「ここまで来た」を共有できる段階で、その先の方向性は別の場でまとめる予定です。気になることや「こう使いたい」というユースケースがあれば、<a href="https://github.com/aletheia-works/vivarium/issues">GitHub Issues</a> にリクエストや提案として残しておいてください。先の地図を描くときの材料になります。
-    </p>
+    <p>現段階では「ここまで来た」を共有できる段階で、その先の方向性は別の場でまとめる予定です。気になることや「こう使いたい」というユースケースがあれば、<a href="https://github.com/aletheia-works/vivarium/issues">GitHub Issues</a> にリクエストや提案として残しておいてください。先の地図を描くときの材料になります。</p>
   </Section>
 </Page>
 

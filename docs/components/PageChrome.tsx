@@ -399,11 +399,10 @@ export function NumberedList({
 }
 
 export function Callout({ children }: { children: ReactNode }) {
-  return (
-    <blockquote className="v-callout">
-      <p>{children}</p>
-    </blockquote>
-  );
+  // No wrapping <p> here: MDX wraps the children in a paragraph component
+  // already, and a hand-written <p> on top produces a hydration-breaking
+  // <p><p>...</p></p> nest. CSS rule `.v-callout p` still matches.
+  return <blockquote className="v-callout">{children}</blockquote>;
 }
 
 export function NextCta({

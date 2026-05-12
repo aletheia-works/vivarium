@@ -89,9 +89,7 @@ import {
     eyebrow="// 01 · LAYER 1"
     heading="WebAssembly, in the page."
     intro={
-      <p>
-        Reproductions run directly inside your browser tab. No account, no install — open the page and it starts. Phases 0–2 built up Python / Ruby / PHP / Rust recipes like <a href="/vivarium/repro/cpython/137205/">cpython#137205</a> and <a href="/vivarium/repro/pandas/56679/">pandas#56679</a>; this layer is the most "browser-only" surface Vivarium ships.
-      </p>
+      <p>Reproductions run directly inside your browser tab. No account, no install — open the page and it starts. Phases 0–2 built up Python / Ruby / PHP / Rust recipes like <a href="/vivarium/repro/cpython/137205/">cpython#137205</a> and <a href="/vivarium/repro/pandas/56679/">pandas#56679</a>; this layer is the most "browser-only" surface Vivarium ships.</p>
     }
     cellLabels={{
       fits: 'Bugs this layer fits',
@@ -139,9 +137,7 @@ import {
     eyebrow="// 02 · LAYER 2"
     heading="Docker / microVM, on your own machine."
     intro={
-      <p>
-        For bugs that need a real filesystem, real processes, and real networking. Vivarium does not host execution; recipes are <strong>distributed as a catalogue</strong> that runs on your own Docker (or Codespaces).
-      </p>
+      <p>For bugs that need a real filesystem, real processes, and real networking. Vivarium does not host execution; recipes are <strong>distributed as a catalogue</strong> that runs on your own Docker (or Codespaces).</p>
     }
     cellLabels={{
       fits: 'Bugs this layer fits',
@@ -158,9 +154,7 @@ import {
       </ul>
     }
     startup={
-      <p>
-        Each recipe page ships a pinned <code>Dockerfile</code>, a copy-pasteable <code>docker run …</code> command, and a link to a published image at <code>ghcr.io/aletheia-works/vivarium-&lt;slug&gt;</code>. The page also shows the latest CI verdict snapshot — your own <code>docker run</code> becomes the live confirmation. Where applicable an "Open in Codespaces" badge is provided.
-      </p>
+      <p>Each recipe page ships a pinned <code>Dockerfile</code>, a copy-pasteable <code>docker run …</code> command, and a link to a published image at <code>ghcr.io/aletheia-works/vivarium-&lt;slug&gt;</code>. The page also shows the latest CI verdict snapshot — your own <code>docker run</code> becomes the live confirmation. Where applicable an "Open in Codespaces" badge is provided.</p>
     }
     cantReach={
       <ul>
@@ -185,9 +179,7 @@ import {
     eyebrow="// 03 · LAYER 3"
     heading="Trace bundled, replay anywhere."
     intro={
-      <p>
-        For <strong>heisenbugs</strong> — bugs that don't reliably reproduce on a fresh re-run. Vivarium pre-records the trace, bakes it into a GHCR image, and you only have to <strong>replay</strong>.
-      </p>
+      <p>For <strong>heisenbugs</strong> — bugs that don't reliably reproduce on a fresh re-run. Vivarium pre-records the trace, bakes it into a GHCR image, and you only have to <strong>replay</strong>.</p>
     }
     cellLabels={{
       fits: 'Bugs this layer fits',
@@ -204,9 +196,7 @@ import {
       </ul>
     }
     startup={
-      <p>
-        Each Layer 3 recipe ships as a self-contained GHCR image with the trace baked in. <code>rr replay</code> doesn't need a PMU, so replay runs on <strong>commodity Linux hosts</strong> — both for visitors and for CI. The recording itself does need a PMU-equipped Linux/x86_64 host, but that is done offline by Vivarium when the recipe is added — not something you have to repeat.
-      </p>
+      <p>Each Layer 3 recipe ships as a self-contained GHCR image with the trace baked in. <code>rr replay</code> doesn't need a PMU, so replay runs on <strong>commodity Linux hosts</strong> — both for visitors and for CI. The recording itself does need a PMU-equipped Linux/x86_64 host, but that is done offline by Vivarium when the recipe is added — not something you have to repeat.</p>
     }
     cantReach={
       <ul>

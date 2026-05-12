@@ -131,9 +131,17 @@ temp/
 .tmp/
 
 # ─── Claude Code / AI tools ──────────────────
-# `.claude/` is tracked; only `*.local.*` files stay personal.
+# `.claude/` is tracked; only `*.local.*` files and runtime artefacts stay personal.
 .claude/CLAUDE.local.md
 .claude/settings.local.json
+.claude/scheduled_tasks.lock
+
+# `docs/data/site-stats.json` is regenerated from `docs/public/api/recipes.json`
+# and `packages/mcp-server/src/tools/` on every `bun run dev` / `build`
+# (CI invokes `mise run docs:build`). Keeping it tracked would mean
+# every recipe-adding PR also bumps a derivative numbers file with no
+# extra information — the recipes.json diff already captures the change.
+docs/data/site-stats.json
 .aider*
 .cursor-server/
 

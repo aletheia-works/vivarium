@@ -35,27 +35,19 @@ import {
     eyebrow="// 01 · WHAT IT GIVES YOU"
     heading="A platform for bug reproduction."
   >
-    <p>
-      Vivarium is <strong>a platform for reproducing bugs</strong>. Open a page, click once, and find out whether a previously-reported bug still reproduces — or whether a candidate fix actually fixes it.
-    </p>
-    <p>
-      For each upstream bug, the catalogue holds one <strong>recipe</strong>. Every recipe satisfies the same <code>verdict.json v1</code> contract, so each page returns either <code>reproduced</code> (the bug reproduces) or <code>unreproduced</code> (it does not). Results show inline on the page and are also exposed as machine-readable JSON.
-    </p>
+    <p>Vivarium is <strong>a platform for reproducing bugs</strong>. Open a page, click once, and find out whether a previously-reported bug still reproduces — or whether a candidate fix actually fixes it.</p>
+    <p>For each upstream bug, the catalogue holds one <strong>recipe</strong>. Every recipe satisfies the same <code>verdict.json v1</code> contract, so each page returns either <code>reproduced</code> (the bug reproduces) or <code>unreproduced</code> (it does not). Results show inline on the page and are also exposed as machine-readable JSON.</p>
     <Callout>
       Vivarium ships bugs as <strong>runnable artefacts, not write-ups</strong>. Instead of someone telling you "this is a bug," you open it in your browser and watch.
     </Callout>
-    <p>
-      The trigger was the surge of AI-generated bug reports and pull requests. Maintainers were drowning in plausible-but-unverified claims arriving at machine speed, and contributors had no way to check whether their own AI-drafted fixes actually worked. The shared root cause — no cheap, universal way to verify whether a bug is real or whether a fix actually fixes it — is what Vivarium addresses.
-    </p>
+    <p>The trigger was the surge of AI-generated bug reports and pull requests. Maintainers were drowning in plausible-but-unverified claims arriving at machine speed, and contributors had no way to check whether their own AI-drafted fixes actually worked. The shared root cause — no cheap, universal way to verify whether a bug is real or whether a fix actually fixes it — is what Vivarium addresses.</p>
   </Section>
 
   <Section
     eyebrow="// 02 · THREE EXECUTION SURFACES"
     heading="Each recipe declares the layer that fits the bug."
   >
-    <p>
-      Bugs differ wildly in what environment they need. Vivarium organises reproduction techniques into three layers, and you don't pick the layer — the recipe declares it for you.
-    </p>
+    <p>Bugs differ wildly in what environment they need. Vivarium organises reproduction techniques into three layers, and you don't pick the layer — the recipe declares it for you.</p>
 
     <LayerCards
       layers={[
@@ -101,9 +93,7 @@ import {
     eyebrow="// 03 · WHERE TO START"
     heading="One first page per audience."
   >
-    <p>
-      Vivarium has different entry points for different readers. The cards below are persona-route shortcuts — each one lands you at a "see it work yourself" surface within 5–30 minutes.
-    </p>
+    <p>Vivarium has different entry points for different readers. The cards below are persona-route shortcuts — each one lands you at a "see it work yourself" surface within 5–30 minutes.</p>
     <RouteCards
       cards={[
         {
@@ -124,7 +114,7 @@ import {
           kicker: '03 · AI AGENT',
           icon: <Bot />,
           title: 'Use from your AI agent',
-          body: 'Drive the seven MCP tools from Claude Code / Aider / Cline via `@aletheia-works/vivarium-mcp`.',
+          body: 'Drive the MCP tools from Claude Code / Aider / Cline via `@aletheia-works/vivarium-mcp`.',
           href: '/vivarium/guide/use-from-ai-agent',
         },
         {

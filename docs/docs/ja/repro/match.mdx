@@ -20,18 +20,12 @@ import { ErrorRecipeMatcher } from '../../../components/ErrorRecipeMatcher';
     heading="マッチが拾うパターン、3 つ。"
   >
     <h3>1. 同義語に強い（synonym table）</h3>
-    <p>
-      「<code>dtype mismatch</code>」を貼ると「datatype」「dtypes」「numpy.dtype」を含むレシピも候補に上がります。matcher が <code>dtype⇄datatype</code>、<code>regex⇄regexp</code>、<code>fork⇄spawn</code> といった派生形を 1 つのキーに正規化するため、書きかたゆれを心配せずに貼り付けて構いません。
-    </p>
+    <p>「<code>dtype mismatch</code>」を貼ると「datatype」「dtypes」「numpy.dtype」を含むレシピも候補に上がります。matcher が <code>dtype⇄datatype</code>、<code>regex⇄regexp</code>、<code>fork⇄spawn</code> といった派生形を 1 つのキーに正規化するため、書きかたゆれを心配せずに貼り付けて構いません。</p>
 
     <h3>2. typo に強い（fuzzy match）</h3>
-    <p>
-      「<code>recursoin depth exceeded</code>」のような 1 文字 typo は Levenshtein 距離 1 で吸収されます（長さ 6 以上のトークンに限定。短いトークンは false-positive を避けるため厳密一致）。「php json_encode で再帰深さでこけた」がなぜか候補に出ない、という事故が減ります。
-    </p>
+    <p>「<code>recursoin depth exceeded</code>」のような 1 文字 typo は Levenshtein 距離 1 で吸収されます（長さ 6 以上のトークンに限定。短いトークンは false-positive を避けるため厳密一致）。「php json_encode で再帰深さでこけた」がなぜか候補に出ない、という事故が減ります。</p>
 
     <h3>3. 日本語と英語が混じってもよい（multi-language stopwords）</h3>
-    <p>
-      「<code>pandas で empty DataFrame の dtype が変わる</code>」のように日本語のメタテキストと英語の技術用語を混ぜて貼っても、「で」「の」「が」のような日本語ストップワードと「the」「a」「is」のような英語ストップワードがどちらも除外されます。スタックトレースをそのまま貼っても候補が見つかります。
-    </p>
+    <p>「<code>pandas で empty DataFrame の dtype が変わる</code>」のように日本語のメタテキストと英語の技術用語を混ぜて貼っても、「で」「の」「が」のような日本語ストップワードと「the」「a」「is」のような英語ストップワードがどちらも除外されます。スタックトレースをそのまま貼っても候補が見つかります。</p>
   </Section>
 </Page>
