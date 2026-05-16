@@ -6,6 +6,27 @@
 // Plain JS (no TypeScript build) so Layer 2 — which has no tsc step —
 // can also import it without a compile dance.
 
+// ── Favicon injection ───────────────────────────────────────────────────
+// Mirrors the rspress docs site config (docs/rspress.config.ts head[]).
+// Repro pages don't go through rspress, so we attach the same icons here
+// once per page load. Absolute /vivarium/ paths because SITE_BASE is
+// fixed at /vivarium/ (docs/scripts/site-paths.ts) and repro URLs nest
+// two levels deep (/vivarium/repro/<project>/<issue>/), so absolute
+// paths sidestep brittle relative-path arithmetic.
+(function injectFavicons() {
+  const icons = [
+    { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/vivarium/favicon-32x32.png' },
+    { rel: 'icon', type: 'image/png', sizes: '16x16', href: '/vivarium/favicon-16x16.png' },
+    { rel: 'icon', type: 'image/png', sizes: '192x192', href: '/vivarium/icon-192.png' },
+    { rel: 'apple-touch-icon', sizes: '180x180', href: '/vivarium/apple-touch-icon.png' },
+  ];
+  for (const spec of icons) {
+    const link = document.createElement('link');
+    for (const [k, v] of Object.entries(spec)) link.setAttribute(k, v);
+    document.head.appendChild(link);
+  }
+})();
+
 const THEME_KEY = 'rspress-theme-appearance';
 
 // ── Theme helpers ────────────────────────────────────────────────────────
