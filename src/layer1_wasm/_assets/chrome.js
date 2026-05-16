@@ -21,6 +21,9 @@
     { rel: 'apple-touch-icon', sizes: '180x180', href: '/vivarium/apple-touch-icon.png' },
   ];
   for (const spec of icons) {
+    // Skip if an equivalent link already exists (e.g. a future template
+    // adds a static <link> for the same rel+sizes pair).
+    if (document.head.querySelector(`link[rel="${spec.rel}"][sizes="${spec.sizes}"]`)) continue;
     const link = document.createElement('link');
     for (const [k, v] of Object.entries(spec)) link.setAttribute(k, v);
     document.head.appendChild(link);
