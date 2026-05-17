@@ -57,6 +57,13 @@
       "homepage": "https://www.sympy.org/",
       "github": "https://github.com/sympy/sympy"
     },
+    "lark": {
+      "display_name": "Lark",
+      "tagline": "Pure-Python parsing toolkit (LALR / Earley / CYK).",
+      "description": "Grammar-engine bugs that survive when lark is installed into Pyodide via micropip. Layer 1 recipes that involve hangs (e.g. LALR-construction infinite loops) run inside a Web Worker so the page can hard-terminate the worker on budget overrun without freezing the visitor's tab.",
+      "homepage": "https://lark-parser.readthedocs.io/",
+      "github": "https://github.com/lark-parser/lark"
+    },
     "bash": {
       "display_name": "bash",
       "tagline": "GNU bash and POSIX shell semantics.",

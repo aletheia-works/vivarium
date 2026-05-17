@@ -21,6 +21,37 @@
       "severity": "spec-violation"
     },
     {
+      "slug": "lark-1585",
+      "layer": 1,
+      "project": "lark",
+      "issue": 1585,
+      "title": "lark-parser/lark#1585",
+      "page_url": "https://aletheia-works.github.io/vivarium/repro/lark/1585/",
+      "source_url": "https://github.com/aletheia-works/vivarium/tree/main/src/layer1_wasm/lark-1585",
+      "language": "python",
+      "tags": [
+        "lark",
+        "lalr",
+        "cyk",
+        "grammar-priority",
+        "infinite-loop"
+      ],
+      "symptom": "lalr-construction-infinite-loop",
+      "severity": "bug",
+      "roundtrip": {
+        "schema_version": 1,
+        "slug": "lark-1585",
+        "upstream_issue": "https://github.com/lark-parser/lark/issues/1585",
+        "vivarium_pr": null,
+        "status": "draft",
+        "updated_at": "2026-05-17T00:00:00Z",
+        "notes": [
+          "scaffolded from upstream issue lark-parser/lark#1585 — infinite loop in lark's LALR/CYK back-ends on the grammar `start.1: \"a\" | start start*`",
+          "Layer 1 recipe runs Pyodide + lark in a Web Worker so the hang does not freeze the page; main thread terminates the worker after an 8-second budget and that termination is the verdict signal"
+        ]
+      }
+    },
+    {
       "slug": "mpmath-983",
       "layer": 1,
       "project": "mpmath",
