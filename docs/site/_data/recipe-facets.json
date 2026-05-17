@@ -60,6 +60,12 @@
       "severity": "spec-violation",
       "tags": ["sympy", "ask", "Q.extended_real", "core.relational", "infinity"]
     },
+    "lark-1585": {
+      "language": "python",
+      "symptom": "lalr-construction-infinite-loop",
+      "severity": "bug",
+      "tags": ["lark", "lalr", "cyk", "grammar-priority", "infinite-loop"]
+    },
     "find-xargs-whitespace": {
       "language": "shell",
       "symptom": "whitespace-unsafe-pipeline",

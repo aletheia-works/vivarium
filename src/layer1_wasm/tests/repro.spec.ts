@@ -125,6 +125,14 @@ const cases: ReproCase[] = [
     expectedBugIssue: 29413,
     expectedRuntimeName: "pyodide",
   },
+  {
+    name: "lark-1585 reproduction",
+    url: `${LAYER1}/lark-1585/`,
+    expectedVerdict: "reproduced",
+    expectedBugProject: "lark",
+    expectedBugIssue: 1585,
+    expectedRuntimeName: "pyodide",
+  },
   // Layer 2 — Docker catalogue, verdict snapshot fetched from
   // `verdict.json` next to the page. CI generates `verdict.json` in
   // both `repro-regression.yml` (build + run + write) and
