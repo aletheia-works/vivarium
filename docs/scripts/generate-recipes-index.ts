@@ -48,6 +48,33 @@ const REPO_BASE = `https://github.com/${OWNER}/${REPO_NAME}`;
 
 type Layer = 1 | 2 | 3;
 
+// Per-recipe round-trip state. Canonical schema:
+// docs/site/public/spec/roundtrip.schema.json. Surfaced here as
+// `recipe.roundtrip` when the recipe directory carries a
+// `roundtrip.json` (opt-in; recipes without one keep the field absent).
+// ADR-0018 minor-revision policy: this is an additive optional field
+// inside the same `index = "v1"` envelope, no version bump.
+interface RoundtripState {
+  schema_version: 1;
+  slug: string;
+  upstream_issue: string;
+  vivarium_pr?: string | null;
+  fork?: {
+    owner: string;
+    repo: string;
+    branch: string;
+    image_tag?: string;
+  } | null;
+  upstream_pr?: string | null;
+  verdicts?: {
+    unfixed?: { verdict: string; captured_at: string; source: string };
+    fixed?: { verdict: string; captured_at: string; source: string };
+  };
+  status: string;
+  updated_at: string;
+  notes?: string[];
+}
+
 interface RecipeEntry {
   slug: string;
   layer: Layer;
@@ -61,6 +88,7 @@ interface RecipeEntry {
   symptom?: string;
   severity?: string;
   tags: string[];
+  roundtrip?: RoundtripState;
 }
 
 interface RecipesIndex {
@@ -197,6 +225,69 @@ function parseSlug(slug: string): {
   };
 }
 
+// Opt-in round-trip state loader. ENOENT is the common case (recipes
+// without a roundtrip.json keep the catalogue field absent); any other
+// failure logs a warning and skips the merge rather than failing the
+// generator — recipes.json must stay generatable from any half-populated
+// tree. Mechanical checks below are the minimal set needed to keep the
+// public catalogue from carrying obviously malformed state; the
+// canonical full-schema validation lives in roundtrip.schema.json and
+// is enforced by the verify_and_report_fix MCP tool / Phase 3
+// validators that consume the file.
+async function loadRoundtripState(
+  recipeDir: string,
+  expectedSlug: string,
+): Promise<RoundtripState | undefined> {
+  const path = join(recipeDir, 'roundtrip.json');
+  try {
+    const raw = await readFile(path, 'utf-8');
+    const parsed = JSON.parse(raw) as RoundtripState;
+    if (parsed.schema_version !== 1) {
+      console.error(
+        `WARNING: ${path}: schema_version != 1 (got ${parsed.schema_version}); skipping merge.`,
+      );
+      return undefined;
+    }
+    if (typeof parsed.slug !== 'string' || parsed.slug !== expectedSlug) {
+      console.error(
+        `WARNING: ${path}: slug "${parsed.slug}" does not match directory name "${expectedSlug}"; skipping merge.`,
+      );
+      return undefined;
+    }
+    if (
+      typeof parsed.upstream_issue !== 'string' ||
+      parsed.upstream_issue.length === 0
+    ) {
+      console.error(
+        `WARNING: ${path}: upstream_issue missing or empty; skipping merge.`,
+      );
+      return undefined;
+    }
+    if (typeof parsed.status !== 'string' || parsed.status.length === 0) {
+      console.error(
+        `WARNING: ${path}: status missing or empty; skipping merge.`,
+      );
+      return undefined;
+    }
+    if (
+      typeof parsed.updated_at !== 'string' ||
+      parsed.updated_at.length === 0
+    ) {
+      console.error(
+        `WARNING: ${path}: updated_at missing or empty; skipping merge.`,
+      );
+      return undefined;
+    }
+    return parsed;
+  } catch (err: unknown) {
+    if ((err as NodeJS.ErrnoException)?.code === 'ENOENT') return undefined;
+    console.error(
+      `WARNING: could not read ${path} (${err instanceof Error ? err.message : err}); skipping roundtrip merge.`,
+    );
+    return undefined;
+  }
+}
+
 async function readTitle(
   readmePath: string,
   fallback: string,
@@ -313,6 +404,8 @@ async function buildEntry(
   if (layer === 2 || layer === 3) {
     entry.verdict_url = `${PAGES_BASE}/repro/${project}/${issuePath}/verdict.json`;
   }
+  const roundtrip = await loadRoundtripState(recipeDir, slug);
+  if (roundtrip) entry.roundtrip = roundtrip;
   return entry;
 }
 
