@@ -26,34 +26,73 @@ import { expect, test } from "@playwright/test";
 
 const LAYER1 = "http://localhost:8767";
 
+const SUPPORTED_RUNTIMES = [
+  "browser",
+  "pyodide",
+  "ruby.wasm",
+  "php-wasm",
+  "rust-wasi",
+] as const;
+
+type ExpectedRuntimeName = (typeof SUPPORTED_RUNTIMES)[number];
+
 interface RecipeEntry {
   slug: string;
   layer: 1 | 2 | 3;
+  expected_runtime?: string;
 }
 
 interface RecipesIndex {
   recipes: RecipeEntry[];
 }
 
-function loadLayer1Slugs(): string[] {
+interface Layer1Recipe {
+  slug: string;
+  expectedRuntimeName: ExpectedRuntimeName;
+}
+
+function isExpectedRuntimeName(value: unknown): value is ExpectedRuntimeName {
+  return SUPPORTED_RUNTIMES.some((v) => v === value);
+}
+
+function loadLayer1Recipes(): Layer1Recipe[] {
+  // Resolved from the spec file's own location so the suite stays
+  // robust against being invoked from a non-default working directory.
+  // See the matching comment in `repro.spec.ts:loadRecipeEntries`.
   const indexPath = resolve(
-    process.cwd(),
-    "../../docs/site/public/api/recipes.json",
+    import.meta.dirname,
+    "../../..",
+    "docs/site/public/api/recipes.json",
   );
   const raw = readFileSync(indexPath, "utf-8");
   const parsed = JSON.parse(raw) as RecipesIndex;
   return parsed.recipes
     .filter((r) => r.layer === 1)
-    .map((r) => r.slug)
-    .sort();
+    .map((r) => {
+      if (!isExpectedRuntimeName(r.expected_runtime)) {
+        throw new Error(
+          `${r.slug}: expected_runtime must be one of ${SUPPORTED_RUNTIMES.join(", ")}`,
+        );
+      }
+      return { slug: r.slug, expectedRuntimeName: r.expected_runtime };
+    })
+    .sort((a, b) => a.slug.localeCompare(b.slug));
 }
 
-const SLUGS = loadLayer1Slugs();
+function timeoutForRuntime(name: ExpectedRuntimeName): number {
+  if (name === "browser") return 10_000;
+  if (name === "pyodide") return 120_000;
+  return 75_000;
+}
+
+const RECIPES = loadLayer1Recipes();
 const FIX_URL = process.env["PLAYWRIGHT_FIX_URL"];
 const OUTPUT_PATH = process.env["VERDICT_CAPTURE_OUTPUT"];
 
-for (const slug of SLUGS) {
+for (const { slug, expectedRuntimeName } of RECIPES) {
   test(`verdict-capture: ${slug}`, async ({ page }) => {
+    test.setTimeout(timeoutForRuntime(expectedRuntimeName) + 15_000);
+
     let url = `${LAYER1}/${slug}/`;
     if (FIX_URL) {
       const sep = url.includes("?") ? "&" : "?";
@@ -69,7 +108,7 @@ for (const slug of SLUGS) {
         return v === "reproduced" || v === "unreproduced";
       },
       undefined,
-      { timeout: 75_000 },
+      { timeout: timeoutForRuntime(expectedRuntimeName) },
     );
 
     const verdict = await page.evaluate(
