@@ -84,7 +84,9 @@ def main() -> int:
             "python_version": sys.version.split()[0],
             "outcome": "timeout",
             "exit_code": None,
-            "stderr_tail": (exc.stderr.decode(errors="replace") if exc.stderr else "").splitlines()[-5:],
+            "stderr_tail": (exc.stderr.decode(errors="replace") if exc.stderr else "").splitlines()[
+                -5:
+            ],
             "elapsed_ms": elapsed_ms,
             "timeout_ms": TIMEOUT_S * 1000,
             "reproduced": True,
