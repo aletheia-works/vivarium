@@ -5,7 +5,7 @@
   "source": {
     "type": "git",
     "url": "https://github.com/JamBalaya56562/dateutil",
-    "ref": "fix-issue-1478"
+    "ref": "fix-1478-utc-gmt-offset-sign"
   },
   "upstream_pr": "https://github.com/dateutil/dateutil/pull/1500"
 }
