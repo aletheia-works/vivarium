@@ -29,6 +29,12 @@
 // wheel under `./wheels/` built from the fork+branch
 // `JamBalaya56562/dateutil@fix-1478-utc-gmt-offset-sign`.
 
+import {
+  fetchWheelManifest,
+  reinstallPyodidePackage,
+  resolveFixCandidateSpec,
+  type WheelManifest,
+} from '../_shared/fix-candidate.js';
 import { loadVivariumPyodide } from '../_shared/loader.js';
 import type { PathACapturedRun } from '../_shared/path_a.js';
 import { enableRunner } from '../_shared/runner.js';
@@ -94,23 +100,6 @@ interface PyodideRuntime {
     toJs(opts: { dict_converter: typeof Object.fromEntries }): ReproOutput;
     destroy?(): void;
   }>;
-}
-
-interface WheelManifest {
-  schema_version: number;
-  package: string;
-  filename: string;
-  version: string;
-  source: {
-    type: string;
-    url: string;
-    ref: string;
-    commit?: string;
-    spec?: string;
-    subdirectory?: string;
-  };
-  upstream_pr?: string;
-  fetched_at?: string;
 }
 
 const BASELINE_SPEC = 'python-dateutil==2.9.0.post0';
@@ -180,26 +169,15 @@ async function captureRun(
   }
 }
 
-// Drop the in-memory dateutil module tree so the next `import
-// dateutil` resolves the freshly-installed wheel rather than the
-// previously-loaded version. Pyodide caches imports in
-// `sys.modules`; `del` is the only reliable way to force a
-// re-resolution after `micropip.uninstall`.
-async function reinstallDateutil(
+const reinstallDateutil = (
   runtime: PyodideRuntime,
   installSpec: string,
-): Promise<void> {
-  await runtime.runPythonAsync(`
-import micropip, sys
-try:
-    await micropip.uninstall("python-dateutil")
-except Exception:
-    pass
-for _name in [n for n in list(sys.modules) if n == "dateutil" or n.startswith("dateutil.")]:
-    del sys.modules[_name]
-await micropip.install(${JSON.stringify(installSpec)})
-`);
-}
+): Promise<void> =>
+  reinstallPyodidePackage(runtime, {
+    pipPackageName: 'python-dateutil',
+    pythonRootModule: 'dateutil',
+    installSpec,
+  });
 
 const startedAt = new Date();
 
@@ -274,12 +252,7 @@ try {
         fix_candidate:
           fixParsed && fixCapture && manifest
             ? {
-                spec:
-                  manifest.source.spec ??
-                  `python-dateutil @ git+${manifest.source.url}@${manifest.source.ref}` +
-                    (manifest.source.subdirectory
-                      ? `#subdirectory=${manifest.source.subdirectory}`
-                      : ''),
+                spec: resolveFixCandidateSpec(manifest, 'python-dateutil'),
                 verdict: fixCapture.verdict,
                 dateutil_version: fixParsed.dateutil_version,
                 cases: fixParsed.cases,
@@ -314,20 +287,10 @@ try {
 
   // Fix-candidate variant: committed wheel.
   outputFixEl.textContent = 'Fetching wheel manifest…';
-  let manifestRes: Response | null = null;
-  try {
-    manifestRes = await fetch('./wheels/manifest.json', { cache: 'no-store' });
-  } catch (err) {
-    const message = err instanceof Error ? err.message : String(err);
-    outputFixEl.textContent = `Could not fetch wheel manifest: ${message}`;
-  }
+  const manifestResult = await fetchWheelManifest();
 
-  if (manifestRes && manifestRes.ok) {
-    manifest = (await manifestRes.json()) as WheelManifest;
-    const wheelUrl = new URL(
-      `./wheels/${manifest.filename}`,
-      window.location.href,
-    ).toString();
+  if (manifestResult.ok) {
+    manifest = manifestResult.manifest;
     outputFixEl.textContent =
       `Installing ${manifest.filename} (${manifest.version})…\n` +
       `from ${manifest.source.url}@${manifest.source.ref}` +
@@ -335,7 +298,7 @@ try {
         ? ` (subdir: ${manifest.source.subdirectory})`
         : '');
     try {
-      await reinstallDateutil(runtime, wheelUrl);
+      await reinstallDateutil(runtime, manifestResult.wheelUrl);
       fixCapture = await captureRun(runtime, REPRO_CODE);
       try {
         fixParsed = JSON.parse(fixCapture.stdout) as ReproOutput;
@@ -349,8 +312,8 @@ try {
         (errAny && (errAny.stack ?? errAny.message)) ?? String(err);
       outputFixEl.textContent = `Fix-candidate install/run failed: ${message}`;
     }
-  } else if (manifestRes && !manifestRes.ok) {
-    outputFixEl.textContent = `Wheel manifest unavailable (HTTP ${manifestRes.status}).`;
+  } else {
+    outputFixEl.textContent = manifestResult.reason;
   }
 
   // Restore baseline python-dateutil so the visitor-facing runner

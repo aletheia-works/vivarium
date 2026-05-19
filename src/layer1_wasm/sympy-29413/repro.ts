@@ -23,6 +23,12 @@
 // side-by-side is a pure-Python wheel under `./wheels/` built from
 // the fork+branch `JamBalaya56562/sympy@claude/fix-sympy-29413-8Lyc6`.
 
+import {
+  fetchWheelManifest,
+  reinstallPyodidePackage,
+  resolveFixCandidateSpec,
+  type WheelManifest,
+} from '../_shared/fix-candidate.js';
 import { loadVivariumPyodide } from '../_shared/loader.js';
 import type { PathACapturedRun } from '../_shared/path_a.js';
 import { enableRunner } from '../_shared/runner.js';
@@ -62,22 +68,7 @@ interface PyodideRuntime {
   }>;
 }
 
-interface WheelManifest {
-  schema_version: number;
-  package: string;
-  filename: string;
-  version: string;
-  source: {
-    type: string;
-    url: string;
-    ref: string;
-    commit?: string;
-    spec?: string;
-    subdirectory?: string;
-  };
-  upstream_pr?: string;
-  fetched_at?: string;
-}
+const BASELINE_SPEC = 'sympy==1.14.0';
 
 const outputBaselineEl = document.getElementById('output');
 const outputFixEl = document.getElementById('output-fix');
@@ -143,26 +134,15 @@ async function captureRun(
   }
 }
 
-// Drop the in-memory sympy module tree so the next `import sympy`
-// resolves the freshly-installed wheel rather than the previously-
-// loaded version. Pyodide caches imports in `sys.modules`; `del` is
-// the only reliable way to force a re-resolution after
-// `micropip.uninstall`.
-async function reinstallSympy(
+const reinstallSympy = (
   runtime: PyodideRuntime,
   installSpec: string,
-): Promise<void> {
-  await runtime.runPythonAsync(`
-import micropip, sys
-try:
-    await micropip.uninstall("sympy")
-except Exception:
-    pass
-for _name in [n for n in list(sys.modules) if n == "sympy" or n.startswith("sympy.")]:
-    del sys.modules[_name]
-await micropip.install(${JSON.stringify(installSpec)})
-`);
-}
+): Promise<void> =>
+  reinstallPyodidePackage(runtime, {
+    pipPackageName: 'sympy',
+    pythonRootModule: 'sympy',
+    installSpec,
+  });
 
 const startedAt = new Date();
 
@@ -180,11 +160,8 @@ try {
   const runtime = pyodide as PyodideRuntime;
 
   // Baseline variant: PyPI sympy==1.14.0.
-  setVerdict('pending', 'Installing sympy==1.14.0 from PyPI…');
-  await runtime.runPythonAsync(`
-import micropip
-await micropip.install("sympy==1.14.0")
-`);
+  setVerdict('pending', `Installing ${BASELINE_SPEC} from PyPI…`);
+  await reinstallSympy(runtime, BASELINE_SPEC);
 
   setVerdict('pending', 'Running reproduction script (baseline)…');
   baselineCapture = await captureRun(runtime, REPRO_CODE);
@@ -227,7 +204,7 @@ await micropip.install("sympy==1.14.0")
         ask_result: baselineParsed.ask_result,
         reproduced: baselineParsed.reproduced,
         baseline: {
-          spec: 'sympy==1.14.0',
+          spec: BASELINE_SPEC,
           verdict: baselineCapture.verdict,
           sympy_version: baselineParsed.sympy_version,
           ask_result: baselineParsed.ask_result,
@@ -236,12 +213,7 @@ await micropip.install("sympy==1.14.0")
         fix_candidate:
           fixParsed && fixCapture && manifest
             ? {
-                spec:
-                  manifest.source.spec ??
-                  `sympy @ git+${manifest.source.url}@${manifest.source.ref}` +
-                    (manifest.source.subdirectory
-                      ? `#subdirectory=${manifest.source.subdirectory}`
-                      : ''),
+                spec: resolveFixCandidateSpec(manifest, 'sympy'),
                 verdict: fixCapture.verdict,
                 sympy_version: fixParsed.sympy_version,
                 ask_result: fixParsed.ask_result,
@@ -274,20 +246,10 @@ await micropip.install("sympy==1.14.0")
 
   // Fix-candidate variant: committed wheel.
   outputFixEl.textContent = 'Fetching wheel manifest…';
-  let manifestRes: Response | null = null;
-  try {
-    manifestRes = await fetch('./wheels/manifest.json', { cache: 'no-store' });
-  } catch (err) {
-    const message = err instanceof Error ? err.message : String(err);
-    outputFixEl.textContent = `Could not fetch wheel manifest: ${message}`;
-  }
+  const manifestResult = await fetchWheelManifest();
 
-  if (manifestRes && manifestRes.ok) {
-    manifest = (await manifestRes.json()) as WheelManifest;
-    const wheelUrl = new URL(
-      `./wheels/${manifest.filename}`,
-      window.location.href,
-    ).toString();
+  if (manifestResult.ok) {
+    manifest = manifestResult.manifest;
     outputFixEl.textContent =
       `Installing ${manifest.filename} (${manifest.version})…\n` +
       `from ${manifest.source.url}@${manifest.source.ref}` +
@@ -295,7 +257,7 @@ await micropip.install("sympy==1.14.0")
         ? ` (subdir: ${manifest.source.subdirectory})`
         : '');
     try {
-      await reinstallSympy(runtime, wheelUrl);
+      await reinstallSympy(runtime, manifestResult.wheelUrl);
       fixCapture = await captureRun(runtime, REPRO_CODE);
       try {
         fixParsed = JSON.parse(fixCapture.stdout) as ReproOutput;
@@ -309,8 +271,8 @@ await micropip.install("sympy==1.14.0")
         (errAny && (errAny.stack ?? errAny.message)) ?? String(err);
       outputFixEl.textContent = `Fix-candidate install/run failed: ${message}`;
     }
-  } else if (manifestRes && !manifestRes.ok) {
-    outputFixEl.textContent = `Wheel manifest unavailable (HTTP ${manifestRes.status}).`;
+  } else {
+    outputFixEl.textContent = manifestResult.reason;
   }
 
   // Restore baseline sympy so the visitor-facing runner (Edit + Run)
@@ -320,7 +282,7 @@ await micropip.install("sympy==1.14.0")
   // execute against the fix-candidate sympy, which is semantically
   // surprising for visitors paste-editing the script.
   try {
-    await reinstallSympy(runtime, 'sympy==1.14.0');
+    await reinstallSympy(runtime, BASELINE_SPEC);
   } catch {
     console.warn(
       'sympy-29413: failed to restore baseline for the runner; runner.runFix will run against the fix-candidate.',
