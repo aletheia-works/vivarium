@@ -1,7 +1,7 @@
 Autofix probe
 ===
 
-*  item one
-+ item two
+* item one
+* item two
 
-trailing spaces follow   
+trailing spaces follow
