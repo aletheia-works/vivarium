@@ -153,8 +153,20 @@ let baseline: VariantOutcome | null = null;
 let fixCandidate: VariantOutcome | null = null;
 let manifest: WheelManifest | null = null;
 
-function variantPaneEl(variant: Variant): HTMLElement {
-  return variant === 'baseline' ? outputBaselineEl! : outputFixEl!;
+/** Write into whichever pane the variant owns. Routing through
+ *  `setFixPane` for the fix-candidate keeps `data-fix-status` in step
+ *  with the copy: a bare `textContent =` on the fix pane would leave
+ *  the attribute at "pending" even after the variant had settled. */
+function writePane(
+  variant: Variant,
+  text: string,
+  status: 'pending' | 'ok' | 'error',
+): void {
+  if (variant === 'baseline') {
+    outputBaselineEl!.textContent = text;
+    return;
+  }
+  setFixPane(text, status);
 }
 
 async function runVariant(
@@ -162,7 +174,6 @@ async function runVariant(
   spec: string,
   pendingLabel: string,
 ): Promise<VariantOutcome> {
-  const paneEl = variantPaneEl(variant);
   if (variant === 'baseline') {
     setVerdict('pending', pendingLabel);
   }
@@ -178,7 +189,7 @@ async function runVariant(
       const onMessage = (ev: MessageEvent<WorkerMessage>): void => {
         const msg = ev.data;
         if (msg.type === 'progress') {
-          paneEl.textContent = `(worker: ${msg.stage}…)`;
+          writePane(variant, `(worker: ${msg.stage}…)`, 'pending');
           if (variant === 'baseline') {
             setVerdict('pending', `Worker: ${msg.stage}…`);
           }
@@ -196,7 +207,7 @@ async function runVariant(
   } catch (err) {
     worker.terminate();
     const message = err instanceof Error ? err.message : String(err);
-    paneEl.textContent = `worker bootstrap failed: ${message}`;
+    writePane(variant, `worker bootstrap failed: ${message}`, 'error');
     return {
       verdict: 'unreproduced',
       outcome: 'raised',
@@ -216,7 +227,11 @@ async function runVariant(
       `Running Lark(...).parse('aa') with a ${TIMEOUT_MS / 1000}s budget…`,
     );
   }
-  paneEl.textContent = `(running with a ${TIMEOUT_MS / 1000}s budget…)`;
+  writePane(
+    variant,
+    `(running with a ${TIMEOUT_MS / 1000}s budget…)`,
+    'pending',
+  );
 
   const resultPromise = new Promise<WorkerResult | WorkerError>(
     (resolve, reject) => {
@@ -254,7 +269,7 @@ async function runVariant(
       null,
       2,
     );
-    paneEl.textContent = stdout;
+    writePane(variant, stdout, 'ok');
     return {
       verdict: 'reproduced',
       outcome: 'timeout',
@@ -274,7 +289,7 @@ async function runVariant(
   worker.terminate();
 
   if (outcome.type === 'error') {
-    paneEl.textContent = outcome.message;
+    writePane(variant, outcome.message, 'error');
     return {
       verdict: 'unreproduced',
       outcome: 'raised',
@@ -290,7 +305,7 @@ async function runVariant(
 
   const data = outcome.data;
   const stdout = JSON.stringify(data, null, 2);
-  paneEl.textContent = stdout;
+  writePane(variant, stdout, 'ok');
   const message =
     data.outcome === 'returned'
       ? `bug not reproduced — parse returned in ${data.elapsed_ms.toFixed(0)} ms (likely fixed upstream).`
