@@ -125,6 +125,18 @@ if (!outputBaselineEl || !outputFixEl || !metaEl || !reproCodeEl) {
   );
 }
 
+/** Write into the fix pane and stamp the machine-readable state the
+ *  Playwright suite asserts on. The attribute is locale-independent,
+ *  unlike the copy, and "pending" left standing means the page rendered
+ *  the pane and then never drove it. */
+function setFixPane(
+  text: string,
+  status: 'pending' | 'ok' | 'error',
+): void {
+  outputFixEl!.textContent = text;
+  outputFixEl!.dataset['fixStatus'] = status;
+}
+
 if (!reproCodeEl.firstChild) {
   reproCodeEl.textContent = REPRO_CODE;
   fetch('./repro.highlighted.html')
@@ -381,13 +393,13 @@ try {
   setVerdict(baseline.verdict, baseline.message);
 
   // ---- Fix-candidate variant ----------------------------------------
-  outputFixEl.textContent = 'Fetching wheel manifest…';
+  setFixPane('Fetching wheel manifest…', 'pending');
   let manifestRes: Response | null = null;
   try {
     manifestRes = await fetch('./wheels/manifest.json', { cache: 'no-store' });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    outputFixEl.textContent = `Could not fetch wheel manifest: ${message}`;
+    setFixPane(`Could not fetch wheel manifest: ${message}`, 'error');
   }
 
   if (manifestRes && manifestRes.ok) {
@@ -396,12 +408,14 @@ try {
       `./wheels/${manifest.filename}`,
       window.location.href,
     ).toString();
-    outputFixEl.textContent =
+    setFixPane(
       `Installing ${manifest.filename} (${manifest.version})…\n` +
-      `from ${manifest.source.url}@${manifest.source.ref}` +
-      (manifest.source.subdirectory
-        ? ` (subdir: ${manifest.source.subdirectory})`
-        : '');
+        `from ${manifest.source.url}@${manifest.source.ref}` +
+        (manifest.source.subdirectory
+          ? ` (subdir: ${manifest.source.subdirectory})`
+          : ''),
+      'pending',
+    );
     try {
       fixCandidate = await runVariant(
         'fix-candidate',
@@ -412,10 +426,10 @@ try {
       const errAny = err as { stack?: string; message?: string } | null;
       const message =
         (errAny && (errAny.stack ?? errAny.message)) ?? String(err);
-      outputFixEl.textContent = `Fix-candidate run failed: ${message}`;
+      setFixPane(`Fix-candidate run failed: ${message}`, 'error');
     }
   } else if (manifestRes && !manifestRes.ok) {
-    outputFixEl.textContent = `Wheel manifest unavailable (HTTP ${manifestRes.status}).`;
+    setFixPane(`Wheel manifest unavailable (HTTP ${manifestRes.status}).`, 'error');
   }
 
   // Re-publish the envelope now that the fix-candidate variant
