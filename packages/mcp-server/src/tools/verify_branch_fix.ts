@@ -153,6 +153,12 @@ export async function verifyBranchFix(
   const notes: string[] = [];
 
   if (recipe.layer === 1) {
+    if (!recipe.path_a) {
+      return {
+        ok: false,
+        error: `${recipe.slug} does not mount the Path A "Try a fix" panel, so a fix cannot be run on its page. Fork the recipe and run it locally, or pick a Layer 2/3 recipe for the Path B workflow.`,
+      };
+    }
     if (args.fix_url || args.fix_source) {
     } else {
       notes.push(

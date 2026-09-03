@@ -202,10 +202,22 @@ async function executeLayer1(
   slug: string,
   action: 'verify_unfixed' | 'verify_fixed',
   args: VerifyAndReportFixArgs,
+  pathA = false,
 ): Promise<{
   verdictEntry?: RoundtripVerdict;
   executed: ExecutedInfo;
 }> {
+  if (action === 'verify_fixed' && !pathA) {
+    return {
+      executed: {
+        action,
+        source: 'layer1-headless',
+        ok: false,
+        duration_ms: 0,
+        error: `${slug} does not mount the Path A "Try a fix" panel, so a fix cannot be run against its page`,
+      },
+    };
+  }
   if (action === 'verify_fixed' && !args.fix_url) {
     return {
       executed: {
@@ -368,7 +380,7 @@ export async function verifyAndReportFix(
     const executable = initialNext as 'verify_unfixed' | 'verify_fixed';
     const captured =
       recipe.layer === 1
-        ? await executeLayer1(slug, executable, args)
+        ? await executeLayer1(slug, executable, args, recipe.path_a === true)
         : await executeLayer23(slug, recipe.layer as 2 | 3, executable, args);
 
     executed = captured.executed;
