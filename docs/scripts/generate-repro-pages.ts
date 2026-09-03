@@ -3,6 +3,7 @@
 import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { parse } from 'node-html-parser';
+import { extractReproSource } from '../../src/layer1_wasm/scripts/repro-source';
 import { REPO_ROOT, SITE_API_DIR, SITE_DATA_DIR } from './site-paths';
 
 const LAYER1_DIR = join(REPO_ROOT, 'src', 'layer1_wasm');
@@ -120,13 +121,30 @@ function fill(template: string, values: Record<string, string>): string {
   return out;
 }
 
-function reproCode(recipeDir: string): string {
-  const path = join(recipeDir, 'repro.highlighted.html');
-  if (!existsSync(path)) return '';
-  return readFileSync(path, 'utf-8')
-    .trim()
-    .replace(/^<code[^>]*>/, '')
-    .replace(/<\/code>$/, '');
+function escapeHtml(value: string): string {
+  return value
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;');
+}
+
+const unhighlighted: string[] = [];
+
+function reproCode(recipeDir: string, slug: string): string {
+  const highlighted = join(recipeDir, 'repro.highlighted.html');
+  if (existsSync(highlighted)) {
+    return readFileSync(highlighted, 'utf-8')
+      .trim()
+      .replace(/^<code[^>]*>/, '')
+      .replace(/<\/code>$/, '');
+  }
+  const reproTs = join(recipeDir, 'repro.ts');
+  const source = existsSync(reproTs)
+    ? extractReproSource(readFileSync(reproTs, 'utf-8'))
+    : null;
+  if (!source) return '';
+  unhighlighted.push(slug);
+  return escapeHtml(source);
 }
 
 function fixChip(recipeDir: string): string {
@@ -210,7 +228,7 @@ function renderLayer1(): void {
       VERDICT_PENDING: shell.verdictPending,
       DRAWER_BODY: indent(slots['drawer-body'] ?? '', 8),
       FIX_CHIP: fixChip(dir),
-      REPRO_CODE: reproCode(dir),
+      REPRO_CODE: reproCode(dir, slug),
       FIX_PANE: indent(slots['fix-pane'] ?? '', 10),
       EXTRA_SECTIONS: slots.sections ? `\n${indent(slots.sections, 6)}\n` : '',
     });
@@ -247,3 +265,8 @@ renderLayer1();
 renderLayer2();
 
 console.log(`[generate-repro-pages] wrote ${written} reproduction page(s).`);
+if (unhighlighted.length > 0) {
+  console.warn(
+    `[generate-repro-pages] plain source inlined for ${unhighlighted.join(', ')} — run \`mise run repro:build:ts\` to render the highlighted version.`,
+  );
+}
