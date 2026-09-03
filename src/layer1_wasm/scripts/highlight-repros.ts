@@ -126,25 +126,6 @@ for (const slug of slugs) {
   writeFileSync(outPath, inner, 'utf-8');
   written += 1;
   console.log(`[highlight-repros] ${slug} (${lang}) -> repro.highlighted.html`);
-
-  const indexPath = join(LAYER1_DIR, slug, 'index.html');
-  if (!existsSync(indexPath)) continue;
-  const indexHtml = readFileSync(indexPath, 'utf-8');
-  const innerSpans = inner
-    .replace(/^<code[^>]*>/, '')
-    .replace(/<\/code>\s*$/, '');
-  const placeholderRe = /(<code id="repro-code"[^>]*>)([\s\S]*?)(<\/code>)/;
-  const m = indexHtml.match(placeholderRe);
-  if (!m) {
-    console.warn(`[highlight-repros] no <code id="repro-code"> placeholder in ${slug}/index.html; skipping inline.`);
-    continue;
-  }
-  if (m[2] === innerSpans) {
-    continue;
-  }
-  const updated = indexHtml.replace(placeholderRe, `$1${innerSpans}$3`);
-  writeFileSync(indexPath, updated, 'utf-8');
-  console.log(`[highlight-repros] ${slug} -> inlined into index.html`);
 }
 
 console.log(`[highlight-repros] done. ${written} written, ${skipped} skipped.`);
