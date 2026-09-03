@@ -87,16 +87,19 @@ const REQUIRED_MARKUP: ReadonlyArray<readonly [string, string]> = [
     'the static `<footer class="vh-footer">` placeholder is missing, so the footer appears only once chrome.js runs.',
   ],
   [
-    'src="../_assets/chrome.js"',
-    'the page does not load `../_assets/chrome.js` from `<head>`, so the chrome arrives one module hop behind repro.js.',
-  ],
-  [
     'class="vh-progress"',
     'the static `.vh-progress` panel is missing, so the loading overlay only appears once chrome.js has built it.',
   ],
+];
+
+const REQUIRED_HEAD_MARKUP: ReadonlyArray<readonly [RegExp, string]> = [
   [
-    'fonts.googleapis.com',
-    'the page does not link the font stylesheet itself; loading it through an `@import` inside style.css blocks first paint on a second round trip.',
+    /<script[^>]+type="module"[^>]+src="\.\.\/_assets\/chrome\.js"/,
+    'the page does not load `../_assets/chrome.js` from `<head>` as a module; loaded from the body, or reached through repro.js, the chrome arrives after first paint.',
+  ],
+  [
+    /<link[^>]+rel="stylesheet"[^>]+fonts\.googleapis\.com/,
+    'the page does not link the font stylesheet from `<head>`; reaching Google Fonts through an `@import` inside style.css blocks first paint on a second round trip.',
   ],
 ];
 
@@ -115,6 +118,18 @@ for (const slug of slugs) {
   recipesChecked++;
 
   const indexBody = readFileSync(indexPath, 'utf-8');
+  const headEnd = indexBody.indexOf('</head>');
+  const indexHead = headEnd === -1 ? '' : indexBody.slice(0, headEnd);
+  for (const [needle, reason] of REQUIRED_HEAD_MARKUP) {
+    check(
+      slug,
+      indexPath,
+      indexHead,
+      needle,
+      reason,
+      'Copy the `<head>` block from src/layer1_wasm/dateutil-1478/index.html — the font links and the chrome module are identical in every recipe.',
+    );
+  }
   for (const [needle, reason] of REQUIRED_MARKUP) {
     check(
       slug,
@@ -164,6 +179,23 @@ for (const slug of slugs) {
       });
     }
   }
+}
+
+const sharedStylePath = join(LAYER1_DIR, '_shared', 'style.css');
+if (
+  existsSync(sharedStylePath) &&
+  /@import[^;]*fonts\.googleapis\.com/.test(
+    readFileSync(sharedStylePath, 'utf-8'),
+  )
+) {
+  failures.push({
+    slug: '_shared',
+    path: relative(REPO_ROOT, sharedStylePath),
+    reason:
+      'style.css reaches Google Fonts through `@import`, which the browser will not paint through — every recipe page renders unstyled until that second round trip lands.',
+    remedy:
+      'Drop the `@import` and link the font stylesheet from each page\'s `<head>`, as src/layer1_wasm/dateutil-1478/index.html does.',
+  });
 }
 
 if (failures.length === 0) {
