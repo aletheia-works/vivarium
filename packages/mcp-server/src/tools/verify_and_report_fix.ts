@@ -434,7 +434,7 @@ export const VERIFY_AND_REPORT_FIX_TOOL = {
         type: 'string' as const,
         pattern: '^[a-z0-9]+(-[a-z0-9]+)*$',
         description:
-          "Kebab-case recipe slug (e.g. 'php-12167', 'bash-local-shadows-exit').",
+          "Kebab-case recipe slug (e.g. 'lark-1585', 'bash-local-shadows-exit').",
       },
       fix_url: {
         type: 'string' as const,

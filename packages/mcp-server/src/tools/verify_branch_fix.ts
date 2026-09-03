@@ -224,7 +224,7 @@ export const VERIFY_BRANCH_FIX_TOOL = {
         type: 'string' as const,
         pattern: '^[a-z0-9]+(-[a-z0-9]+)*$',
         description:
-          "Kebab-case recipe slug (e.g. 'php-12167', 'bash-local-shadows-exit'). Same convention as Manifest v1's `slug`.",
+          "Kebab-case recipe slug (e.g. 'lark-1585', 'bash-local-shadows-exit'). Same convention as Manifest v1's `slug`.",
       },
       fix_url: {
         type: 'string' as const,
