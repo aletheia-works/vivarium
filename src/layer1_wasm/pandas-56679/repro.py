@@ -1,7 +1,7 @@
 # /// script
-# requires-python = ">=3.13"
+# requires-python = ">=3.14"
 # dependencies = [
-#   "pandas==2.3.3",
+#   "pandas==3.0.2",
 # ]
 # ///
 """Vivarium Layer 1 reproduction — pandas-dev/pandas#56679, native variant.
@@ -13,7 +13,7 @@ contributor can re-verify the bug against a real CPython interpreter
     mise install                                                    # one-time
     mise exec uv -- uv run src/layer1_wasm/pandas-56679/repro.py
 
-PEP 723 inline metadata pins pandas to **2.3.3** — the exact version
+PEP 723 inline metadata pins pandas to **3.0.2** — the exact version
 Pyodide v0.29.3 bundles — so the page and this CLI exercise the same
 code path. `uv run` reads the metadata and creates an ephemeral venv
 on first invocation; subsequent runs hit uv's cache.

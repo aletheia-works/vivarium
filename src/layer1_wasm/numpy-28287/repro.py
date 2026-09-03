@@ -1,7 +1,7 @@
 # /// script
-# requires-python = ">=3.13"
+# requires-python = ">=3.14"
 # dependencies = [
-#   "numpy==2.2.5",
+#   "numpy==2.4.6",
 # ]
 # ///
 """Vivarium Layer 1 reproduction — numpy/numpy#28287, native variant.
@@ -13,7 +13,7 @@ contributor can re-verify the bug against a real CPython interpreter
     mise install                                                  # one-time
     mise exec uv -- uv run src/layer1_wasm/numpy-28287/repro.py
 
-PEP 723 inline metadata pins numpy to **2.2.5** — the exact version
+PEP 723 inline metadata pins numpy to **2.4.6** — the exact version
 Pyodide v0.29.3 ships — so the page and this CLI exercise the same
 code path.
 
