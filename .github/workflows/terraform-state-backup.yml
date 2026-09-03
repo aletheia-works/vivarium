@@ -42,7 +42,7 @@ jobs:
           run-id: ${{ github.event.workflow_run.id || vars.LATEST_APPLY_RUN_ID }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Fall back to the newest state-backup release
+      - name: Report the missing artifact and stop
         if: steps.artifact.outcome != 'success'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -50,14 +50,8 @@ jobs:
           set -euo pipefail
           tag="$(gh release list --limit 100 --json tagName,isPrerelease \
             --jq '[.[] | select(.isPrerelease and (.tagName | startswith("state-backup-")))][0].tagName')"
-          if [ -z "${tag}" ] || [ "${tag}" = "null" ]; then
-            echo "::error::The state artifact is gone and no state-backup release exists to fall back to."
-            exit 1
-          fi
-          echo "::warning::State artifact unavailable; falling back to release ${tag}."
-          mkdir -p ./state-backup
-          gh release download "${tag}" --pattern '*.tfstate' --dir ./state-backup
-          mv ./state-backup/terraform-*.tfstate ./state-backup/terraform.tfstate
+          echo "::error::The terraform-state artifact for run ${{ github.event.workflow_run.id || vars.LATEST_APPLY_RUN_ID }} could not be downloaded, so this run cannot publish a backup or renew the artifact lease. Newest release backup: ${tag:-none}. Restore with the Seed Terraform State workflow, then re-run this one."
+          exit 1
 
       - name: Verify state file present
         id: check
