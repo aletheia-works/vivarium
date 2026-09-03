@@ -78,6 +78,26 @@ const REQUIRED_MARKUP: ReadonlyArray<readonly [string, string]> = [
     'id="output-fix"',
     '`<pre id="output-fix">` is missing — there is nowhere to render the fix-candidate output.',
   ],
+  [
+    '<header class="vh-topnav"></header>',
+    'the static `<header class="vh-topnav">` placeholder is missing, so the nav chrome.js injects lands on an unreserved page and pushes every element down after first paint.',
+  ],
+  [
+    '<footer class="vh-footer"></footer>',
+    'the static `<footer class="vh-footer">` placeholder is missing, so the footer appears only once chrome.js runs.',
+  ],
+  [
+    'src="../_assets/chrome.js"',
+    'the page does not load `../_assets/chrome.js` from `<head>`, so the chrome arrives one module hop behind repro.js.',
+  ],
+  [
+    'class="vh-progress"',
+    'the static `.vh-progress` panel is missing, so the loading overlay only appears once chrome.js has built it.',
+  ],
+  [
+    'fonts.googleapis.com',
+    'the page does not link the font stylesheet itself; loading it through an `@import` inside style.css blocks first paint on a second round trip.',
+  ],
 ];
 
 const RETIRED_MARKUP: ReadonlyArray<readonly [string, string]> = [
