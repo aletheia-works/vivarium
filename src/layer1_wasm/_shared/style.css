@@ -1203,7 +1203,8 @@ main > footer code {
   height: 12px;
 }
 
-body.vh-drawer-open {
+body.vh-drawer-open,
+body.vh-drawer-open:has(#path-a-mount) {
   overflow: hidden;
 }
 
