@@ -105,7 +105,7 @@ run = '''
 set -euo pipefail
 find src/layer1_wasm -name Cargo.toml -not -path '*/target/*' -print | sort | while IFS= read -r cargo_toml; do
   crate_dir=$(dirname "$cargo_toml")
-  if [ -f "${crate_dir}/index.html" ]; then
+  if [ -f "${crate_dir}/recipe.json" ]; then
     recipe_dir="$crate_dir"
   else
     recipe_dir=$(dirname "$crate_dir")
