@@ -16,7 +16,7 @@ permissions:
   actions: write  # Required to read artifacts and re-upload the renewed one.
 
 concurrency:
-  group: terraform-state-backup
+  group: terraform-state
   cancel-in-progress: false
 
 jobs:
@@ -32,6 +32,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
+      - name: Resolve the run holding the state
+        id: source
+        run: |
+          echo "run_id=${{ github.event.workflow_run.id || vars.LATEST_APPLY_RUN_ID }}" >> "$GITHUB_OUTPUT"
+
       - name: Download latest state artifact
         id: artifact
         continue-on-error: true
@@ -39,7 +44,7 @@ jobs:
         with:
           name: terraform-state
           path: ./state-backup/
-          run-id: ${{ github.event.workflow_run.id || vars.LATEST_APPLY_RUN_ID }}
+          run-id: ${{ steps.source.outputs.run_id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Report the missing artifact and stop
@@ -50,7 +55,7 @@ jobs:
           set -euo pipefail
           tag="$(gh release list --limit 100 --json tagName,isPrerelease \
             --jq '[.[] | select(.isPrerelease and (.tagName | startswith("state-backup-")))][0].tagName')"
-          echo "::error::The terraform-state artifact for run ${{ github.event.workflow_run.id || vars.LATEST_APPLY_RUN_ID }} could not be downloaded, so this run cannot publish a backup or renew the artifact lease. Newest release backup: ${tag:-none}. Restore with the Seed Terraform State workflow, then re-run this one."
+          echo "::error::The terraform-state artifact for run ${{ steps.source.outputs.run_id }} could not be downloaded, so this run cannot publish a backup or renew the artifact lease. Newest release backup: ${tag:-none}. Restore with the Seed Terraform State workflow, then re-run this one."
           exit 1
 
       - name: Verify state file present
@@ -125,24 +130,30 @@ jobs:
 
       - name: Point LATEST_APPLY_RUN_ID at this run
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        env:
+          SOURCE_RUN_ID: ${{ steps.source.outputs.run_id }}
         with:
           github-token: ${{ secrets.TF_TOKEN_GITHUB }}
           script: |
-            try {
-              await github.rest.actions.createRepoVariable({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                name: 'LATEST_APPLY_RUN_ID',
-                value: '${{ github.run_id }}',
-              });
-            } catch (e) {
-              await github.rest.actions.updateRepoVariable({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                name: 'LATEST_APPLY_RUN_ID',
-                value: '${{ github.run_id }}',
-              });
+            const expected = process.env.SOURCE_RUN_ID;
+            const { data } = await github.rest.actions.getRepoVariable({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: 'LATEST_APPLY_RUN_ID',
+            });
+            if (data.value !== expected) {
+              core.warning(
+                `LATEST_APPLY_RUN_ID moved to ${data.value} while this run was reading ${expected}; ` +
+                  'a newer apply owns the state, so the lease is left alone.',
+              );
+              return;
             }
+            await github.rest.actions.updateRepoVariable({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: 'LATEST_APPLY_RUN_ID',
+              value: '${{ github.run_id }}',
+            });
 
       - name: Cleanup old backups (keep last 12)
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
