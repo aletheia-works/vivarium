@@ -26,7 +26,7 @@
 # locally by the maintainer on the same host that recorded the
 # trace, then committed alongside this recipe.
 
-FROM ubuntu:24.04
+FROM ubuntu:26.04
 
 RUN set -eux; \
     apt-get update -qq; \
