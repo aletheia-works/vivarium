@@ -137,6 +137,19 @@ jobs:
             docker inspect --format='{{index .RepoDigests 0}}' "$1" 2>/dev/null || echo ''
           }
 
+          pull_published() {
+            for attempt in 1 2 3; do
+              if docker pull "$1"; then
+                return 0
+              fi
+              echo "docker pull $1 failed (attempt ${attempt}/3)"
+              if [ "$attempt" -lt 3 ]; then
+                sleep $((attempt * 5))
+              fi
+            done
+            return 1
+          }
+
           for dockerfile in src/layer2_docker/*/Dockerfile; do
             slug_dir="$(dirname "$dockerfile")"
             slug="$(basename "$slug_dir")"
@@ -146,14 +159,15 @@ jobs:
 
             if ! recipe_changed "$slug"; then
               echo "Unchanged: ${slug} - capturing against the published ${tag_latest}"
-              if docker pull "$tag_latest"; then
-                bash scripts/capture_layer2_verdict.sh \
-                  "$tag_latest" "${slug_dir}/verdict.json" \
-                  --image-tag "$tag_latest" \
-                  --image-digest "$(repo_digest "$tag_latest")"
-                continue
+              if ! pull_published "$tag_latest"; then
+                echo "::error::Cannot pull ${tag_latest}. Refusing to rebuild an unchanged recipe: that would move :latest and force every visitor to re-pull. Re-run this workflow via workflow_dispatch to republish the catalogue."
+                exit 1
               fi
-              echo "::warning::${tag_latest} is not published yet; building ${slug} instead."
+              bash scripts/capture_layer2_verdict.sh \
+                "$tag_latest" "${slug_dir}/verdict.json" \
+                --image-tag "$tag_latest" \
+                --image-digest "$(repo_digest "$tag_latest")"
+              continue
             fi
 
             echo "Building Layer 2 image: ${slug}"
