@@ -31,10 +31,6 @@ FROM ubuntu:24.04
 RUN set -eux; \
     apt-get update -qq; \
     DEBIAN_FRONTEND=noninteractive apt-get install -y -qq \
-      software-properties-common >/dev/null; \
-    add-apt-repository -y universe >/dev/null; \
-    apt-get update -qq; \
-    DEBIAN_FRONTEND=noninteractive apt-get install -y -qq \
       build-essential rr zstd ca-certificates >/dev/null; \
     rm -rf /var/lib/apt/lists/*; \
     rr --version
