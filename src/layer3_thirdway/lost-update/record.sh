@@ -67,10 +67,6 @@ docker run --rm \
 
     apt-get update -qq
     DEBIAN_FRONTEND=noninteractive apt-get install -y -qq \
-      software-properties-common >/dev/null
-    add-apt-repository -y universe >/dev/null
-    apt-get update -qq
-    DEBIAN_FRONTEND=noninteractive apt-get install -y -qq \
       build-essential rr zstd >/dev/null
 
     sysctl -w kernel.perf_event_paranoid=1 >/dev/null || true
