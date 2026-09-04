@@ -233,16 +233,23 @@ jobs:
             )
 
             echo "Building Layer 2 image: ${slug}"
-            docker build "${labels[@]}" --tag "$tag_latest" --tag "$tag_sha" "$slug_dir"
+            docker build "${labels[@]}" --tag "$tag_latest" "$slug_dir"
 
-            echo "Pushing ${tag_latest} and ${tag_sha} to GHCR"
+            echo "Pushing ${tag_latest} to GHCR"
             docker push "$tag_latest"
-            docker push "$tag_sha"
+            verdict_tag="$tag_latest"
+
+            if recipe_changed "$slug"; then
+              echo "Pushing ${tag_sha} to GHCR"
+              docker tag "$tag_latest" "$tag_sha"
+              docker push "$tag_sha"
+              verdict_tag="$tag_sha"
+            fi
 
             bash scripts/capture_layer2_verdict.sh \
               "$tag_latest" "${slug_dir}/verdict.json" \
-              --image-tag "$tag_sha" \
-              --image-digest "$(repo_digest "$tag_sha")"
+              --image-tag "$verdict_tag" \
+              --image-digest "$(repo_digest "$verdict_tag")"
           done
 
       - name: Bundle Layer 1 reproductions alongside docs

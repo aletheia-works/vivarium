@@ -69,9 +69,12 @@ source and reports drift between the two.
 
 An untouched recipe with nothing published under `:latest` — a new
 package, or one somebody deleted — is built and pushed instead of
-failing the deploy. CI only takes that path when the registry
-positively reports the tag as absent; if it cannot tell, the deploy
-stops rather than risk moving a `:latest` that visitors already hold.
+failing the deploy. That path restores `:latest` alone and still
+mints no `:<git-sha>`, so the rule above holds without exception: a
+sha tag exists only for the recipes its commit changed. CI only takes
+the path when the registry positively reports the tag as absent; if
+it cannot tell, the deploy stops rather than risk moving a `:latest`
+that visitors already hold.
 
 Published images carry OCI metadata, so `docker inspect` on a pulled
 image says which bug it reproduces and where the page for it lives:
