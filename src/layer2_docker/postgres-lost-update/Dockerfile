@@ -12,7 +12,7 @@
 # (iii) runs two concurrent application-side increments under
 # READ COMMITTED, and (iv) exits 0 if the lost-update anomaly
 # reproduces, 1 otherwise.
-FROM postgres:16-alpine
+FROM postgres:18-alpine
 
 # Standard postgres image expects these to be set on first boot.
 # `vivarium` is a literal placeholder; nothing else uses the DB.

@@ -13,7 +13,7 @@
 # `-print0` flag (BusyBox `find` supports it on alpine 3.19+ as
 # well, but pinning the GNU version makes the verdict identical
 # across alpine and Debian-style distros).
-FROM alpine:3.19
+FROM alpine:3.24
 
 RUN apk add --no-cache findutils bash grep
 

@@ -10,7 +10,7 @@
 # the standards trail), so the page is a "real-world surprise
 # you should know about" entry, not an "Open upstream issue"
 # entry.
-FROM bash:5.2
+FROM bash:5.3
 
 COPY repro.sh /repro.sh
 RUN chmod +x /repro.sh
