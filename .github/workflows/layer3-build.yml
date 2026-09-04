@@ -31,20 +31,16 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - name: Setup mise (bun)
-        uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4.3.0
+      - name: Setup bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
-          install: true
-          cache: true
-          experimental: true
-          install_args: bun
+          bun-version: latest
 
       - name: Install ajv-cli for verdict schema validation
         run: |
-          BUN="$(mise which bun)"
           cd "$RUNNER_TEMP"
-          "$BUN" init -y >/dev/null
-          "$BUN" add ajv-cli@5 ajv-formats
+          bun init -y >/dev/null
+          bun add ajv-cli@5 ajv-formats
           echo "AJV_BIN=$RUNNER_TEMP/node_modules/.bin/ajv" >> "$GITHUB_ENV"
           echo "$RUNNER_TEMP/node_modules/.bin" >> "$GITHUB_PATH"
 
