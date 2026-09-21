@@ -15,23 +15,26 @@ rust = { version = "1.98.0", components = "rustfmt,clippy", targets = "wasm32-wa
 experimental = true
 
 [deps.bun-docs]
-sources = ["docs/package.json", "docs/bun.lock"]
+sources = ["package.json", "bun.lock"]
+outputs = ["node_modules"]
 run = "bun install"
 dir = "docs"
 
 [deps.bun-mcp]
-sources = ["packages/mcp-server/package.json", "packages/mcp-server/bun.lock"]
+sources = ["package.json", "bun.lock"]
+outputs = ["node_modules"]
 run = "bun install"
 dir = "packages/mcp-server"
 
 [deps.bun-wasm]
-sources = ["src/layer1_wasm/package.json", "src/layer1_wasm/bun.lock"]
+sources = ["package.json", "bun.lock"]
+outputs = ["node_modules"]
 run = "bun install"
 dir = "src/layer1_wasm"
 
 [deps.tofu]
-sources = ["infra/github/versions.tf", "infra/github/providers.tf"]
-outputs = ["infra/github/.terraform.lock.hcl"]
+sources = ["versions.tf", "providers.tf"]
+outputs = [".terraform.lock.hcl"]
 run = "tofu init"
 dir = "infra/github"
 
