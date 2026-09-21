@@ -3,6 +3,11 @@
 #MISE depends=["docker:build"]
 set -euo pipefail
 shopt -s nullglob
+(cd docs && bun install --frozen-lockfile)
+ajv_bin_dir="$(cd docs/node_modules/.bin && pwd)"
+AJV_BIN="${ajv_bin_dir}/ajv"
+[ -x "${AJV_BIN}" ] || AJV_BIN="${AJV_BIN}.exe"
+export AJV_BIN
 for dockerfile in src/layer2_docker/*/Dockerfile; do
   slug_dir=$(dirname "$dockerfile")
   slug=$(basename "$slug_dir")
