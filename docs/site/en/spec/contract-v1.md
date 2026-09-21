@@ -290,9 +290,9 @@ CI enforces these clauses mechanically — currently via
 `jq -e '.contract == "v1" and …'` predicates in
 [`.github/workflows/repro-regression.yml`](https://github.com/aletheia-works/vivarium/blob/main/.github/workflows/repro-regression.yml)
 (clause 4). The follow-up PR for [Issue #109](https://github.com/aletheia-works/vivarium/issues/109)
-will replace clause 4's `jq` validators with an `ajv-cli` schema
-validator pointed at the schema file above, keeping clause-4
-enforcement single-sourced.
+will replace clause 4's `jq` validators with a JSON Schema
+validator (`jsonschema validate`) pointed at the schema file above,
+keeping clause-4 enforcement single-sourced.
 
 The optional revision-2 evidence surface deliberately has **no**
 conformance clause: gating an optional surface on CI would create
