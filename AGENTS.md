@@ -262,14 +262,17 @@ tests and so uses `oven-sh/setup-bun`.
 
 When adding a new tool, pin it in `mise.toml` first.
 
-Tasks are split by shape. A task whose body is a single command, or
-that only composes other tasks through `depends`, stays in `mise.toml`.
-Anything longer is a **file task** under `mise-tasks/`: the directory
-path is the `:` namespace (`mise-tasks/repro/build/rust.sh` is
-`repro:build:rust`), and the `#MISE` / `#USAGE` header carries
-`description`, `depends`, `dir`, and the argument spec that `--help`
-prints. mise runs file tasks from the repository root. `scripts/` is
-for shell CI calls directly by path, not through `mise run`.
+Tasks are split by what the body needs. A command, a list of commands
+mise runs one after another, or a `depends` aggregate stays in
+`mise.toml`. A task that needs a shell — a loop, a conditional,
+argument handling, a heredoc — is a **file task** under `mise-tasks/`:
+the directory path is the `:` namespace
+(`mise-tasks/repro/build/rust.sh` is `repro:build:rust`), and the
+`#MISE` / `#USAGE` header carries `description`, `depends`, `dir`, and
+the argument spec that `--help` prints. mise runs file tasks from the
+repository root. Write one rather than reach for a `shell` override or
+a `set -euo pipefail` prologue inside a TOML string. `scripts/` is for
+shell CI calls directly by path, not through `mise run`.
 
 ### 4.10 Spec evolution policy
 
