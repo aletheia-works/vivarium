@@ -264,9 +264,12 @@ When adding a new tool, pin it in `mise.toml` first.
 
 Tasks are split by what the body needs. A command, a list of commands
 mise runs one after another, or a `depends` aggregate stays in
-`mise.toml`. A task that needs a shell — a loop, a conditional,
-argument handling, a heredoc — is a **file task** under `mise-tasks/`:
-the directory path is the `:` namespace
+`mise.toml`. A task that needs a shell of its own — a loop, a
+conditional, argument handling, a heredoc, a glob the default shell
+will not expand, or a `shopt` that has to hold over the whole body —
+is a **file task** under `mise-tasks/`: mise runs one entry of a `run`
+list per shell, so anything shared across lines has to be a script.
+The directory path is the `:` namespace
 (`mise-tasks/repro/build/rust.sh` is `repro:build:rust`), and the
 `#MISE` / `#USAGE` header carries `description`, `depends`, `dir`, and
 the argument spec that `--help` prints. mise runs file tasks from the
