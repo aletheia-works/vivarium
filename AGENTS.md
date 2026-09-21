@@ -79,7 +79,8 @@ vivarium/
 ├── AGENTS.md              # this file — standing AI instructions
 ├── README.md              # public project overview
 ├── LICENSE                # Apache-2.0
-├── mise.toml              # mise-en-place tool versions (bun, opentofu, etc.)
+├── mise.toml              # mise-en-place tool versions (bun, opentofu, etc.) + TOML tasks
+├── mise-tasks/            # mise file tasks — one script per task, namespaced by directory
 ├── .claude/                # Claude Code config (team-shared)
 │   ├── CLAUDE.md          # Claude Code-specific addenda; auto-loads `@../AGENTS.md`
 │   └── rules/             # path-scoped operational rules (e.g. recipe-authoring.md)
@@ -108,6 +109,7 @@ vivarium/
 │       └── ja/            # Japanese docs content
 ├── packages/
 │   └── mcp-server/        # @aletheia-works/vivarium-mcp (JSR + npm dual publish)
+├── scripts/               # shell steps CI calls directly (verdict capture, Pages bundling)
 ├── src/
 │   ├── layer1_wasm/       # Layer 1 reproductions (Pyodide, Ruby.wasm, php-wasm, Rust wasm32-wasip1)
 │   ├── layer2_docker/     # Layer 2 reproductions (Docker images, GHCR-published)
@@ -259,6 +261,15 @@ action — `test-mcp.yml` needs bun solely to run the package's own
 tests and so uses `oven-sh/setup-bun`.
 
 When adding a new tool, pin it in `mise.toml` first.
+
+Tasks are split by shape. A task whose body is a single command, or
+that only composes other tasks through `depends`, stays in `mise.toml`.
+Anything longer is a **file task** under `mise-tasks/`: the directory
+path is the `:` namespace (`mise-tasks/repro/build/rust.sh` is
+`repro:build:rust`), and the `#MISE` / `#USAGE` header carries
+`description`, `depends`, `dir`, and the argument spec that `--help`
+prints. mise runs file tasks from the repository root. `scripts/` is
+for shell CI calls directly by path, not through `mise run`.
 
 ### 4.10 Spec evolution policy
 
