@@ -94,7 +94,14 @@ jobs:
           git switch --quiet -C "${BRANCH}"
           git commit --quiet -am "${title}"
           pushed=false
-          if git fetch --quiet origin "${BRANCH}" 2>/dev/null; then
+          remote=0
+          git ls-remote --exit-code --heads origin "${BRANCH}" > /dev/null || remote=$?
+          if [ "${remote}" != 0 ] && [ "${remote}" != 2 ]; then
+            echo "::error::Could not look up ${BRANCH} on origin (git ls-remote exited ${remote})."
+            exit 1
+          fi
+          if [ "${remote}" = 0 ]; then
+            git fetch --quiet origin "${BRANCH}"
             others="$(git log --format=%ae "${GITHUB_SHA}..FETCH_HEAD" | grep -cvxF "${BOT_EMAIL}" || true)"
             if [ "${others}" != 0 ]; then
               echo "${BRANCH} has commits from someone other than this workflow; leaving it and its pull request to them."
