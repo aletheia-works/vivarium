@@ -1,0 +1,66 @@
+name: upstream-bump
+
+on:
+  schedule:
+    - cron: '0 1 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: upstream-bump
+  cancel-in-progress: false
+
+jobs:
+  bump:
+    name: bump Layer 1 upstream pins
+    if: github.repository_owner == 'aletheia-works' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          token: ${{ secrets.TF_TOKEN_GITHUB }}
+          persist-credentials: true
+
+      - name: Setup mise (bun, jq)
+        uses: jdx/mise-action@7a4e45a543138629540c9a1616d08632b893e492 # v5.0.1
+        with:
+          install: true
+          cache: true
+          experimental: true
+          install_args: bun jq
+
+      - name: Open or update one pull request per recipe
+        env:
+          GH_TOKEN: ${{ secrets.TF_TOKEN_GITHUB }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for slug in $(mise run repro:upstream:list); do
+            git reset --quiet --hard "${GITHUB_SHA}"
+            mise run repro:upstream:bump "${slug}" > "${RUNNER_TEMP}/${slug}.md"
+            if git diff --quiet; then
+              echo "${slug}: already on the latest upstream release."
+              continue
+            fi
+            version="$(jq -r '.upstream.version' "src/layer1_wasm/${slug}/recipe.json")"
+            branch="chore/bump-upstream-${slug}"
+            title="chore(wasm): bump the ${slug} baseline to ${version}"
+            {
+              cat "${RUNNER_TEMP}/${slug}.md"
+              echo
+              echo "This pull request's own repro-regression run re-checks the recipe on the new release. If the verdict flips to unreproduced, the bug is fixed upstream: retire the recipe or point it at the last release that still reproduces, rather than reverting this pin."
+            } > "${RUNNER_TEMP}/${slug}-body.md"
+            cat "${RUNNER_TEMP}/${slug}.md" >> "${GITHUB_STEP_SUMMARY}"
+            git switch --quiet -C "${branch}"
+            git commit --quiet -am "${title}"
+            git push --quiet --force origin "HEAD:${branch}"
+            if [ "$(gh pr view "${branch}" --json state --jq .state 2>/dev/null || true)" = "OPEN" ]; then
+              gh pr edit "${branch}" --title "${title}" --body-file "${RUNNER_TEMP}/${slug}-body.md"
+            else
+              gh pr create --base main --head "${branch}" --title "${title}" --body-file "${RUNNER_TEMP}/${slug}-body.md"
+            fi
+          done
