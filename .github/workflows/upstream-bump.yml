@@ -102,7 +102,7 @@ jobs:
           fi
           if [ "${remote}" = 0 ]; then
             git fetch --quiet origin "${BRANCH}"
-            others="$(git log --format=%ae "${GITHUB_SHA}..FETCH_HEAD" | grep -cvxF "${BOT_EMAIL}" || true)"
+            others="$(git log --format='%ae%n%ce' "${GITHUB_SHA}..FETCH_HEAD" | grep -cvxF "${BOT_EMAIL}" || true)"
             if [ "${others}" != 0 ]; then
               echo "${BRANCH} has commits from someone other than this workflow; leaving it and its pull request to them."
               exit 0
