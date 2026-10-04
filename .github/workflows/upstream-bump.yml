@@ -111,6 +111,13 @@ jobs:
               pushed=true
             fi
           fi
+          # shellcheck disable=SC2016
+          closed="$(TITLE="${title}" gh pr list --head "${BRANCH}" --state closed --json title,mergedAt \
+            --jq '[.[] | select(.mergedAt == null and .title == $ENV.TITLE)] | length')"
+          if [ "${closed}" != 0 ]; then
+            echo "A pull request for this exact bump was closed unmerged; not opening it again."
+            exit 0
+          fi
           if [ "${pushed}" = true ] &&
             [ "$(gh pr list --head "${BRANCH}" --state all --json number --jq length)" != 0 ]; then
             echo "${BRANCH} already carries this change and has a pull request; leaving both as they are."
