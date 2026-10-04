@@ -407,7 +407,9 @@ PRs 180 / 189 / 192.
   rather than the copy a runtime bundles, put it in `recipe.json` as
   `upstream` (`registry: "pypi"` with `package`, or `registry: "github"`
   with `repository` and the tag's `commit`), written exactly as the
-  recipe's files write it. The daily `upstream-bump` workflow moves the
+  recipe's files write it — and write it that one way everywhere, since
+  another spelling (a normalised version, a shortened commit) is not
+  rewritten. The daily `upstream-bump` workflow moves the
   pin to the latest release in every non-Markdown file of the recipe
   and opens a pull request; README prose and `roundtrip.json` stay as
   written and are only listed. Runtime-bundled targets (Pyodide's
