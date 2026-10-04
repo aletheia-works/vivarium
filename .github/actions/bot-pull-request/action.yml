@@ -19,6 +19,9 @@ inputs:
   body-path:
     description: File holding the pull request body.
     required: true
+  bot-login:
+    description: Login the token commits as.
+    default: aletheia-works-bot[bot]
 
 runs:
   using: composite
@@ -30,6 +33,7 @@ runs:
         BRANCH: ${{ inputs.branch }}
         TITLE: ${{ inputs.title }}
         BODY_PATH: ${{ inputs.body-path }}
+        BOT_LOGIN: ${{ inputs.bot-login }}
       run: |
         set -euo pipefail
         repo="${GITHUB_REPOSITORY}"
@@ -43,13 +47,19 @@ runs:
         fi
 
         number=""
+        recorded=""
         open="$(gh pr list --head "${BRANCH}" --state open --json number,headRefOid,body \
           --jq '.[0] // empty | [.number, .headRefOid, ((.body // "") | capture("<!-- bot-head: (?<sha>[0-9a-f]{40}) -->").sha // "")] | @tsv')"
         if [ -n "${open}" ]; then
           IFS=$'\t' read -r number open_head recorded <<< "${open}"
           if [ "${open_head}" != "${recorded}" ]; then
-            echo "${BRANCH} changed after the bot's last push (${recorded:-none recorded} -> ${open_head}); leaving it and #${number} alone."
-            exit 0
+            made_by="$(gh api "repos/${repo}/commits/${open_head}" \
+              --jq '[.author.login // "", .committer.login // "", (.commit.verification.verified | tostring)] | join(" ")')"
+            if [ "${made_by}" != "${BOT_LOGIN} web-flow true" ]; then
+              echo "${BRANCH} changed after the bot's last push (${recorded:-none recorded} -> ${open_head}); leaving it and #${number} alone."
+              exit 0
+            fi
+            echo "${open_head} is the bot's own commit but #${number} does not record it; carrying on."
           fi
         fi
 
@@ -121,7 +131,7 @@ runs:
           echo "Committed ${head} to ${BRANCH}."
         fi
 
-        if [ -n "${number}" ] && [ "${committed}" = false ]; then
+        if [ -n "${number}" ] && [ "${committed}" = false ] && [ "${recorded}" = "${head}" ]; then
           echo "#${number} is up to date."
           exit 0
         fi
