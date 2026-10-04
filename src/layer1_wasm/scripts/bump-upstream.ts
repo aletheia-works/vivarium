@@ -38,11 +38,14 @@ function fixCandidateOf(slug: string): FixCandidate | undefined {
   const wheel = readJson<{ source?: { url?: string; ref?: string; commit?: string } }>(
     join(LAYER1_DIR, slug, 'fix-candidate.json'),
   );
+  const declared = recipeOf(slug)?.fix_candidate;
+  if (wheel && declared) {
+    throw new Error(`${slug} pins its fix candidate twice: use fix-candidate.json source.commit or recipe.json fix_candidate, not both`);
+  }
   if (wheel) {
     const { url, ref, commit } = wheel.source ?? {};
     return url && ref && commit ? { url, branch: ref, commit } : undefined;
   }
-  const declared = recipeOf(slug)?.fix_candidate;
   return declared
     ? { url: `https://github.com/${declared.repository}`, branch: declared.branch, commit: declared.commit }
     : undefined;
