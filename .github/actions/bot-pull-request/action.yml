@@ -57,13 +57,25 @@ runs:
         git add -A
         tree="$(git write-tree)"
 
-        code=0
-        line="$(git ls-remote --exit-code origin "refs/heads/${BRANCH}")" || code=$?
-        case "${code}" in
-          0) head="${line%%[[:space:]]*}" ;;
-          2) head="" ;;
-          *) echo "::error::Could not look up ${BRANCH} on origin (git ls-remote exited ${code})."; exit 1 ;;
-        esac
+        : > "${RUNNER_TEMP}/bot-changes"
+        while IFS= read -r -d '' meta && IFS= read -r -d '' path; do
+          read -r old_mode new_mode _ _ status <<< "${meta#:}"
+          if [ "${status}" != D ] && { [ "${new_mode}" != 100644 ] || { [ "${old_mode}" != 100644 ] && [ "${old_mode}" != 000000 ]; }; }; then
+            echo "::error::${path} changes to mode ${new_mode} (from ${old_mode}); createCommitOnBranch can only commit regular files."
+            exit 1
+          fi
+          printf '%s\0%s\0' "${status}" "${path}" >> "${RUNNER_TEMP}/bot-changes"
+        done < <(git diff --cached --no-renames --raw -z "${base}")
+
+        if gh api "repos/${repo}/git/ref/heads/${BRANCH}" --jq .object.sha > "${RUNNER_TEMP}/bot-ref" 2> "${RUNNER_TEMP}/bot-ref.err"; then
+          head="$(cat "${RUNNER_TEMP}/bot-ref")"
+        elif grep -q 'HTTP 404' "${RUNNER_TEMP}/bot-ref.err"; then
+          head=""
+        else
+          cat "${RUNNER_TEMP}/bot-ref.err" >&2
+          echo "::error::Could not look up ${BRANCH}."
+          exit 1
+        fi
 
         committed=false
         if [ -n "${head}" ] && [ "$(gh api "repos/${repo}/git/commits/${head}" --jq .tree.sha)" = "${tree}" ]; then
@@ -72,26 +84,30 @@ runs:
           scratch="${BRANCH}--bot-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${RANDOM}"
           gh api "repos/${repo}/git/refs" -f ref="refs/heads/${scratch}" -f sha="${base}" > /dev/null
           trap 'gh api --method DELETE "repos/${repo}/git/refs/heads/${scratch}" > /dev/null || true' EXIT
-          additions='[]'
-          deletions='[]'
-          while IFS=$'\t' read -r status path; do
+          echo '[]' > "${RUNNER_TEMP}/bot-additions.json"
+          echo '[]' > "${RUNNER_TEMP}/bot-deletions.json"
+          while IFS= read -r -d '' status && IFS= read -r -d '' path; do
             if [ "${status}" = D ]; then
-              deletions="$(jq -c --arg p "${path}" '. + [{path: $p}]' <<< "${deletions}")"
+              jq -c --arg p "${path}" '. + [{path: $p}]' "${RUNNER_TEMP}/bot-deletions.json" > "${RUNNER_TEMP}/bot-next.json"
+              mv "${RUNNER_TEMP}/bot-next.json" "${RUNNER_TEMP}/bot-deletions.json"
             else
               git show ":${path}" | base64 -w0 > "${RUNNER_TEMP}/bot-blob"
-              additions="$(jq -c --arg p "${path}" --rawfile c "${RUNNER_TEMP}/bot-blob" '. + [{path: $p, contents: $c}]' <<< "${additions}")"
+              jq -c --arg p "${path}" --rawfile c "${RUNNER_TEMP}/bot-blob" '. + [{path: $p, contents: $c}]' \
+                "${RUNNER_TEMP}/bot-additions.json" > "${RUNNER_TEMP}/bot-next.json"
+              mv "${RUNNER_TEMP}/bot-next.json" "${RUNNER_TEMP}/bot-additions.json"
             fi
-          done < <(git diff --cached --no-renames --name-status "${base}")
+          done < "${RUNNER_TEMP}/bot-changes"
           # shellcheck disable=SC2016
           jq -n --arg repo "${repo}" --arg branch "${scratch}" --arg base "${base}" --arg title "${TITLE}" \
-            --argjson additions "${additions}" --argjson deletions "${deletions}" \
+            --slurpfile additions "${RUNNER_TEMP}/bot-additions.json" \
+            --slurpfile deletions "${RUNNER_TEMP}/bot-deletions.json" \
             '{
               query: "mutation($input: CreateCommitOnBranchInput!) { createCommitOnBranch(input: $input) { commit { oid } } }",
               variables: {input: {
                 branch: {repositoryNameWithOwner: $repo, branchName: $branch},
                 expectedHeadOid: $base,
                 message: {headline: $title},
-                fileChanges: {additions: $additions, deletions: $deletions}
+                fileChanges: {additions: $additions[0], deletions: $deletions[0]}
               }}
             }' > "${RUNNER_TEMP}/bot-commit.json"
           commit="$(gh api graphql --input "${RUNNER_TEMP}/bot-commit.json" --jq .data.createCommitOnBranch.commit.oid)"
