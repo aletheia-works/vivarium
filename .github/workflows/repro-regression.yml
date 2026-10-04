@@ -13,7 +13,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: repro-regression-${{ github.ref }}
+  group: repro-regression-${{ github.ref }}-${{ github.event_name }}
   cancel-in-progress: true
 
 jobs:
