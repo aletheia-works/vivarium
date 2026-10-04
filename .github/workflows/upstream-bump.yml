@@ -91,9 +91,14 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git switch --quiet -C "${BRANCH}"
           git commit --quiet -am "${title}"
+          pushed=false
           if git fetch --quiet origin "${BRANCH}" 2>/dev/null &&
             [ "$(git rev-parse 'HEAD^{tree}')" = "$(git rev-parse 'FETCH_HEAD^{tree}')" ]; then
-            echo "${BRANCH} already carries this change; leaving it and its pull request as they are."
+            pushed=true
+          fi
+          if [ "${pushed}" = true ] &&
+            [ "$(gh pr list --head "${BRANCH}" --state all --json number --jq length)" != 0 ]; then
+            echo "${BRANCH} already carries this change and has a pull request; leaving both as they are."
             exit 0
           fi
           {
@@ -105,7 +110,9 @@ jobs:
             echo "- If the build fails instead, something the recipe applies to the upstream source (a patch, a build step) no longer fits the new release. Fix the recipe on this branch."
             echo "- The fix-candidate pane is not rebuilt here, so until it is, the two panes may run different upstream bases."
           } > "${RUNNER_TEMP}/body.md"
-          git push --quiet --force origin "HEAD:${BRANCH}"
+          if [ "${pushed}" = false ]; then
+            git push --quiet --force origin "HEAD:${BRANCH}"
+          fi
           if [ "$(gh pr view "${BRANCH}" --json state --jq .state 2>/dev/null || true)" = "OPEN" ]; then
             gh pr edit "${BRANCH}" --title "${title}" --body-file "${RUNNER_TEMP}/body.md"
           else
