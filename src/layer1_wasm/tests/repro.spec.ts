@@ -200,15 +200,15 @@ for (const c of cases) {
         });
 
       const fixText = (
-      await fixPane.evaluate(
-        (el) =>
-          el.querySelector<HTMLElement & { transcript: string }>(
-            "terrarium-terminal",
-          )?.transcript ??
-          el.textContent ??
-          "",
-      )
-    ).trim();
+        await fixPane.evaluate(
+          (el) =>
+            el.querySelector<HTMLElement & { transcript: string }>(
+              "terrarium-terminal",
+            )?.transcript ??
+            el.textContent ??
+            "",
+        )
+      ).trim();
       expect
         .soft(fixText.length, "#output-fix is non-empty")
         .toBeGreaterThan(0);
