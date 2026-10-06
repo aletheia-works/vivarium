@@ -406,6 +406,8 @@ PRs 180 / 189 / 192.
   `drawer-body`, `runtime-label`, `baseline-heading` and `fix-heading`;
   `src/layer1_wasm/scripts/page-templates.ts` maps the runtime to the
   template for the generator, the slot validator and the highlighter.
+  A baseline on `main` declares no `upstream` in `recipe.json`: there is
+  no release to pin, and terrarium rebuilds `main` daily on its own.
   terrarium must already publish a build
   for each ref; its `builds.json` lists them. The tool uses threads, so
   the page has to be cross-origin isolated: the recipe ships
