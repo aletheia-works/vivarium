@@ -65,7 +65,10 @@ docs/site/_data/projects.json           ← add a row keyed by <project> (only i
 
 `index.html` is **generated** and gitignored:
 `docs/scripts/generate-repro-pages.ts` renders it from the layer's
-`page.template.html` plus the recipe's `page.en.html`. You edit
+page template plus the recipe's `page.en.html`. Layer 1 has two —
+`page.template.html`, and `page.terminal.template.html` for terrarium
+recipes — chosen by runtime in `src/layer1_wasm/scripts/page-templates.ts`;
+a change to the shared shell goes into both. You edit
 `page.en.html` — the slots only your recipe knows — and run
 `mise run repro:pages`. The generated English page is the input to the
 Japanese one: visitor-facing prose nodes carry `data-i18n="<key>"`, the
