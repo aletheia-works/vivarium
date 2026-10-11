@@ -79,14 +79,17 @@ Keep `package.json` and `jsr.json` names and versions identical. The MCP
 handshake reads its version from `jsr.json`; `bun run check:version` checks
 both manifests, and runs before tests and builds.
 
-Create a `mcp-server-v<version>` tag on the intended release commit to trigger
-`publish-mcp`. The workflow checks out that tag and rejects mismatched
-versions before publishing. To resume a partial release, run the same
+Release Please updates `package.json`, `jsr.json`, and `CHANGELOG.md` in a
+release PR from Conventional Commits merged into `main`. Merge that PR
+after its required checks pass to create the `mcp-server-v<version>` tag
+and GitHub release automatically. The tag triggers `publish-mcp`, which
+checks out that tag and rejects mismatched versions before publishing.
+To resume a partial release, run the same
 workflow manually with the existing tag. It checks both registries first,
 skips versions already published, and stops on registry or network errors.
 Only a registry HTTP 404 is treated as an unpublished version.
 
 This workflow uses OIDC trusted publishing. Keep its filename
 `publish-mcp.yml` aligned with the npm trusted publisher configuration.
-Version updates and tag creation remain manual until release automation is
-introduced separately.
+See [release automation](../../docs/releases.md) for version rules,
+repository-wide releases, and recovery.
