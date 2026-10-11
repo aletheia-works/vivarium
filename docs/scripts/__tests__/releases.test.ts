@@ -4,16 +4,22 @@ import Ajv from 'ajv';
 import { configSchema, type GitHub, Manifest } from 'release-please';
 import { parseConventionalCommits } from 'release-please/build/src/commit';
 import { buildStrategy } from 'release-please/build/src/factory';
-import { CommitSplit } from 'release-please/build/src/util/commit-split';
 import { TagName } from 'release-please/build/src/util/tag-name';
 import { Version } from 'release-please/build/src/version';
 
 const root = new URL('../../../', import.meta.url);
 const read = (path: string) => readFileSync(new URL(path, root), 'utf8');
-const baseline = '0'.repeat(40);
+const config = JSON.parse(read('.github/release-please-config.json'));
+const baseline = config['bootstrap-sha'];
 const merge = 'b'.repeat(40);
 const manifestPath = '.github/release-please-manifest.json';
-const versions = { '.': '0.1.3', 'packages/mcp-server': '0.2.1' };
+const versions = { '.': '0.2.2' };
+const manifests: string[] = [
+  'package.json',
+  ...config.packages['.']['extra-files'].map(
+    (file: { path: string }) => file.path,
+  ),
+];
 const commits = [
   {
     message: 'fix(mcp): correct a response',
@@ -33,8 +39,7 @@ function client() {
     }),
     findFilesByGlobAndRef: async (path: string) => [path],
     releaseIterator: async function* () {
-      yield { tagName: 'v0.1.3', sha: baseline, notes: '' };
-      yield { tagName: 'mcp-server-v0.2.1', sha: baseline, notes: '' };
+      yield { tagName: 'v0.2.2', sha: baseline, notes: '' };
     },
     mergeCommitIterator: async function* () {
       yield* commits;
@@ -50,7 +55,7 @@ const load = (github: GitHub) =>
     manifestPath,
   );
 
-describe('release automation', () => {
+describe('shared release version', () => {
   test('configuration conforms to the action engine schema', () => {
     const validate = new Ajv({
       strict: false,
@@ -63,7 +68,9 @@ describe('release automation', () => {
   });
 
   for (const [message, expected] of [
-    ['fix(mcp): correct a response', '0.2.2'],
+    ['fix(mcp): correct a response', '0.2.3'],
+    ['fix(docs): correct a page', '0.2.3'],
+    ['fix(wasm): correct a recipe', '0.2.3'],
     ['feat(mcp): add a tool', '0.3.0'],
     ['feat(mcp)!: change the protocol', '0.3.0'],
     ['docs(mcp): document a tool', undefined],
@@ -72,25 +79,34 @@ describe('release automation', () => {
       const github = client() as unknown as GitHub;
       const manifest = await load(github);
       const strategy = await buildStrategy({
-        ...manifest.repositoryConfig['packages/mcp-server'],
+        ...manifest.repositoryConfig['.'],
         github,
-        path: 'packages/mcp-server',
+        path: '.',
         targetBranch: 'main',
       });
       const pr = await strategy.buildReleasePullRequest(
-        parseConventionalCommits([{ ...commits[0], message }]),
+        parseConventionalCommits([
+          {
+            ...commits[0],
+            message,
+            files: [
+              message.startsWith('fix(docs)')
+                ? 'docs/site/en/index.mdx'
+                : message.startsWith('fix(wasm)')
+                  ? 'src/layer1_wasm/biome-12265/recipe.json'
+                  : commits[0].files[0],
+            ],
+          },
+        ]),
         {
-          tag: new TagName(Version.parse('0.2.1'), 'mcp-server', '-'),
+          tag: new TagName(Version.parse('0.2.2')),
           sha: baseline,
           notes: '',
         },
       );
       expect(pr?.version?.toString()).toBe(expected);
       if (!pr) return;
-      for (const path of [
-        'packages/mcp-server/package.json',
-        'packages/mcp-server/jsr.json',
-      ]) {
+      for (const path of manifests) {
         const update = pr.updates.find((entry) => entry.path === path);
         expect(update).toBeDefined();
         expect(
@@ -100,27 +116,20 @@ describe('release automation', () => {
     });
   }
 
-  test('grouped release PR produces both tags on its merge commit', async () => {
+  test('one release PR creates one tag on its merge commit', async () => {
     const mock = client();
     const github = mock as unknown as GitHub;
     const manifest = await load(github);
     const prs = await manifest.buildPullRequests();
     expect(prs).toHaveLength(1);
     const pr = prs[0];
-    const rootVersion = pr.updates.find(
-      (update) => update.path === '.github/vivarium-version.txt',
-    );
-    expect(rootVersion?.updater.updateContent('0.1.3\n')).toBe('0.1.4\n');
     let content = JSON.stringify(versions);
     for (const update of pr.updates) {
       if (update.path === manifestPath) {
         content = update.updater.updateContent(content);
       }
     }
-    expect(JSON.parse(content)).toEqual({
-      '.': '0.1.4',
-      'packages/mcp-server': '0.2.2',
-    });
+    expect(JSON.parse(content)).toEqual({ '.': '0.2.3' });
     Object.assign(mock, {
       pullRequestIterator: async function* () {
         yield {
@@ -136,24 +145,28 @@ describe('release automation', () => {
       },
     });
     const releases = await manifest.buildReleases();
-    expect(releases.map((release) => release.tag.toString()).sort()).toEqual([
-      'mcp-server-v0.2.2',
-      'v0.1.4',
-    ]);
-    expect(releases.every((release) => release.sha === merge)).toBe(true);
+    expect(releases).toHaveLength(1);
+    expect(releases[0].tag.toString()).toBe('v0.2.3');
+    expect(releases[0].sha).toBe(merge);
   });
 
-  test('recipe changes do not enter the MCP release history', () => {
-    const split = new CommitSplit({
-      packagePaths: ['.', 'packages/mcp-server'],
-    }).split([
-      {
-        ...commits[0],
-        message: 'fix(wasm): correct a recipe',
-        files: ['src/layer1_wasm/biome-12265/recipe.json'],
-      },
-    ]);
-    expect(split['packages/mcp-server']).toBeUndefined();
+  test('all first-party manifests are registered and share the root version', () => {
+    const discovered = [
+      ...new Bun.Glob('**/{package,jsr}.json').scanSync({
+        cwd: root.pathname,
+        onlyFiles: true,
+      }),
+    ].filter(
+      (path) =>
+        !path
+          .split('/')
+          .some((part) => ['node_modules', 'doc_build', 'dist'].includes(part)),
+    );
+    expect([...manifests].sort()).toEqual(discovered.sort());
+    const version = JSON.parse(read('package.json')).version;
+    for (const path of manifests)
+      expect(JSON.parse(read(path)).version).toBe(version);
+    expect(JSON.parse(read(manifestPath))).toEqual({ '.': version });
   });
 
   test('already released commits do not create another release PR', async () => {
@@ -163,5 +176,26 @@ describe('release automation', () => {
     };
     const manifest = await load(mock as unknown as GitHub);
     expect(await manifest.buildPullRequests()).toEqual([]);
+  });
+
+  test('migration starts from the shared baseline and excludes older history', async () => {
+    const mock = client();
+    Object.assign(mock, {
+      releaseIterator: async function* () {
+        yield { tagName: 'v0.1.3', sha: 'c'.repeat(40), notes: '' };
+      },
+      tagIterator: async function* () {
+        yield { name: 'v0.1.3', sha: 'c'.repeat(40) };
+        yield { name: 'mcp-server-v0.2.1', sha: 'c'.repeat(40) };
+      },
+      mergeCommitIterator: async function* () {
+        yield* commits;
+        yield { ...commits[0], message: 'feat: historical feature' };
+      },
+    });
+    const manifest = await load(mock as unknown as GitHub);
+    const prs = await manifest.buildPullRequests();
+    expect(prs).toHaveLength(1);
+    expect(prs[0].version?.toString()).toBe('0.2.3');
   });
 });

@@ -17,7 +17,7 @@ concurrency:
 
 jobs:
   release:
-    name: Update release PR or create releases
+    name: Update release PR or create release
     if: >-
       github.repository == 'aletheia-works/vivarium' &&
       github.ref == 'refs/heads/main' &&
@@ -44,7 +44,7 @@ jobs:
           gh api "repos/$GITHUB_REPOSITORY/labels/autorelease%3A%20pending" > /dev/null
           gh api "repos/$GITHUB_REPOSITORY/labels/autorelease%3A%20tagged" > /dev/null
 
-      - name: Update release PR or create tags and GitHub releases
+      - name: Update release PR or create tag and GitHub release
         uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
         with:
           token: ${{ steps.app-token.outputs.token }}

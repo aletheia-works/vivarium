@@ -1,24 +1,32 @@
 {
   "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
-  "bootstrap-sha": "6dd66ec958e75e0986179ce221bdf2405d7e6923",
+  "bootstrap-sha": "22a00ecb1d3c40730e25fb9fa5e5bd7be0d67ed8",
   "bump-minor-pre-major": true,
   "bump-patch-for-minor-pre-major": false,
-  "pull-request-header": "Release Please calculated these versions from Conventional Commits. Review the changes and merge this PR to create the tags and GitHub releases. MCP tags also trigger npm and JSR trusted publishing.",
+  "pull-request-header": "Release Please calculated this shared version from Conventional Commits. Review the changes and merge this PR to create the Vivarium tag and GitHub release, then publish MCP to npm and JSR.",
   "packages": {
     ".": {
-      "release-type": "simple",
-      "version-file": ".github/vivarium-version.txt",
-      "include-component-in-tag": false
-    },
-    "packages/mcp-server": {
       "release-type": "node",
-      "component": "mcp-server",
-      "include-component-in-tag": true,
-      "tag-separator": "-",
+      "include-component-in-tag": false,
       "extra-files": [
         {
           "type": "json",
-          "path": "jsr.json",
+          "path": "docs/package.json",
+          "jsonpath": "$.version"
+        },
+        {
+          "type": "json",
+          "path": "src/layer1_wasm/package.json",
+          "jsonpath": "$.version"
+        },
+        {
+          "type": "json",
+          "path": "packages/mcp-server/package.json",
+          "jsonpath": "$.version"
+        },
+        {
+          "type": "json",
+          "path": "packages/mcp-server/jsr.json",
           "jsonpath": "$.version"
         }
       ]
