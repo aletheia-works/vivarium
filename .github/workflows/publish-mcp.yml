@@ -58,13 +58,13 @@ jobs:
         if: steps.release.outputs.npm_skip == 'false'
         # Bun cannot publish over OIDC (oven-sh/bun#15601), and older npm
         # minors mask trusted-publishing failures as ENEEDAUTH (npm/cli#9088).
-        run: bunx npm@12.2.0 publish --provenance --access public
+        run: bunx npm@latest publish --provenance --access public
         env:
           NPM_CONFIG_REGISTRY: 'https://registry.npmjs.org/'
 
       - name: Publish to JSR (provenance via OIDC)
         if: steps.release.outputs.jsr_skip == 'false'
-        run: bunx jsr@0.14.3 publish
+        run: bunx jsr publish
 
       - name: Summary
         run: |
