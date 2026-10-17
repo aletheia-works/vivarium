@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.5.0](https://github.com/aletheia-works/vivarium/compare/v0.4.0...v0.5.0) (2026-10-17)
+
+
+### Features
+
+* **tools:** add the fixed guest builder and its workflows ([#531](https://github.com/aletheia-works/vivarium/issues/531)) ([90dd87e](https://github.com/aletheia-works/vivarium/commit/90dd87e32554f68c0ba6ef183041b5df6f01550d))
+
+
+### Bug Fixes
+
+* **tools:** pin the guest toolchain offline and keep the build failure cause ([#534](https://github.com/aletheia-works/vivarium/issues/534)) ([bad23e6](https://github.com/aletheia-works/vivarium/commit/bad23e674e27198ccb3255c8f25b8b506b4b02cd))
+
 ## [0.4.0](https://github.com/aletheia-works/vivarium/compare/v0.3.0...v0.4.0) (2026-10-11)
 
 
