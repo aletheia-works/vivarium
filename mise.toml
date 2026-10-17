@@ -1,16 +1,17 @@
 [tools]
-bun = "latest"
-opentofu = "latest"
-uv = "latest"
-mago = "latest"
-ruff = "latest"
-tombi = "latest"
-rumdl = "latest"
-shellcheck = "latest"
-actionlint = "latest"
-jq = "latest"
-jsonschema = "latest"
-rust = { version = "1.98.0", components = "rustfmt,clippy", targets = "wasm32-wasip1" }
+node = "26.12.0"
+bun = "1.4.3"
+opentofu = "1.13.1"
+uv = "0.13.1"
+mago = "1.57.0"
+ruff = "0.17.1"
+tombi = "1.8.4"
+rumdl = "0.2.79"
+shellcheck = "0.11.0"
+actionlint = "1.7.12"
+jq = "1.8.2"
+jsonschema = "17.2.1"
+rust = { version = "1.99.0", components = "rustfmt,clippy", targets = "wasm32-wasip1" }
 
 [settings]
 experimental = true
@@ -127,7 +128,7 @@ run = ["bunx playwright install --with-deps chromium", "bun run test"]
 
 [tasks."repro:native:ruby"]
 description = "Run Ruby repros against host Ruby (4.0.x pin)"
-tools = { ruby = "4.0.6" }
+tools = { ruby = "4.0.7" }
 run = "ruby src/layer1_wasm/ruby-21709/repro.rb"
 
 [tasks."repro:native"]

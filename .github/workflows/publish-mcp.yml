@@ -36,13 +36,13 @@ jobs:
         with:
           ref: refs/tags/${{ inputs.tag || github.ref_name }}
 
-      - name: Setup mise (bun)
-        uses: jdx/mise-action@08ae2a091c038e1e05ec6f5115dc5c69d5a2a6b8 # v5.1.2
+      - name: Setup mise (bun, node)
+        uses: jdx/mise-action@9b200bcecbfd6303e69a4a261b2e09e3757440a7 # v5.2.0
         with:
           install: true
           cache: true
           experimental: true
-          install_args: bun
+          install_args: bun node
 
       - name: Install + build + test
         run: |
@@ -58,13 +58,13 @@ jobs:
         if: steps.release.outputs.npm_skip == 'false'
         # Bun cannot publish over OIDC (oven-sh/bun#15601), and older npm
         # minors mask trusted-publishing failures as ENEEDAUTH (npm/cli#9088).
-        run: bunx npm@latest publish --provenance --access public
+        run: bunx npm@12.2.0 publish --provenance --access public
         env:
           NPM_CONFIG_REGISTRY: 'https://registry.npmjs.org/'
 
       - name: Publish to JSR (provenance via OIDC)
         if: steps.release.outputs.jsr_skip == 'false'
-        run: bunx jsr publish
+        run: bunx jsr@0.14.3 publish
 
       - name: Summary
         run: |
