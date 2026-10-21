@@ -3,7 +3,13 @@
   "language": "shell",
   "symptom": "migration-option-dropped",
   "severity": "bug",
-  "tags": ["biome", "prettier", "migration", "formatter", "overrides"],
+  "tags": [
+    "biome",
+    "prettier",
+    "migration",
+    "formatter",
+    "overrides"
+  ],
   "expected_verdict": "reproduced",
   "expected_runtime": "formicarium",
   "guests": [
@@ -11,9 +17,11 @@
       "role": "baseline",
       "tool": "biome",
       "repository": "https://github.com/biomejs/biome",
-      "commit": "ef61338b24b7125fbc3cb3d4792ec90fa005a86e",
+      "commit": "bbbd95d7711cb3a50ff4891464d1d231fb7fe1d5",
       "fixture": "biome-migrate-prettier-override",
-      "reference": { "branch": "main" },
+      "reference": {
+        "branch": "main"
+      },
       "accepted": {
         "commit": "ef61338b24b7125fbc3cb3d4792ec90fa005a86e",
         "versionOrName": "ef61338b24b7125fbc3cb3d4792ec90fa005a86e",
