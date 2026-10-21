@@ -33,8 +33,9 @@ tags and registry versions retain their original contents.
 The docs unit suite tests the release configuration with the
 `release-please` package in `docs/package.json`. Keep it at the engine
 version that the pinned `release-please-action` bundles (its
-`package-lock.json` records it). When adding a package, register its manifest in the root
-release configuration's `extra-files` list so its version is updated too.
+`package-lock.json` records it). When adding a package, register its
+manifest in the root release configuration's `extra-files` list so its
+version is updated too.
 
 ## Weekly merge
 
