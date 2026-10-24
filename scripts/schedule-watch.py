@@ -1,6 +1,4 @@
 #!/usr/bin/env python3
-"""Find scheduled workflows that did not run, and keep one Issue per problem streak."""
-
 import argparse
 import json
 import re
@@ -74,7 +72,6 @@ def parse_time(text):
 
 
 def problem(file, crons, workflow, run, now):
-    """One line describing what is wrong with a scheduled workflow, or None."""
     if workflow["state"] != "active":
         return f"- `{file}` is {workflow['state']}."
     due = last_fire(crons, now - GRACE)
@@ -106,8 +103,6 @@ def check(repo, now, call=gh):
 
 
 def report(repo, title, lines, run_url, call=gh):
-    """Open an Issue for a new streak, comment lines it does not hold yet, or close it."""
-
     def issue(verb, *args):
         return call("issue", verb, *args, "--repo", repo)
 

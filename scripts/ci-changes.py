@@ -67,7 +67,6 @@ RULES = (
             "docs/rspress.config.ts",
         ),
     ),
-    # The changes job runs its self-test on every pull request.
     (NONE, ("scripts/schedule-watch.py", ".github/workflows/schedule-watch.yml")),
     (
         {"docs", "repro"},
