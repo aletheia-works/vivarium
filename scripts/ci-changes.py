@@ -67,6 +67,7 @@ RULES = (
             "docs/rspress.config.ts",
         ),
     ),
+    (NONE, ("scripts/schedule-watch.py", ".github/workflows/schedule-watch.yml")),
     (
         {"docs", "repro"},
         (
@@ -126,6 +127,8 @@ def self_test():
         ".github/labeler.yml": NONE,
         ".github/workflows/claude-review.yml": NONE,
         ".github/workflows/terraform-plan.yml": NONE,
+        ".github/workflows/schedule-watch.yml": NONE,
+        "scripts/schedule-watch.py": NONE,
         "ruff.toml": NONE,
         ".github/workflows/ci.yml": ALL,
         "scripts/ci-changes.py": ALL,
