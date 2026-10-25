@@ -97,6 +97,8 @@ describe('references', () => {
     expect(await errorCode(referencesOnMain(join(directory, 'missing')))).toBe(
       'INVALID_INPUT',
     );
+    await writeFile(join(directory, 'one', 'recipe.json'), '{');
+    expect(await errorCode(referencesOnMain(directory))).toBe('INVALID_INPUT');
   });
 
   test('add the recipes an open pull request carries at its head', async () => {

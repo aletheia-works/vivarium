@@ -75,8 +75,13 @@ export async function referencesOnMain(
     } catch {
       continue;
     }
-    for (const key of acceptedKeys(text))
-      addReference(references, key, `main:${entry.name}`);
+    let keys: string[];
+    try {
+      keys = acceptedKeys(text);
+    } catch {
+      fail('INVALID_INPUT', `main has an unreadable ${entry.name}/recipe.json`);
+    }
+    for (const key of keys) addReference(references, key, `main:${entry.name}`);
   }
   return references;
 }
