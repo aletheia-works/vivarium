@@ -20,6 +20,8 @@ const COMMANDS = [
   'aube install',
   'ls node_modules/.aube/builder@file+f207b01d788bfbae/node_modules',
 ];
+const BIN_COMMAND =
+  'ls node_modules/.aube/builder@file+f207b01d788bfbae/node_modules/.bin';
 
 interface Envelope {
   runtime: { name: string; version: string; extras: Record<string, string> };
@@ -135,6 +137,11 @@ for (const lang of ['en', 'ja'] as const) {
     for (const terminal of observed.terminals)
       for (const command of COMMANDS)
         expect(terminal.transcript).toContain(`$ ${command}\n`);
+    const [baselineTerminal, fixTerminal] = observed.terminals;
+    expect(baselineTerminal?.transcript).not.toContain(`$ ${BIN_COMMAND}\n`);
+    expect(fixTerminal?.transcript).toContain(
+      `$ ${BIN_COMMAND}\nlinked-tool\n`,
+    );
     const names = observed.marks.map((mark) => mark.name);
     for (const name of [
       'isolated',

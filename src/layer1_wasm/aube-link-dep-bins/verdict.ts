@@ -11,6 +11,8 @@ export const COMMANDS = [
   `ls ${BUILDER_NODE_MODULES}`,
 ] as const;
 
+export const BIN_COMMAND = `ls ${BUILDER_NODE_MODULES}/.bin`;
+
 export interface CommandResult {
   command: string;
   code: number;
@@ -30,6 +32,7 @@ export interface SessionResult {
   commands: CommandResult[];
   listing: string[];
   hasBinDirectory: boolean;
+  bins: string[];
   reproduced: boolean;
   corrected: boolean;
 }
@@ -112,13 +115,16 @@ export async function runSession(
       `${role}: ${error instanceof Error ? error.message : String(error)}`,
     );
   }
+  const bins = hasBinDirectory ? parseListing(await run(BIN_COMMAND)) : [];
+  const linked = bins.includes('linked-tool');
   return {
     role,
     commands,
     listing,
     hasBinDirectory,
-    reproduced: !hasBinDirectory,
-    corrected: hasBinDirectory,
+    bins,
+    reproduced: !linked,
+    corrected: linked,
   };
 }
 
@@ -139,7 +145,7 @@ export function decide(baseline: Outcome, fix: Outcome): Decision {
   const fixError = fix.ok
     ? fix.session.corrected
       ? null
-      : "fix: builder's node_modules has no .bin"
+      : "fix: builder's .bin has no linked-tool"
     : fix.error;
   return {
     verdict:

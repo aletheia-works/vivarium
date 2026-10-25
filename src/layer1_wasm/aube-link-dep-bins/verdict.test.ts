@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'bun:test';
 import { createHash } from 'node:crypto';
 import {
+  BIN_COMMAND,
   BUILDER_NODE_MODULES,
   buildEnvelope,
   COMMANDS,
@@ -39,6 +40,7 @@ function runner(
         'cat vendor/builder/package.json': BUILDER_MANIFEST,
         'aube install': 'dependencies:\n+ builder@1.0.0\n',
         [LIST]: BASELINE_LISTING,
+        [BIN_COMMAND]: 'linked-tool\n',
       };
       return {
         command,
@@ -87,21 +89,44 @@ describe('runSession', () => {
       role: 'baseline',
       listing: ['builder/', 'linked-tool -> /work/app/vendor/linked-tool'],
       hasBinDirectory: false,
+      bins: [],
       reproduced: true,
       corrected: false,
     });
     expect(session.commands.map((c) => c.command)).toEqual([...COMMANDS]);
   });
 
-  test('reads the corrected listing through ANSI escapes and CRLF', async () => {
+  test('lists .bin only when it exists and corrects on linked-tool through ANSI escapes and CRLF', async () => {
     const coloured = `${ESC}[1m${FIX_LISTING.replace(/\n/g, '\r\n')}${ESC}[0m`;
+    const terminal = runner({ [LIST]: { output: coloured } });
+    const session = await runSession('fix', terminal, {
+      builderManifest: BUILDER_MANIFEST,
+    });
+    expect(terminal.calls).toEqual([...COMMANDS, BIN_COMMAND]);
+    expect(session).toMatchObject({
+      hasBinDirectory: true,
+      bins: ['linked-tool'],
+      corrected: true,
+      reproduced: false,
+    });
+    expect(stripAnsi(`${ESC}[31mred${ESC}[0m`)).toBe('red');
+  });
+
+  test('keeps a .bin without linked-tool reproduced', async () => {
     const session = await runSession(
       'fix',
-      runner({ [LIST]: { output: coloured } }),
+      runner({
+        [LIST]: { output: FIX_LISTING },
+        [BIN_COMMAND]: { output: 'other-tool\n' },
+      }),
       { builderManifest: BUILDER_MANIFEST },
     );
-    expect(session).toMatchObject({ corrected: true, reproduced: false });
-    expect(stripAnsi(`${ESC}[31mred${ESC}[0m`)).toBe('red');
+    expect(session).toMatchObject({
+      hasBinDirectory: true,
+      bins: ['other-tool'],
+      corrected: false,
+      reproduced: true,
+    });
   });
 
   test('fails on a changed fixture, a failed install and an unexpected layout', async () => {
@@ -141,6 +166,7 @@ function ok(corrected: boolean): Outcome {
       commands: [],
       listing: [],
       hasBinDirectory: corrected,
+      bins: corrected ? ['linked-tool'] : [],
       reproduced: !corrected,
       corrected,
     },
@@ -159,7 +185,7 @@ describe('decide', () => {
     expect(decide(ok(false), ok(false))).toMatchObject({
       verdict: 'reproduced',
       fixStatus: 'error',
-      fixError: "fix: builder's node_modules has no .bin",
+      fixError: "fix: builder's .bin has no linked-tool",
     });
   });
 

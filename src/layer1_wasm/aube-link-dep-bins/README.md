@@ -56,10 +56,16 @@ ls node_modules/.aube/builder@file+f207b01d788bfbae/node_modules
 
 formicarium has no shell, no Node.js and no network, so no lifecycle script
 can run. The fixture declares none, and the page reads the directory those
-scripts would get on their `PATH` instead. With `builder/` and
-`linked-tool -> /work/app/vendor/linked-tool` listed, no `.bin/` is
-reproduced and a `.bin/` is corrected. The fix's `.bin/linked-tool` is
-aube's `#!/bin/sh` bin shim. The verdict comes from the baseline alone; the
+scripts would get on their `PATH` instead. The listing must show `builder/`
+and `linked-tool -> /work/app/vendor/linked-tool`. When it also shows
+`.bin/`, the terminal runs one more command:
+
+```sh
+ls node_modules/.aube/builder@file+f207b01d788bfbae/node_modules/.bin
+```
+
+`linked-tool` in `.bin` is corrected; no `.bin/`, or a `.bin` without it, is
+reproduced. The fix's `.bin/linked-tool` is aube's `#!/bin/sh` bin shim. The verdict comes from the baseline alone; the
 fix pane reports whether the fix is corrected. A failed check, command or
 unexpected listing is reported as an error, never as a verdict.
 
