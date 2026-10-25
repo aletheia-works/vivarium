@@ -108,7 +108,9 @@ the reference does.
 The 30 days start at the `main` commit that last changed the key's
 references (the run reads the full history), or at the Release's
 publication when `main` never named the key. Drafts are left to their
-release run. The job summary lists every guest Release as referenced (and
+release run. A `guest-*` tag with no Release, such as one left by a run that
+deleted the Release but failed on the tag, is deleted on the next run unless
+its key is referenced. The job summary lists every guest Release as referenced (and
 by what), waiting (with the date it goes) or deleted.
 
 Start **fixed-guest-prune** by hand to see the list: `dry_run` is on by

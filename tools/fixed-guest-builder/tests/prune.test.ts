@@ -192,6 +192,53 @@ describe('pruneReleases', () => {
     expect(api.releases.map((release) => release.tag)).toContain('v0.6.0');
   });
 
+  test('delete a guest tag left without its Release unless a recipe accepts its key', async () => {
+    const { api, directory, lastReferencedAt } = await setup();
+    const draft = `guest-biome-${'e'.repeat(64)}`;
+    const orphan = `guest-biome-${'f'.repeat(64)}`;
+    for (const tag of [
+      draft,
+      orphan,
+      `guest-aube-${KEY_A}`,
+      'guest-x',
+      'v0.6.0',
+    ])
+      api.tags.add(tag);
+    const dry = await pruneReleases({
+      api,
+      layer1Directory: directory,
+      lastReferencedAt,
+      now: NOW,
+      graceDays: 30,
+      dryRun: true,
+    });
+    expect(dry.orphanTags).toEqual([orphan]);
+    expect(renderPruneSummary(dry)).toContain(
+      `- \`${orphan}\`: tag with no Release, **would be deleted**`,
+    );
+    const result = await pruneReleases({
+      api,
+      layer1Directory: directory,
+      lastReferencedAt,
+      now: NOW,
+      graceDays: 30,
+      dryRun: false,
+    });
+    expect(result.deleted).toEqual([`guest-biome-${KEY_B}`, orphan]);
+    expect(api.tags.has(orphan)).toBe(false);
+    expect(api.tags.has(draft)).toBe(true);
+    expect(api.tags.has(`guest-aube-${KEY_A}`)).toBe(true);
+    expect(
+      renderPruneSummary({
+        dryRun: false,
+        graceDays: 30,
+        decisions: [],
+        orphanTags: [orphan],
+        deleted: [orphan],
+      }),
+    ).toContain(`- \`${orphan}\`: tag with no Release, **deleted**`);
+  });
+
   test('write nothing in a dry run', async () => {
     const { api, directory, lastReferencedAt } = await setup();
     const before = api.writes.length;
@@ -279,6 +326,7 @@ describe('pruneReleases', () => {
         dryRun: true,
         graceDays: 30,
         decisions: [],
+        orphanTags: [],
         deleted: [],
       }),
     ).toContain('dry run, nothing deleted');
@@ -455,6 +503,8 @@ describe('createGitHubApi pruning calls', () => {
               draft: true,
               published_at: null,
             }));
+      if (url.includes('/git/matching-refs/tags/guest-'))
+        return Response.json([{ ref: `refs/tags/guest-biome-${KEY_A}` }]);
       if (url.includes('/pulls?'))
         return url.endsWith('page=1')
           ? page(100, (index) => ({ number: index }))
@@ -474,6 +524,7 @@ describe('createGitHubApi pruning calls', () => {
       publishedAt: null,
     });
     expect(await api.openPulls()).toHaveLength(100);
+    expect(await api.guestTags()).toEqual([`guest-biome-${KEY_A}`]);
     expect(await api.pullFiles(3)).toEqual([
       { filename: 'f0', status: 'added' },
       { filename: 'f1', status: 'added' },

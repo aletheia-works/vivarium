@@ -26,6 +26,7 @@ export interface PruneResult {
   dryRun: boolean;
   graceDays: number;
   decisions: PruneDecision[];
+  orphanTags: string[];
   deleted: string[];
 }
 
@@ -199,8 +200,15 @@ export async function pruneReleases(options: {
     now: options.now,
     graceDays: options.graceDays,
   });
+  const released = new Set(releases.map((release) => release.tag));
+  const orphanTags = (await options.api.guestTags())
+    .filter((tag) => {
+      const key = guestKey(tag);
+      return key !== null && !released.has(tag) && !references.has(key);
+    })
+    .sort();
   const deleted: string[] = [];
-  if (!options.dryRun)
+  if (!options.dryRun) {
     for (const decision of decisions) {
       if (decision.status !== 'delete') continue;
       await options.api.deletePublished({
@@ -212,10 +220,16 @@ export async function pruneReleases(options: {
       await options.api.deleteTag(decision.tag);
       deleted.push(decision.tag);
     }
+    for (const tag of orphanTags) {
+      await options.api.deleteTag(tag);
+      deleted.push(tag);
+    }
+  }
   return {
     dryRun: options.dryRun,
     graceDays: options.graceDays,
     decisions,
+    orphanTags,
     deleted,
   };
 }
@@ -227,8 +241,12 @@ export function renderPruneSummary(result: PruneResult): string {
     `A \`guest-<tool>-<buildKey>\` Release is deleted with its tag ${result.graceDays} days after no recipe on \`main\` and no open pull request accepts its key.`,
     '',
   ];
+  const orphans = result.orphanTags.map(
+    (tag) =>
+      `- \`${tag}\`: tag with no Release, ${result.deleted.includes(tag) ? '**deleted**' : '**would be deleted**'}`,
+  );
   if (result.decisions.length === 0) {
-    lines.push('No guest Releases.', '');
+    lines.push('No guest Releases.', '', ...orphans, '');
     return `${lines.join('\n')}\n`;
   }
   lines.push(
@@ -248,6 +266,7 @@ export function renderPruneSummary(result: PruneResult): string {
       `| \`${decision.tag}\` | ${status} | ${decision.unreferencedSince ?? '–'} | ${decision.deleteAfter ?? '–'} |`,
     );
   }
+  if (orphans.length > 0) lines.push('', ...orphans);
   lines.push('');
   return `${lines.join('\n')}\n`;
 }

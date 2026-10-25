@@ -75,6 +75,7 @@ export interface GitHubApi {
   listReleases(): Promise<ListedRelease[]>;
   deletePublished(release: ListedRelease): Promise<void>;
   deleteTag(tag: string): Promise<void>;
+  guestTags(): Promise<string[]>;
   openPulls(): Promise<number[]>;
   pullFiles(pull: number): Promise<PullFile[]>;
   fileAt(path: string, ref: string): Promise<string | null>;
@@ -247,6 +248,12 @@ export function createGitHubApi(options: {
       );
       if (response.status !== 204 && response.status !== 422)
         fail('EXTERNAL', `tag delete returned HTTP ${response.status}`);
+    },
+    async guestTags() {
+      const refs = await json<{ ref: string }[]>(
+        `${api}/git/matching-refs/tags/guest-`,
+      );
+      return refs.map((item) => item.ref.replace(/^refs\/tags\//, ''));
     },
     async openPulls() {
       const numbers: number[] = [];

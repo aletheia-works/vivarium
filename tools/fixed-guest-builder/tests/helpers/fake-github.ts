@@ -118,6 +118,10 @@ export class FakeGitHub implements GitHubApi {
     this.tags.delete(tag);
   }
 
+  async guestTags() {
+    return [...this.tags].filter((tag) => tag.startsWith('guest-'));
+  }
+
   async openPulls() {
     return [...this.pulls.keys()];
   }
