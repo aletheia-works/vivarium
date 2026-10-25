@@ -108,7 +108,7 @@ describe('toolchain', () => {
     expect(await readToolchainChannel(plain, '1.98.1')).toBe('1.97.0');
   });
 
-  test('checkToolchain refuses an image whose Rust differs from the upstream pin', () => {
+  test('checkToolchain refuses an image whose Rust differs from the build channel', () => {
     expect(() =>
       checkToolchain('rustc 1.98.1\nrelease: 1.98.1\n', '1.98.1'),
     ).not.toThrow();

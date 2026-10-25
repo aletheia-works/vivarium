@@ -210,7 +210,7 @@ export function checkToolchain(rustcVerbose: string, channel: string): void {
   if (release !== channel)
     fail(
       'VERIFY_FAILED',
-      `image has Rust ${release ?? 'unknown'}, the source pins ${channel}`,
+      `image has Rust ${release ?? 'unknown'}, expected ${channel}`,
     );
 }
 
