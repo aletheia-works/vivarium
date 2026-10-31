@@ -120,6 +120,15 @@ Step 2 on Lambda, ARM_64, image version 2.0 (2026-11-01):
   6.64 s, the rest 0.02–0.03 s, the state went back to `RUNNING`, and the
   frames showed the current time.
 
+Step 3 on Lambda, the proxy behind a function URL (2026-11-01):
+
+- The first deploy answered 502 without the cookie and an empty download for
+  the key link: the streaming runtime sends the status only on the first
+  `write()`, and its `end()` drops the chunk passed to it.
+- After the fix, the key link opened motionEye in a browser and `admin`
+  logged in. Without the cookie, a wrong key or a wrong cookie, the URL
+  answers 403 `text/plain`.
+
 ## Open points
 
 - motionEye makes its cookie secret at start-up, so every MicroVM resumed
