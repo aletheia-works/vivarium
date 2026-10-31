@@ -187,9 +187,7 @@ When lark releases a wheel that includes this fix on PyPI:
 ## Round-trip state
 
 `roundtrip.json` tracks the recipe's progress through the round-
-trip loop (see
-[the round-trip guide](https://aletheia-works.github.io/vivarium/guide/round-trip)
-for the stage breakdown). Stages reflect:
+trip loop. Stages reflect:
 
 - `status: "draft"` — recipe just scaffolded.
 - `status: "verifying"` — `verdicts.unfixed` captured.

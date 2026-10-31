@@ -46,7 +46,6 @@ interface PrepareNewRecipeOk {
   commit_subject: string;
   next_steps: string[];
   references: {
-    rules: string;
     layer_readme: string;
     selection_policy: string;
   };
@@ -203,7 +202,7 @@ export async function prepareNewRecipe(
           `Write ${recipeJson.path} with the recipe_json.contents from this response, replacing each TODO placeholder (pick expected_runtime for the layer's WASM target).`,
           `If "${project}" is a new project, add the projects_row to docs/site/_data/projects.json.`,
           `Run: cd docs && mise exec -- bun run generate`,
-          `Validate locally per the layer's README + the .claude/rules/recipe-authoring.md checklist.`,
+          `Validate locally per the layer's README.`,
           `Commit with subject: ${commitSubject}`,
           `Submit the PR.`,
         ];
@@ -230,8 +229,6 @@ export async function prepareNewRecipe(
     commit_subject: commitSubject,
     next_steps: nextSteps,
     references: {
-      rules:
-        'https://github.com/aletheia-works/vivarium/blob/main/.claude/rules/recipe-authoring.md',
       layer_readme: `https://github.com/aletheia-works/vivarium/blob/main/src/layer${layer}_${layer === 1 ? 'wasm' : layer === 2 ? 'docker' : 'thirdway'}/README.md`,
       selection_policy:
         'caller-defined — issue selection criteria vary by user workflow and are not enforced by the MCP server beyond the slug regex',

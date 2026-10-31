@@ -145,7 +145,7 @@ for (const path of written) console.log(`✓ ${path}`);
 console.log('');
 console.log(`Scaffolded src/layer2_docker/${slug}/ from _template/.`);
 console.log('');
-console.log('Next steps (per .claude/rules/recipe-authoring.md):');
+console.log('Next steps:');
 console.log(
   `  1. Edit src/layer2_docker/${slug}/Dockerfile — set the real base image (current: ${baseImage}).`,
 );
