@@ -85,7 +85,6 @@ RULES = (
         NONE,
         (
             "infra/",
-            ".claude/",
             ".github/",
             "*.md",
             "LICENSE",
@@ -125,7 +124,6 @@ def self_test():
         "AGENTS.md": NONE,
         "README.md": NONE,
         "SECURITY.md": NONE,
-        ".claude/rules/recipe-authoring.md": NONE,
         "infra/github/main.tf": NONE,
         ".github/labeler.yml": NONE,
         ".github/workflows/claude-review.yml": NONE,

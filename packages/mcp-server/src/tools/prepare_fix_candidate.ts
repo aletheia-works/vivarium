@@ -32,7 +32,6 @@ interface PrepareFixCandidateOk {
   commands: string[];
   next_steps: string[];
   references: {
-    rules: string;
     builder_script: string;
   };
 }
@@ -219,8 +218,6 @@ export async function prepareFixCandidate(
     commands,
     next_steps: nextSteps,
     references: {
-      rules:
-        'https://github.com/aletheia-works/vivarium/blob/main/.claude/rules/recipe-authoring.md',
       builder_script:
         'https://github.com/aletheia-works/vivarium/blob/main/mise-tasks/repro/build/wheels.sh',
     },

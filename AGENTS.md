@@ -2,9 +2,6 @@
 
 > Standing instructions for any AI coding agent working in this repository.
 > Follows the emerging [agents.md](https://agents.md) convention.
-> Claude Code users: see also [`.claude/CLAUDE.md`](.claude/CLAUDE.md) for
-> Claude-specific additions; path-scoped operational rules live under
-> [`.claude/rules/`](.claude/rules/).
 
 ---
 
@@ -64,7 +61,7 @@ If unsure whether an action crosses the line, stop and ask.
    confirm it exists in the current tree. Memory and training data both go
    stale.
 7. **The code wins over the text.** When the code and a document
-   (`docs/site/`, README.md, this file, `.claude/`) disagree, trust the
+   (`docs/site/`, README.md, this file) disagree, trust the
    code. After the change, always tell the human about every mismatch you
    found, whether you fixed it (in both `docs/site/en/` and
    `docs/site/ja/` when the page has both) or left it, even if that makes
@@ -84,9 +81,6 @@ vivarium/
 ├── package.json           # shared repository and package version (private root metadata)
 ├── mise.toml              # mise-en-place tool versions (bun, opentofu, etc.) + TOML tasks
 ├── mise-tasks/            # mise file tasks — one script per task, namespaced by directory
-├── .claude/                # Claude Code config (team-shared)
-│   ├── CLAUDE.md          # Claude Code-specific addenda; auto-loads `@../AGENTS.md`
-│   └── rules/             # path-scoped operational rules (e.g. recipe-authoring.md)
 ├── .github/
 │   ├── workflows/         # CI/CD — mostly thin callers, plus Vivarium-owned reusable workflows
 │   ├── dependabot.yml
@@ -290,7 +284,7 @@ or release tags.
 [`scripts/ci-changes.py`](scripts/ci-changes.py) maps each path to the
 docs, repro, MCP and fixed-guest-builder groups. An unknown path, a
 change to `ci.yml`, the classifier, `mise.toml` or `mise-tasks/`, and
-the release PR run every group; prose, `infra/` and `.claude/` run none.
+the release PR run every group; prose and `infra/` run none.
 Polyglot lint runs on every PR. The ruleset requires `ci-required`,
 which passes only when each needed group passed and each other one was
 skipped, plus Polyglot lint and Commitlint. A push to `main` still runs
