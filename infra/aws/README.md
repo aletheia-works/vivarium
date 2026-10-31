@@ -46,7 +46,8 @@ function URL with `RESPONSE_STREAM`.
   request, and ends after an hour suspended or 8 hours in all.
 - **Forwarding**: the proxy streams motionEye's answers back to the browser.
 
-`node --test infra/aws/preview-proxy/` runs its tests without AWS.
+`node --test infra/aws/preview-proxy/index.test.mjs` runs its tests without
+AWS.
 
 ### Cost
 

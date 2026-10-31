@@ -6,8 +6,7 @@ locals {
     }
   }
 
-  account_id = data.aws_caller_identity.current.account_id
-  # Pinned so a plan shows when Lambda moves the managed base image.
+  account_id         = data.aws_caller_identity.current.account_id
   base_image_arn     = "arn:aws:lambda:${var.aws_region}:aws:microvm-image:al2023-1"
   base_image_version = "2"
   connector          = "arn:aws:lambda:${var.aws_region}:aws:network-connector:aws-network-connector"
@@ -212,8 +211,6 @@ resource "aws_lambda_function" "preview" {
   depends_on = [aws_iam_role_policy.preview_proxy]
 }
 
-# Public, so a reviewer needs no AWS account; the proxy answers 403 before any
-# AWS call to a request without the key or the cookie it sets.
 resource "aws_lambda_function_url" "preview" {
   for_each           = local.previews
   function_name      = aws_lambda_function.preview[each.key].function_name

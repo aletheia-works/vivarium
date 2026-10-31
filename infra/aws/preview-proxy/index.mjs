@@ -9,6 +9,7 @@ const START_TIMEOUT_MS = 30_000;
 const POLL_MS = 1_000;
 const TOKEN_MARGIN_MS = 60_000;
 const COOKIE = 'vivarium-preview';
+const REPEATABLE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS']);
 const KEY_PARAM = 'vivarium-key';
 const DROPPED_REQUEST_HEADERS = new Set([
   'host',
@@ -147,7 +148,7 @@ export function microvms(config, fetchImpl = fetch) {
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-export async function previewMicrovm(config, api, { now = Date.now } = {}) {
+async function liveMicrovm(config, api) {
   let nextToken;
   do {
     const page = await api.list(config.imageArn, nextToken);
@@ -155,7 +156,10 @@ export async function previewMicrovm(config, api, { now = Date.now } = {}) {
     if (live) return api.get(live.microvmId);
     nextToken = page.nextToken;
   } while (nextToken);
-  let microvm = await api.run({
+}
+
+export async function previewMicrovm(config, api, { now = Date.now } = {}) {
+  let microvm = (await liveMicrovm(config, api)) ?? await api.run({
     imageIdentifier: config.imageArn,
     ingressNetworkConnectors: [config.ingressConnector],
     idlePolicy: config.idlePolicy,
@@ -214,7 +218,7 @@ export function admit(config, event) {
     const rest = query.toString();
     return {
       status: 302,
-      location: `${event.rawPath || '/'}${rest ? `?${rest}` : ''}`,
+      location: `/${(event.rawPath ?? '').replace(/^\/+/, '')}${rest ? `?${rest}` : ''}`,
       cookie: `${COOKIE}=${cookieValue(config.accessKey)}; Path=/; Max-Age=86400; HttpOnly; Secure; SameSite=Lax`,
     };
   }
@@ -291,7 +295,9 @@ export function createProxy({ config, api, fetchImpl = fetch, from, now = Date.n
         cookies: [admission.cookie],
       });
     let response;
-    for (let attempt = 0; attempt < 2 && !response; attempt++) {
+    const method = event.requestContext?.http?.method ?? 'GET';
+    const attempts = REPEATABLE_METHODS.has(method) ? 2 : 1;
+    for (let attempt = 0; attempt < attempts && !response; attempt++) {
       try {
         const { url, init } = upstreamRequest(event, await current());
         response = await fetchImpl(url, init);

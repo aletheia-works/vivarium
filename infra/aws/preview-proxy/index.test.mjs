@@ -268,3 +268,43 @@ test('bodyless answers still send their status, the key redirect and an upstream
   await respond(admitted(), {});
   assert.equal(sent[1].metadata.statusCode, 304);
 });
+
+test('the key redirect stays on the preview host', () => {
+  const admission = admit(CONFIG, {
+    rawPath: '//evil.example/x',
+    rawQueryString: 'vivarium-key=open-sesame',
+  });
+  assert.equal(admission.location, '/evil.example/x');
+});
+
+test('a reused MicroVM that is still starting is waited for', async () => {
+  const api = fakeApi([{ microvmId: 'mvm-starting', state: 'PENDING' }]);
+  const get = api.get;
+  let gets = 0;
+  api.get = async (id) => {
+    gets += 1;
+    return gets === 1 ? { microvmId: id, state: 'PENDING' } : get(id);
+  };
+  const microvm = await previewMicrovm(CONFIG, api);
+  assert.equal(microvm.state, 'RUNNING');
+  assert.equal(microvm.endpoint, 'mvm-starting.example');
+});
+
+test('a write is not sent twice after a failed fetch', async () => {
+  const api = fakeApi([{ microvmId: 'mvm-live', state: 'RUNNING' }]);
+  let calls = 0;
+  const { sent, from } = sink();
+  const respond = createProxy({
+    config: CONFIG,
+    api,
+    fetchImpl: async () => {
+      calls += 1;
+      throw new TypeError('fetch failed');
+    },
+    from,
+    now: () => 0,
+  });
+  await respond(admitted({ requestContext: { http: { method: 'POST' } }, body: '{}' }), {});
+  assert.equal(calls, 1);
+  assert.equal(sent[0].metadata.statusCode, 503);
+});

@@ -45,6 +45,20 @@ updates:
         patterns:
           - "*"
 
+  - package-ecosystem: "terraform"
+    directory: "/infra/aws"
+    schedule:
+      interval: "daily"
+    labels:
+      - "type: chore"
+      - "scope: infra"
+    commit-message:
+      prefix: "chore(infra)"
+    groups:
+      terraform-providers:
+        patterns:
+          - "*"
+
   - package-ecosystem: "bun"
     directory: "/packages/mcp-server"
     schedule:
