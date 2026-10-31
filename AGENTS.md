@@ -87,6 +87,7 @@ vivarium/
 │   ├── labeler.yml        # path-based label rules (mechanical)
 │   └── release.yml
 ├── infra/
+│   ├── aws/               # preview environments on Lambda MicroVMs via OpenTofu
 │   └── github/            # GitHub Settings-as-Code via OpenTofu (labels, milestones, main ruleset)
 ├── docs/                  # rspress docs site
 │   ├── package.json       # rspress + bun deps
