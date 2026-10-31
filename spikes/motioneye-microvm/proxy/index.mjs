@@ -258,13 +258,20 @@ export function responseMetadata(response) {
   };
 }
 
+function open(from, responseStream, metadata) {
+  const stream = from(responseStream, metadata);
+  stream.write('');
+  return stream;
+}
+
 function plain(responseStream, from, statusCode, text, extra = {}) {
-  const stream = from(responseStream, {
+  const stream = open(from, responseStream, {
     statusCode,
     headers: { 'content-type': 'text/plain; charset=utf-8', 'cache-control': 'no-store' },
     ...extra,
   });
-  stream.end(text);
+  stream.write(text);
+  stream.end();
 }
 
 export function createProxy({ config, api, fetchImpl = fetch, from, now = Date.now }) {
@@ -295,7 +302,7 @@ export function createProxy({ config, api, fetchImpl = fetch, from, now = Date.n
     }
     if (!response)
       return plain(responseStream, from, 503, 'The preview is starting or unavailable. Reload in a moment.\n');
-    const stream = from(responseStream, responseMetadata(response));
+    const stream = open(from, responseStream, responseMetadata(response));
     if (response.body) await pipeline(Readable.fromWeb(response.body), stream);
     else stream.end();
   };

@@ -55,7 +55,15 @@ function sink() {
   const sent = [];
   const from = (responseStream, metadata) => {
     const stream = new PassThrough();
-    sent.push({ metadata, body: text(stream) });
+    const response = { body: text(stream) };
+    sent.push(response);
+    const write = stream.write.bind(stream);
+    const end = stream.end.bind(stream);
+    stream.write = (chunk, ...rest) => {
+      response.metadata ??= metadata;
+      return write(chunk, ...rest);
+    };
+    stream.end = (callback) => end(typeof callback === 'function' ? callback : undefined);
     return stream;
   };
   return { sent, from };
@@ -241,4 +249,22 @@ test('the proxy refuses without the cookie and answers 503 when motionEye stays 
   assert.deepEqual(api.calls, []);
   await respond(admitted(), {});
   assert.equal(sent[1].metadata.statusCode, 503);
+  assert.match(await sent[0].body, /needs the link/);
+});
+
+test('bodyless answers still send their status, the key redirect and an upstream 304', async () => {
+  const api = fakeApi([{ microvmId: 'mvm-live', state: 'RUNNING' }]);
+  const { sent, from } = sink();
+  const respond = createProxy({
+    config: CONFIG,
+    api,
+    fetchImpl: async () => new Response(null, { status: 304 }),
+    from,
+    now: () => 0,
+  });
+  await respond({ rawPath: '/', rawQueryString: 'vivarium-key=open-sesame' }, {});
+  assert.equal(sent[0].metadata.statusCode, 302);
+  assert.equal(sent[0].metadata.headers.location, '/');
+  await respond(admitted(), {});
+  assert.equal(sent[1].metadata.statusCode, 304);
 });
