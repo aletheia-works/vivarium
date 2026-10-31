@@ -82,6 +82,17 @@ the MicroVMs REST calls itself.
 the same code as a plain HTTP server on port 18080 in front of the local
 container, with a stand-in for the MicroVMs API.
 
+## The browser check
+
+`node check.mjs [idle-seconds]` drives Chromium through the function URL with
+the Playwright that `docs/` installs, reading the URL and key from
+`build/aws.json`. It opens the key link, logs in as `admin`, waits for three
+different frames from camera 1, renames camera 1 and applies it, reloads and
+reads the name back. motionEye refuses to apply anything while the passwords
+are empty, so on a fresh MicroVM it sets both to `preview-check`, and logs in
+with either. With `idle-seconds`, it then leaves no page open that long and
+checks the frames again.
+
 ## Results so far
 
 Step 1, local Docker, motionEye `dev` at `8451b85d` (2026-10-31, amd64):
@@ -128,6 +139,26 @@ Step 3 on Lambda, the proxy behind a function URL (2026-11-01):
 - After the fix, the key link opened motionEye in a browser and `admin`
   logged in. Without the cookie, a wrong key or a wrong cookie, the URL
   answers 403 `text/plain`.
+
+Step 4, `node check.mjs 360` (2026-11-01):
+
+- The key link answered 200 in 1.1 s, camera 1 sent three different frames
+  in 2.1 s, the renamed camera was there after a reload.
+- After 360 s with no page open, longer than the 300 s idle policy, the page
+  answered 200 in 3.95 s instead of about 0.3 s, and the frames moved again.
+  The state was not read in between, so the suspend is inferred from the
+  delay.
+- One logged-in page with four cameras made 1,056 requests and pulled
+  8.68 MB in 60 s, 55 ms each on average: about 63,000 requests and 0.5 GB
+  an hour.
+
+Cost of one review, estimated from those numbers and third-party us-east-1
+rates, not a bill: an hour of viewing is about $0.06 of MicroVM compute at
+1 GB and half a vCPU, $0.01 of proxy requests, $0.01 of proxy duration and
+$0.06 of transfer out, so about $0.15. A suspended MicroVM costs no compute;
+each suspend writes and each resume reads the snapshot, under a cent per GB.
+Transfer out and the request count both scale with the frame rate, which
+motionEye's frame rate dimmer lowers.
 
 ## Open points
 
