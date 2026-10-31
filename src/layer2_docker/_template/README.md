@@ -1,10 +1,7 @@
 # Reproduction — {{TITLE}}
 
 > Layer 2 (Docker) reproduction. Conforms to the catalogue
-> conventions in [`src/layer2_docker/README.md`](../README.md);
-> see [`.claude/rules/recipe-authoring.md`](../../../.claude/rules/recipe-authoring.md)
-> for the agent-side authoring checklist (path-scoped, auto-loads
-> when Claude Code edits files under `src/layer*_*/`).
+> conventions in [`src/layer2_docker/README.md`](../README.md).
 
 ## The behaviour
 

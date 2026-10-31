@@ -69,9 +69,7 @@ Preview 3+ are more promising precisely because they do not.
 
 There is no per-recipe convention yet — the previous one was shaped
 around `rr` and went with it. Whoever authors the first recipe here
-defines the shape, and should update this README and
-[`.claude/rules/recipe-authoring.md`](../../.claude/rules/recipe-authoring.md)
-in the same PR.
+defines the shape, and should update this README in the same PR.
 
 Start from the criterion above. If the runtime cannot be exercised on a
 reviewer's own machine, it belongs in a discussion, not in this
