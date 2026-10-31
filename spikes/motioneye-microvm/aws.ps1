@@ -179,8 +179,9 @@ function Step-Check {
     $shots = New-Item -ItemType Directory -Force (Join-Path $Build 'shots')
     $auth = @{ 'X-aws-proxy-auth' = $token }
     $common = @{ SkipHttpErrorCheck = $true; TimeoutSec = 60 }
+    $started = Get-Date
     $ready = Invoke-WebRequest "https://$endpoint$Hook/ready" -Headers ($auth + @{ 'X-aws-proxy-port' = '9000' }) @common
-    Write-Host "ready: $($ready.StatusCode)"
+    Write-Host ("ready: {0} {1:N2}s" -f $ready.StatusCode, ((Get-Date) - $started).TotalSeconds)
     $me = $auth + @{ 'X-aws-proxy-port' = '8765' }
     $index = Invoke-WebRequest "https://$endpoint/" -Headers $me -SessionVariable session @common
     Write-Host "index: $($index.StatusCode)"
@@ -193,7 +194,7 @@ function Step-Check {
         $started = Get-Date
         $picture = Invoke-WebRequest "https://$endpoint/picture/$camera/current/" -Headers $me -WebSession $session -OutFile $file -PassThru @common
         $seconds = ((Get-Date) - $started).TotalSeconds
-        Write-Host ("camera {0}: {1} {2} {3} bytes {4:N2}s" -f $camera, $picture.StatusCode, $picture.Headers['Content-Type'], (Get-Item $file).Length, $seconds)
+        Write-Host ("camera {0}: {1} {2} {3} bytes {4:N2}s" -f $camera, $picture.StatusCode, ($picture.Headers['Content-Type'] -join ','),(Get-Item $file).Length, $seconds)
     }
     Write-Host "OK: pictures saved under $shots"
 }

@@ -110,10 +110,18 @@ from the zip with every file at mode 0644; with the tarball inside, the same
 build passes, `linux_init` and `relayevent.sh` are 0755, and `ready` returns
 200.
 
-## Open points for step 2
+Step 2 on Lambda, ARM_64, image version 2.0 (2026-11-01):
 
-- The image is built for ARM_64, as formicarium's relay is; this spike has
-  only run on amd64.
+- The rebuild with the tarball inside reached `UPDATED`.
+- `run`, `token`, `check`: `ready`, `/` and login 200; `/picture/1..4/current/`
+  200 `image/jpeg`, about 8 KB, 0.02–0.04 s each, with motion's caption on the
+  frame.
+- `suspend` reached `SUSPENDED`. The next `check` resumed it: `ready` took
+  6.64 s, the rest 0.02–0.03 s, the state went back to `RUNNING`, and the
+  frames showed the current time.
+
+## Open points
+
 - motionEye makes its cookie secret at start-up, so every MicroVM resumed
   from one image version shares it. One MicroVM per PR keeps this harmless
   for now; a `/run` hook that restarts motionEye would remove it.
