@@ -31,7 +31,9 @@ AI agents **must not** take any of these actions — always hand off to the huma
 - Creating accounts, entering credentials, or handling payments.
 - Destructive operations on shared state: `tofu destroy`, production database
   writes, force-push to `main` once the first PR has been merged, deleting
-  released tags, rewriting pushed history on a repo with collaborators.
+  released tags, rewriting pushed history on a branch other people build on.
+  Rebasing and force-pushing your own PR branch (for example, onto `main`
+  to resolve a conflict) is not shared state and is fine.
 - Rotating, exporting, or committing secrets. If a secret is needed at
   runtime, reference it via GitHub Actions secrets or environment variables;
   never inline.
