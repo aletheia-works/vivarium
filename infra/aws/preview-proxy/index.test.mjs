@@ -18,6 +18,7 @@ const CONFIG = {
   region: 'ap-northeast-1',
   imageArn: 'arn:aws:lambda:ap-northeast-1:123456789012:microvm-image:preview',
   ingressConnector: 'arn:ingress',
+  egressConnector: 'arn:egress',
   accessKey: 'open-sesame',
   tokenMinutes: 60,
   idlePolicy: {
@@ -30,8 +31,10 @@ const CONFIG = {
 
 function fakeApi(items = []) {
   const calls = [];
+  const runs = [];
   return {
     calls,
+    runs,
     list: async () => {
       calls.push('list');
       return { items };
@@ -42,6 +45,7 @@ function fakeApi(items = []) {
     },
     run: async (body) => {
       calls.push(`run ${body.clientToken}`);
+      runs.push(body);
       return { microvmId: 'mvm-new', state: 'PENDING' };
     },
     token: async (id, body) => {
@@ -105,7 +109,12 @@ test('sign still matches the get-vanilla test vector', () => {
 
 test('settings refuses a missing access key', () => {
   assert.throws(
-    () => settings({ IMAGE_ARN: 'a', INGRESS_CONNECTOR: 'b' }),
+    () =>
+      settings({
+        IMAGE_ARN: 'a',
+        INGRESS_CONNECTOR: 'b',
+        EGRESS_CONNECTOR: 'c',
+      }),
     /ACCESS_KEY is not set/,
   );
 });
@@ -154,6 +163,19 @@ test('with no live MicroVM one is started with a per-minute client token', async
     'get mvm-new',
   ]);
   assert.equal(microvm.state, 'RUNNING');
+});
+
+test('a started MicroVM sends its outbound traffic only through the egress connector', async () => {
+  const api = fakeApi([]);
+  await previewMicrovm(CONFIG, api, { now: () => 0 });
+  assert.deepEqual(api.runs[0].egressNetworkConnectors, ['arn:egress']);
+});
+
+test('settings refuses a missing egress connector', () => {
+  assert.throws(
+    () => settings({ IMAGE_ARN: 'a', INGRESS_CONNECTOR: 'b', ACCESS_KEY: 'c' }),
+    /EGRESS_CONNECTOR is not set/,
+  );
 });
 
 test('connect asks for a token to the motionEye port only', async () => {

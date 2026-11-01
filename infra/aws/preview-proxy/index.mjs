@@ -29,12 +29,18 @@ const DROPPED_RESPONSE_HEADERS = new Set([
 ]);
 
 export function settings(env = process.env) {
-  for (const name of ['IMAGE_ARN', 'INGRESS_CONNECTOR', 'ACCESS_KEY'])
+  for (const name of [
+    'IMAGE_ARN',
+    'INGRESS_CONNECTOR',
+    'EGRESS_CONNECTOR',
+    'ACCESS_KEY',
+  ])
     if (!env[name]) throw new Error(`${name} is not set`);
   return {
     region: env.AWS_REGION,
     imageArn: env.IMAGE_ARN,
     ingressConnector: env.INGRESS_CONNECTOR,
+    egressConnector: env.EGRESS_CONNECTOR,
     accessKey: env.ACCESS_KEY,
     tokenMinutes: Number(env.TOKEN_MINUTES ?? 60),
     idlePolicy: {
@@ -165,6 +171,7 @@ export async function previewMicrovm(config, api, { now = Date.now } = {}) {
     (await api.run({
       imageIdentifier: config.imageArn,
       ingressNetworkConnectors: [config.ingressConnector],
+      egressNetworkConnectors: [config.egressConnector],
       idlePolicy: config.idlePolicy,
       maximumDurationInSeconds: config.maximumDurationInSeconds,
       clientToken: `preview-${new Date(now())

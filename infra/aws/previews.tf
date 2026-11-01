@@ -215,6 +215,7 @@ resource "aws_lambda_function" "preview" {
     variables = {
       IMAGE_ARN         = awscc_lambda_microvm_image.preview[each.key].image_arn
       INGRESS_CONNECTOR = "${local.connector}:ALL_INGRESS"
+      EGRESS_CONNECTOR  = aws_lambdacore_network_connector.preview.arn
       ACCESS_KEY        = random_password.preview_key[each.key].result
     }
   }
