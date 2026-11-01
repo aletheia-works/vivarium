@@ -37,7 +37,7 @@ function receiptFor(
   return {
     schemaVersion: 1,
     buildKey: set.key,
-    tag: `guest-biome-${set.key}`,
+    tag: `guest-jj-${set.key}`,
     compiled,
     elfSha256: sha(set.files.elf),
     buildInfoSha256: sha(set.files.buildInfo),
@@ -96,18 +96,18 @@ describe('deriveSet and the plan', () => {
     const { set, root, api } = await buildArtifact();
     const prepared = await derive(api, root);
     expect(prepared.identity).toEqual({
-      tool: 'biome',
-      binary: 'biome',
+      tool: 'jj',
+      binary: 'jj',
       key: set.key,
       repository: SOURCE.repository,
       commit: SOURCE.commit,
     });
     expect(prepared.compiled).toBe(true);
     const plan = preparePlan(prepared, BUILD_RUN, RELEASE_RUN);
-    const tag = `guest-biome-${set.key}`;
+    const tag = `guest-jj-${set.key}`;
     expect(plan.plan.targets).toEqual([
       tag,
-      `${tag}/biome`,
+      `${tag}/jj`,
       `${tag}/build-info.json`,
       `${tag}/catalog.json`,
       `${tag}/LICENSE`,
@@ -179,7 +179,7 @@ describe('deriveSet and the plan', () => {
     const { root, api } = await buildArtifact();
     api.jobs.set(BUILD_RUN, [
       {
-        name: 'build biome',
+        name: 'build jj',
         status: 'completed',
         conclusion: 'failure',
         steps: [],
@@ -199,7 +199,7 @@ describe('deriveSet and the plan', () => {
       steps: [],
     });
     const prepared = await derive(api, root, { currentRunId: BUILD_RUN });
-    expect(prepared.identity.tool).toBe('biome');
+    expect(prepared.identity.tool).toBe('jj');
   });
 
   test('refuses a receipt that disagrees with build-info, the run or the files', async () => {
@@ -229,7 +229,7 @@ describe('deriveSet and the plan', () => {
     );
     const tampered = await buildArtifact();
     await writeFile(
-      join(tampered.root, tampered.set.key, 'biome'),
+      join(tampered.root, tampered.set.key, 'jj'),
       new TextEncoder().encode('\x7fELF-other'),
     );
     expect(await errorCode(derive(tampered.api, tampered.root))).toBe(
@@ -249,7 +249,7 @@ describe('deriveSet and the plan', () => {
         derive(api, root, {
           toolsConfig: {
             ...TOOLS,
-            tools: { biome: { ...TOOLS.tools.biome, binary: 'biome2' } },
+            tools: { jj: { ...TOOLS.tools.jj, binary: 'jj2' } },
           },
         }),
       ),
@@ -283,7 +283,7 @@ describe('deriveSet and the plan', () => {
 
   test('for a reused key, takes the published set and refuses an unpublished one', async () => {
     const { set, root, api } = await buildArtifact({ compiled: false });
-    const tag = `guest-biome-${set.key}`;
+    const tag = `guest-jj-${set.key}`;
     const served = assetsOf(set.files) as Record<
       string,
       Uint8Array<ArrayBuffer>

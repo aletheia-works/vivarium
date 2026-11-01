@@ -32,8 +32,8 @@ const ALLOW = parseAllowlist({
 function setup(elf?: string) {
   const set = sampleSet(elf);
   const identity: SetIdentity = {
-    tool: 'biome',
-    binary: 'biome',
+    tool: 'jj',
+    binary: 'jj',
     key: set.key,
     ...SOURCE,
   };
@@ -45,7 +45,7 @@ function setup(elf?: string) {
     rollbackPlan: 'point the recipe back to the previous key',
     approvalReference: 'chat 2026-10-17',
   });
-  return { set, identity, plan, tag: releaseTag('biome', set.key) };
+  return { set, identity, plan, tag: releaseTag('jj', set.key) };
 }
 
 describe('publishSet', () => {
@@ -63,7 +63,7 @@ describe('publishSet', () => {
     expect(result.status).toBe('published');
     expect(api.writes).toEqual([
       `create ${tag}`,
-      'upload biome',
+      'upload jj',
       'upload build-info.json',
       'upload catalog.json',
       'upload LICENSE',
@@ -108,7 +108,7 @@ describe('publishSet', () => {
     const { set, identity, plan, tag } = setup();
     const removed = parseAllowlist({
       schemaVersion: 1,
-      repositories: ['https://github.com/jambalaya56562/biome'],
+      repositories: ['https://github.com/marukome0743/jj'],
     });
     for (const published of [false, true]) {
       const api = new FakeGitHub();
@@ -174,7 +174,7 @@ describe('publishSet', () => {
     const api = new FakeGitHub();
     api.addPublished(tag, {
       ...assetsOf(set.files),
-      biome: new TextEncoder().encode('\x7fELF-tampered'),
+      jj: new TextEncoder().encode('\x7fELF-tampered'),
     });
     expect(
       await errorCode(
@@ -271,7 +271,7 @@ describe('createGitHubApi', () => {
         return new Response('bytes');
       },
     });
-    const bytes = await api.downloadAsset({ id: 7, name: 'biome' }, 10);
+    const bytes = await api.downloadAsset({ id: 7, name: 'jj' }, 10);
     expect(new TextDecoder().decode(bytes)).toBe('bytes');
     expect(
       (calls[0]?.init.headers as Record<string, string> | undefined)
@@ -308,7 +308,7 @@ describe('createGitHubApi requests', () => {
               id: 3,
               tag_name: 'guest-x',
               draft: true,
-              assets: [{ id: 4, name: 'biome' }],
+              assets: [{ id: 4, name: 'jj' }],
             },
           ]);
         if (url.endsWith('/releases') && init.method === 'POST')
@@ -319,7 +319,7 @@ describe('createGitHubApi requests', () => {
             assets: [],
           });
         if (url.startsWith('https://uploads.github.com/'))
-          return Response.json({ id: 6, name: 'biome' });
+          return Response.json({ id: 6, name: 'jj' });
         if (init.method === 'DELETE')
           return new Response(null, { status: 204 });
         return Response.json({});
@@ -329,7 +329,7 @@ describe('createGitHubApi requests', () => {
       id: 3,
       tag: 'guest-x',
       draft: true,
-      assets: [{ id: 4, name: 'biome' }],
+      assets: [{ id: 4, name: 'jj' }],
     });
     expect(await api.findRelease('guest-missing')).toBeNull();
     const draft = await api.createDraft('guest-y', 'guest-y', 'body');
@@ -341,8 +341,8 @@ describe('createGitHubApi requests', () => {
       ),
     ).toMatchObject({ draft: true, make_latest: 'false' });
     expect(
-      await api.uploadAsset(draft, 'biome', new TextEncoder().encode('elf')),
-    ).toEqual({ id: 6, name: 'biome' });
+      await api.uploadAsset(draft, 'jj', new TextEncoder().encode('elf')),
+    ).toEqual({ id: 6, name: 'jj' });
     expect(
       calls.find((call) => call.url.startsWith('https://uploads.github.com/'))
         ?.body,
@@ -396,7 +396,7 @@ describe('createGitHubApi requests', () => {
             total_count: pages.jobs,
             jobs: [
               {
-                name: 'build biome',
+                name: 'build jj',
                 status: 'completed',
                 conclusion: 'success',
                 id: 3,
@@ -449,7 +449,7 @@ describe('createGitHubApi requests', () => {
     });
     expect(await api.runJobs(9)).toEqual([
       {
-        name: 'build biome',
+        name: 'build jj',
         status: 'completed',
         conclusion: 'success',
         steps: [

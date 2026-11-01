@@ -7,8 +7,8 @@ import {
 import { buildKey, canonicalJson, keyDependencies } from '../../src/key.ts';
 
 export const SOURCE = {
-  repository: 'https://github.com/biomejs/biome',
-  commit: '2405c7620169bd0719166af09a8d89cc76fb37fb',
+  repository: 'https://github.com/jj-vcs/jj',
+  commit: 'b5c61830e73eccb3f7f79661c0915681fdc00dd3',
 };
 const encoder = new TextEncoder();
 
@@ -20,7 +20,7 @@ export function sampleSet(
   const license = encoder.encode('MIT License\n');
   const notices = encoder.encode('# Third-party notices\n');
   const partial = {
-    tool: 'biome',
+    tool: 'jj',
     repository: SOURCE.repository,
     commit: SOURCE.commit,
     target: 'x86_64-unknown-linux-musl' as const,
@@ -54,7 +54,7 @@ export function sampleSet(
     buildInfo,
     buildInfoBytes,
     elf,
-    `https://github.com/aletheia-works/vivarium/releases/download/guest-biome-${key}/biome`,
+    `https://github.com/aletheia-works/vivarium/releases/download/guest-jj-${key}/jj`,
   );
   return {
     key,
@@ -65,13 +65,13 @@ export function sampleSet(
       license,
       notices,
     },
-    expected: { buildKey: key, tool: 'biome', ...SOURCE },
+    expected: { buildKey: key, tool: 'jj', ...SOURCE },
   };
 }
 
 export function assetsOf(
   files: GuestSet,
-  binary = 'biome',
+  binary = 'jj',
 ): Record<string, Uint8Array> {
   return {
     [binary]: files.elf,

@@ -145,7 +145,7 @@ export class FakeGitHub implements GitHubApi {
   jobs = new Map<number, RunJob[]>();
   artifacts = new Map<number, RunArtifact[]>();
 
-  addBuildRun(id: number, tool = 'biome'): WorkflowRunDetail {
+  addBuildRun(id: number, tool = 'jj'): WorkflowRunDetail {
     const run: WorkflowRunDetail = {
       id,
       repository: 'aletheia-works/vivarium',

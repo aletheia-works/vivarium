@@ -126,7 +126,7 @@ describe('fetchLimited', () => {
 
 describe('findPublished', () => {
   function published(set = sampleSet(), assets?: string[], draft = false) {
-    const tag = releaseTag('biome', set.key);
+    const tag = releaseTag('jj', set.key);
     const base = `https://github.com/aletheia-works/vivarium/releases/download/${tag}`;
     return server({
       [`https://api.github.com/repos/aletheia-works/vivarium/releases/tags/${tag}`]:
@@ -150,8 +150,8 @@ describe('findPublished', () => {
     const set = sampleSet();
     const { fetcher } = published(set);
     const result = await findPublished({
-      tool: 'biome',
-      binary: 'biome',
+      tool: 'jj',
+      binary: 'jj',
       key: set.key,
       source: SOURCE,
       fetcher,
@@ -165,8 +165,8 @@ describe('findPublished', () => {
     const { fetcher } = server({});
     expect(
       await findPublished({
-        tool: 'biome',
-        binary: 'biome',
+        tool: 'jj',
+        binary: 'jj',
         key: set.key,
         source: SOURCE,
         fetcher,
@@ -179,8 +179,8 @@ describe('findPublished', () => {
     const { fetcher } = published(set, undefined, true);
     expect(
       await findPublished({
-        tool: 'biome',
-        binary: 'biome',
+        tool: 'jj',
+        binary: 'jj',
         key: set.key,
         source: SOURCE,
         fetcher,
@@ -190,12 +190,12 @@ describe('findPublished', () => {
 
   test('marks the key unusable when the published set is incomplete or fails verification', async () => {
     const set = sampleSet();
-    const incomplete = published(set, ['biome', 'build-info.json']);
+    const incomplete = published(set, ['jj', 'build-info.json']);
     expect(
       await errorCode(
         findPublished({
-          tool: 'biome',
-          binary: 'biome',
+          tool: 'jj',
+          binary: 'jj',
           key: set.key,
           source: SOURCE,
           fetcher: incomplete.fetcher,
@@ -203,15 +203,15 @@ describe('findPublished', () => {
       ),
     ).toBe('UNUSABLE_KEY');
     const threeFiles = published(set, [
-      'biome',
+      'jj',
       'build-info.json',
       'catalog.json',
     ]);
     expect(
       await errorCode(
         findPublished({
-          tool: 'biome',
-          binary: 'biome',
+          tool: 'jj',
+          binary: 'jj',
           key: set.key,
           source: SOURCE,
           fetcher: threeFiles.fetcher,
@@ -225,8 +225,8 @@ describe('findPublished', () => {
     expect(
       await errorCode(
         findPublished({
-          tool: 'biome',
-          binary: 'biome',
+          tool: 'jj',
+          binary: 'jj',
           key: set.key,
           source: SOURCE,
           fetcher: otherNotices.fetcher,
@@ -243,8 +243,8 @@ describe('findPublished', () => {
     expect(
       await errorCode(
         findPublished({
-          tool: 'biome',
-          binary: 'biome',
+          tool: 'jj',
+          binary: 'jj',
           key: set.key,
           source: SOURCE,
           fetcher: tampered.fetcher,
@@ -254,10 +254,8 @@ describe('findPublished', () => {
   });
 
   test('needs the full key for the tag', () => {
-    expect(() => releaseTag('biome', 'abc')).toThrow(BuildError);
-    expect(releaseTag('biome', 'a'.repeat(64))).toBe(
-      `guest-biome-${'a'.repeat(64)}`,
-    );
+    expect(() => releaseTag('jj', 'abc')).toThrow(BuildError);
+    expect(releaseTag('jj', 'a'.repeat(64))).toBe(`guest-jj-${'a'.repeat(64)}`);
   });
 });
 

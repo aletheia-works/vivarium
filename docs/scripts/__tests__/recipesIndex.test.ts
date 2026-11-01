@@ -94,13 +94,13 @@ function accepted(commit: string, seed: string) {
 function guest(role: string, overrides: Record<string, unknown> = {}) {
   return {
     role,
-    tool: 'biome',
+    tool: 'jj',
     repository:
       role === 'fix'
-        ? 'https://github.com/jambalaya56562/biome'
-        : 'https://github.com/biomejs/biome',
+        ? 'https://github.com/marukome0743/jj'
+        : 'https://github.com/jj-vcs/jj',
     commit: role === 'fix' ? FIX_COMMIT : BASELINE_COMMIT,
-    fixture: 'biome-migrate-prettier-override',
+    fixture: 'jj-10189',
     reference: { branch: role === 'fix' ? 'fix/branch' : 'main' },
     ...overrides,
   };
@@ -179,7 +179,7 @@ describe('formicarium recipe guests (BR1.1–BR1.4, BR1.7, BR1.8)', () => {
       rejection(
         formicariumMeta([guest('baseline')], {
           fix_candidate: {
-            repository: 'jambalaya56562/biome',
+            repository: 'marukome0743/jj',
             branch: 'fix/branch',
             commit: FIX_COMMIT,
           },

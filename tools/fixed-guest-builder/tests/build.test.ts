@@ -468,7 +468,7 @@ describe('parseToolsConfig', () => {
     const shipped = await Bun.file(
       new URL('../tools.json', import.meta.url),
     ).json();
-    expect(parseToolsConfig(shipped).tools.biome?.binary).toBe('biome');
+    expect(parseToolsConfig(shipped).tools.jj?.binary).toBe('jj');
     expect(() =>
       parseToolsConfig({
         ...shipped,
