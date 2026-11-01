@@ -1,5 +1,6 @@
 import asyncio
 import ssl
+import sys
 
 LISTEN = ("127.0.0.1", 1465)
 MAILPIT = ("127.0.0.1", 1025)
@@ -22,9 +23,12 @@ async def handle(client_reader: asyncio.StreamReader, client_writer: asyncio.Str
     except OSError:
         client_writer.close()
         return
-    await asyncio.gather(
+    results = await asyncio.gather(
         pipe(client_reader, writer), pipe(reader, client_writer), return_exceptions=True
     )
+    for result in results:
+        if isinstance(result, Exception):
+            print(f"smtps: {result!r}", file=sys.stderr, flush=True)
 
 
 async def main() -> None:
