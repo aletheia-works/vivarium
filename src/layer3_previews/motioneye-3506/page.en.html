@@ -1,0 +1,23 @@
+<template data-slot="title">motionEye #3506 — a manual detection change outlasts the schedule</template>
+
+<template data-slot="h1">motionEye #3506 — a manual detection change outlasts the schedule</template>
+
+<template data-slot="lede">
+  With a working schedule, motionEye used to undo a manual pause or
+  start of motion detection within 10 seconds. The pull request keeps
+  the manual state until the schedule itself changes.
+</template>
+
+<template data-slot="check">
+  <ol>
+    <li>Sign in as <code>admin</code> with the password <code>password</code>.</li>
+    <li>Open a camera's settings. Under <strong>Motion Detection</strong>, turn on
+      <strong>Motion detection toggle button</strong>. Turn on
+      <strong>Working Schedule</strong>, set every day to 00:00–23:59, choose
+      <strong>During Working Schedule</strong>, and apply.</li>
+    <li>Pause motion detection with the camera's detection button.</li>
+    <li>Wait 30 seconds. With the pull request the camera stays paused,
+      and the button offers to start detection; without it, detection
+      is active again.</li>
+  </ol>
+</template>

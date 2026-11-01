@@ -59,11 +59,7 @@ const STRINGS: Record<Lang, Strings> = {
     open: 'Open ↗',
     source: 'Source',
     layerName: (layer) =>
-      layer === 1
-        ? 'L1 · WASM'
-        : layer === 2
-          ? 'L2 · Docker'
-          : 'L3 · Third way',
+      layer === 1 ? 'L1 · WASM' : layer === 2 ? 'L2 · Docker' : 'L3 · Preview',
     unknownLanguage: 'unknown',
   },
   ja: {
@@ -79,7 +75,11 @@ const STRINGS: Record<Lang, Strings> = {
     open: '開く ↗',
     source: 'ソース',
     layerName: (layer) =>
-      layer === 1 ? 'L1 · WASM' : layer === 2 ? 'L2 · Docker' : 'L3 · 第三の道',
+      layer === 1
+        ? 'L1 · WASM'
+        : layer === 2
+          ? 'L2 · Docker'
+          : 'L3 · プレビュー',
     unknownLanguage: '未指定',
   },
 };

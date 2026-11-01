@@ -388,7 +388,7 @@ conflate "which layer does this problem fit" with "which library do we use."
 
 A recipe in any layer must let a reader on an ordinary machine
 reproduce and check the result — the bar `rr` failed; a preview needs
-only a browser. Layer 3 previews are not in the recipes index yet. See `src/layer{1,2,3}_*/README.md` for the per-layer catalogue
+only a browser. See `src/layer{1,2,3}_*/README.md` for the per-layer catalogue
 model.
 
 ## 6. When in doubt

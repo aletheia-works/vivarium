@@ -82,11 +82,7 @@ const STRINGS: Record<Lang, Strings> = {
     homepage: 'Homepage ↗',
     upstream: 'Upstream ↗',
     layerName: (layer) =>
-      layer === 1
-        ? 'L1 · WASM'
-        : layer === 2
-          ? 'L2 · Docker'
-          : 'L3 · Third way',
+      layer === 1 ? 'L1 · WASM' : layer === 2 ? 'L2 · Docker' : 'L3 · Preview',
     issueLabel: 'Issue',
     titleLabel: 'Title',
     layerLabel: 'Layer',
@@ -105,7 +101,11 @@ const STRINGS: Record<Lang, Strings> = {
     homepage: 'ホームページ ↗',
     upstream: 'アップストリーム ↗',
     layerName: (layer) =>
-      layer === 1 ? 'L1 · WASM' : layer === 2 ? 'L2 · Docker' : 'L3 · 第三の道',
+      layer === 1
+        ? 'L1 · WASM'
+        : layer === 2
+          ? 'L2 · Docker'
+          : 'L3 · プレビュー',
     issueLabel: 'Issue',
     titleLabel: 'タイトル',
     layerLabel: 'レイヤー',

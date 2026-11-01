@@ -53,7 +53,7 @@
             2,
             3
           ],
-          "description": "The reproduction's runtime layer. 1 = WASM in-browser. 2 = Docker (visitor runs `docker run`). 3 = third way, for reproductions Layers 1 and 2 cannot reach. No recipe uses it today."
+          "description": "The reproduction's runtime layer. 1 = WASM in-browser. 2 = Docker (visitor runs `docker run`). 3 = live preview: an upstream pull request's whole application, built at one commit and run in the cloud (src/layer3_previews). The 2026-11-01 revision gave 3 this meaning; no entry used it before."
         },
         "project": {
           "type": "string",
@@ -63,7 +63,7 @@
         "issue": {
           "type": "integer",
           "minimum": 0,
-          "description": "Upstream issue number, parsed from the slug's trailing digits when the slug matches '<project>-<digits>'. Recipes with no upstream issue tracker entry use 0."
+          "description": "Upstream issue number, parsed from the slug's trailing digits when the slug matches '<project>-<digits>'. A Layer 3 preview's slug ends in its pull request number instead, so its issue is the one the pull request fixes, from the recipe's preview.json. Recipes with no upstream issue tracker entry use 0."
         },
         "title": {
           "type": "string",
@@ -73,17 +73,22 @@
         "page_url": {
           "type": "string",
           "format": "uri",
-          "description": "Live reproduction page URL on GitHub Pages. Layer 1: a WASM-in-browser page that produces a verdict client-side. Layer 2 / 3: a docker-run instructions page that loads the verdict.json snapshot."
+          "description": "Live reproduction page URL on GitHub Pages. Layer 1: a WASM-in-browser page that produces a verdict client-side. Layer 2: a docker-run instructions page that loads the verdict.json snapshot. Layer 3: a page describing the preview and how to check it; the preview's own link carries a key and is shared on the upstream pull request, not here."
         },
         "page_url_ja": {
           "type": "string",
           "format": "uri",
           "description": "Japanese rendering of the same reproduction page, under the site's /ja/ tree. Present only when the recipe actually ships a translation (src/layer*/<slug>/i18n.ja.json); its absence means no Japanese page exists, so a consumer must not derive this URL by inserting /ja/ into page_url. Added in the 2026-09-02 revision; v1 consumers ignore it."
         },
+        "pull": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Optional. Layer 3 only: the upstream pull request the preview runs, from the recipe's preview.json. Added in the 2026-11-01 revision; v1 consumers ignore it."
+        },
         "verdict_url": {
           "type": "string",
           "format": "uri",
-          "description": "URL of the deployed verdict.json snapshot. Layer 2 / 3 only; Layer 1 verdicts are produced live in-page and have no static snapshot. See https://aletheia-works.github.io/vivarium/spec/contract-v1#verdict-snapshot-file-verdictjson."
+          "description": "URL of the deployed verdict.json snapshot. Layer 2 only; Layer 1 verdicts are produced live in-page and have no static snapshot. See https://aletheia-works.github.io/vivarium/spec/contract-v1#verdict-snapshot-file-verdictjson."
         },
         "source_url": {
           "type": "string",

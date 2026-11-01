@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "language": "python",
+  "severity": "bug",
+  "tags": [
+    "motioneye",
+    "motion-detection",
+    "working-schedule"
+  ]
+}
