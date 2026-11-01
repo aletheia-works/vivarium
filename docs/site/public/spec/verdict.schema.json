@@ -44,7 +44,7 @@
     },
     "stdout": {
       "type": "string",
-      "description": "Full stdout of the recorded run, or the page-specific JSON-encoded output the recipe writes to stdout. Length is unbounded by the schema; pages should keep this reasonable for page-load size."
+      "description": "Full stdout of the run, or the page-specific JSON-encoded output the recipe writes to stdout. Length is unbounded by the schema; pages should keep this reasonable for page-load size."
     },
     "stderr_tail": {
       "type": "string",

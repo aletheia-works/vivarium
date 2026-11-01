@@ -242,8 +242,7 @@ were already present at the snapshot's top level and are reused as-is.
 
 The snapshot is written *after* the in-container reproducer
 finishes. There is no captured `"pending"` snapshot — by the time
-CI or the maintainer is writing the file, the run has already
-settled. A `"pending"` value would mean a writer bug.
+the file is written, the run has already settled. A `"pending"` value would mean a writer bug.
 
 ## Versioning
 
