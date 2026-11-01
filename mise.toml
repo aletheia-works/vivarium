@@ -216,7 +216,6 @@ run = "tofu plan"
 
 [tasks."infra:apply"]
 description = "Apply OpenTofu changes (PRODUCTION — review the plan first)"
-depends = ["infra:init"]
 dir = "infra/github"
 run = "tofu apply"
 
