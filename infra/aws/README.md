@@ -29,7 +29,10 @@ and installs it, so the zip carries no file modes that matter. The image adds:
 
 - `fakecam.py`: four cameras on `127.0.0.1:9900`, each a moving square and the
   time, so the preview needs no real camera.
-- `seed.py`: adds the four cameras to motionEye's configuration at build time.
+- `seed.py`: adds the four cameras to motionEye's configuration at build time,
+  and sets the `admin` and `user` passwords to `password`. motionEye applies no
+  setting while either password is empty, and the preview's key already keeps
+  strangers out, so the passwords only spare the reviewer that step.
 - `hooks.py`: the lifecycle hooks on port 9000. `ready` and `validate` answer
   200 only once motionEye serves a picture from every camera, so Lambda
   snapshots a running motionEye with frames flowing.
@@ -79,11 +82,6 @@ may write only `vivarium-*` buckets, functions, MicroVM images, roles and
 `vivarium-workload-boundary` permissions boundary. It cannot change the
 boundary or the CI roles: they are made by hand from [bootstrap/](bootstrap/),
 and a plan reports any change made to them since.
-
-## Open points
-
-- motionEye's admin and user passwords are empty. motionEye applies no
-  setting until both are set.
 
 ## Setup (日本語)
 

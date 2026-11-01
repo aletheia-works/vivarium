@@ -27,7 +27,8 @@ Each preview is a [Lambda MicroVM](https://docs.aws.amazon.com/lambda/latest/dg/
 image built from the pull request's commit, behind a public function URL.
 The link carries a key; without it the URL answers 403. The MicroVM starts
 on the first request, suspends after five minutes without traffic, and
-resumes on the next one. [`infra/aws/`](../../infra/aws/README.md) has the
+resumes on the next one. motionEye previews sign in as `admin` with the
+password `password`. [`infra/aws/`](../../infra/aws/README.md) has the
 details, the cost, and how to read a preview's link.
 
 A reader needs only a browser, so a preview clears the bar this layer has
