@@ -11,18 +11,21 @@ closing it, so `preview.json` has `issue: 0`.
 
 1. Open the preview link. The login dialog shows a **Remember me** switch,
    on, below **Username** and **Password**.
-2. In a normal window, sign in as `admin` with the password `password` and
+2. Hover over the **Remember me** row: a **?** appears at its end. Hover over
+   the **?**: its tooltip says the switch keeps you logged in after the browser
+   is closed, for 24 hours as the admin and 30 days as the surveillance user.
+3. In a normal window, sign in as `admin` with the password `password` and
    **Remember me** left on. Quit the browser completely, start it again and
    open the link: you are still signed in. A private window would not show
    this, because closing it drops every cookie.
-3. In a private window, turn **Remember me** off and sign in. Close every
+4. In a private window, turn **Remember me** off and sign in. Close every
    private window, open a new one and open the link again: the login dialog is
    back.
-4. Optionally, look at the `user` cookie in the browser's developer tools:
+5. Optionally, look at the `user` cookie in the browser's developer tools:
    with the switch off it expires with the session, with it on about a day
    later.
 
 A browser that restores the previous session can keep session cookies across
-a restart, which is why step 3 uses a private window. The preview's own
+a restart, which is why step 4 uses a private window. The preview's own
 access cookie lasts a day and is set again whenever the link is opened, so it
 does not affect either step.
