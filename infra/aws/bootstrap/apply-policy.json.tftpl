@@ -1,0 +1,107 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "WriteOwnBuckets",
+      "Effect": "Allow",
+      "Action": "s3:*",
+      "Resource": [
+        "arn:aws:s3:::vivarium-*",
+        "arn:aws:s3:::vivarium-*/*"
+      ]
+    },
+    {
+      "Sid": "WriteOwnFunctionsAndImages",
+      "Effect": "Allow",
+      "Action": "lambda:*",
+      "Resource": [
+        "arn:aws:lambda:*:${account_id}:function:vivarium-*",
+        "arn:aws:lambda:*:${account_id}:microvm-image:vivarium-*"
+      ]
+    },
+    {
+      "Sid": "WriteThroughCloudControl",
+      "Effect": "Allow",
+      "Action": [
+        "cloudformation:CreateResource",
+        "cloudformation:UpdateResource",
+        "cloudformation:DeleteResource",
+        "cloudformation:CancelResourceRequest"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "CreateOwnMicrovmImages",
+      "Effect": "Allow",
+      "Action": ["lambda:CreateMicrovmImage", "lambda:TagResource"],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestTag/Project": "vivarium"
+        }
+      }
+    },
+    {
+      "Sid": "PassLambdaNetworkConnectors",
+      "Effect": "Allow",
+      "Action": "lambda:PassNetworkConnector",
+      "Resource": "*"
+    },
+    {
+      "Sid": "WriteOwnLogGroups",
+      "Effect": "Allow",
+      "Action": "logs:*",
+      "Resource": [
+        "arn:aws:logs:*:${account_id}:log-group:/vivarium/*",
+        "arn:aws:logs:*:${account_id}:log-group:/vivarium/*:*"
+      ]
+    },
+    {
+      "Sid": "CreateWorkloadRolesInsideTheBoundary",
+      "Effect": "Allow",
+      "Action": [
+        "iam:CreateRole",
+        "iam:PutRolePermissionsBoundary",
+        "iam:PutRolePolicy",
+        "iam:AttachRolePolicy"
+      ],
+      "Resource": "arn:aws:iam::${account_id}:role/vivarium-*",
+      "Condition": {
+        "StringEquals": {
+          "iam:PermissionsBoundary": "arn:aws:iam::${account_id}:policy/vivarium-workload-boundary"
+        }
+      }
+    },
+    {
+      "Sid": "ManageWorkloadRoles",
+      "Effect": "Allow",
+      "Action": [
+        "iam:DeleteRole",
+        "iam:UpdateRole",
+        "iam:UpdateAssumeRolePolicy",
+        "iam:TagRole",
+        "iam:UntagRole",
+        "iam:DeleteRolePolicy",
+        "iam:DetachRolePolicy"
+      ],
+      "Resource": "arn:aws:iam::${account_id}:role/vivarium-*"
+    },
+    {
+      "Sid": "PassWorkloadRolesToLambda",
+      "Effect": "Allow",
+      "Action": "iam:PassRole",
+      "Resource": "arn:aws:iam::${account_id}:role/vivarium-*",
+      "Condition": {
+        "StringEquals": {
+          "iam:PassedToService": "lambda.amazonaws.com"
+        }
+      }
+    },
+    {
+      "Sid": "KeepTheBoundary",
+      "Effect": "Deny",
+      "Action": "iam:DeleteRolePermissionsBoundary",
+      "Resource": "arn:aws:iam::${account_id}:role/vivarium-*"
+    }
+  ]
+}

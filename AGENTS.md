@@ -283,9 +283,10 @@ or release tags.
 **Run the matching CI checks locally before pushing.** On a PR,
 `ci.yml` runs only the test workflows its changed files need:
 [`scripts/ci-changes.py`](scripts/ci-changes.py) maps each path to the
-docs, repro, MCP and fixed-guest-builder groups. An unknown path, a
+docs, repro, MCP, fixed-guest-builder and previews groups. An unknown path, a
 change to `ci.yml`, the classifier, `mise.toml` or `mise-tasks/`, and
-the release PR run every group; prose and `infra/` run none.
+the release PR run every group; prose and `infra/` other than the
+preview proxy run none.
 Polyglot lint runs on every PR. The ruleset requires `ci-required`,
 which passes only when each needed group passed and each other one was
 skipped, plus Polyglot lint and Commitlint. A push to `main` still runs
@@ -303,6 +304,7 @@ job-for-job:
 | `lint:all`          | `test-lint-check.yml`     |
 | `ci:mcp`            | `test-mcp.yml`            |
 | `ci:fixed-guest-builder` | `test-fixed-guest-builder.yml` |
+| `ci:previews`       | `test-previews.yml`       |
 | `ci:all`            | union of the above        |
 
 The Bun install step in local `ci:*` tasks is supplied by the automatic

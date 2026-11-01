@@ -53,7 +53,7 @@ function fakeApi(items = []) {
 
 function sink() {
   const sent = [];
-  const from = (responseStream, metadata) => {
+  const from = (_responseStream, metadata) => {
     const stream = new PassThrough();
     const response = { body: text(stream) };
     sent.push(response);
@@ -63,15 +63,17 @@ function sink() {
       response.metadata ??= metadata;
       return write(chunk, ...rest);
     };
-    stream.end = (callback) => end(typeof callback === 'function' ? callback : undefined);
+    stream.end = (callback) =>
+      end(typeof callback === 'function' ? callback : undefined);
     return stream;
   };
   return { sent, from };
 }
 
 function admitted(overrides = {}) {
-  const cookie = admit(CONFIG, { rawQueryString: 'vivarium-key=open-sesame' })
-    .cookie.split(';')[0];
+  const cookie = admit(CONFIG, {
+    rawQueryString: 'vivarium-key=open-sesame',
+  }).cookie.split(';')[0];
   return {
     rawPath: '/',
     rawQueryString: '',
@@ -115,12 +117,18 @@ test('the key link sets the cookie and redirects without the key', () => {
   });
   assert.equal(admission.status, 302);
   assert.equal(admission.location, '/config?a=1');
-  assert.match(admission.cookie, /^vivarium-preview=[0-9a-f]{64}; .*HttpOnly; Secure/);
+  assert.match(
+    admission.cookie,
+    /^vivarium-preview=[0-9a-f]{64}; .*HttpOnly; Secure/,
+  );
   assert.doesNotMatch(admission.cookie, /open-sesame/);
 });
 
 test('a wrong key, a wrong cookie and no cookie are refused', () => {
-  assert.equal(admit(CONFIG, { rawQueryString: 'vivarium-key=nope' }).status, 403);
+  assert.equal(
+    admit(CONFIG, { rawQueryString: 'vivarium-key=nope' }).status,
+    403,
+  );
   assert.equal(admit(CONFIG, { cookies: ['vivarium-preview=00'] }).status, 403);
   assert.equal(admit(CONFIG, {}).status, 403);
   assert.equal(admit(CONFIG, admitted()).status, 200);
@@ -140,7 +148,11 @@ test('with no live MicroVM one is started with a per-minute client token', async
   const api = fakeApi([{ microvmId: 'mvm-old', state: 'TERMINATED' }]);
   const now = Date.parse('2026-11-01T09:30:15Z');
   const microvm = await previewMicrovm(CONFIG, api, { now: () => now + 0 });
-  assert.deepEqual(api.calls, ['list', 'run preview-202611010930', 'get mvm-new']);
+  assert.deepEqual(api.calls, [
+    'list',
+    'run preview-202611010930',
+    'get mvm-new',
+  ]);
   assert.equal(microvm.state, 'RUNNING');
 });
 
@@ -167,7 +179,10 @@ test('the upstream request carries the token, the port and only motionEye cookie
     body: Buffer.from('{"a":1}').toString('base64'),
     isBase64Encoded: true,
   });
-  const { url, init } = upstreamRequest(event, { endpoint: 'mvm.example', token: 'jwe' });
+  const { url, init } = upstreamRequest(event, {
+    endpoint: 'mvm.example',
+    token: 'jwe',
+  });
   assert.equal(url, 'https://mvm.example/config/1/set/?_=1');
   assert.deepEqual(init.headers, {
     'content-type': 'application/json',
@@ -201,10 +216,18 @@ test('the proxy streams motionEye back and reuses its connection', async () => {
   const seen = [];
   const fetchImpl = async (url, init) => {
     seen.push([url, init.headers['x-aws-proxy-auth']]);
-    return new Response('jpeg bytes', { headers: { 'content-type': 'image/jpeg' } });
+    return new Response('jpeg bytes', {
+      headers: { 'content-type': 'image/jpeg' },
+    });
   };
   const { sent, from } = sink();
-  const respond = createProxy({ config: CONFIG, api, fetchImpl, from, now: () => 0 });
+  const respond = createProxy({
+    config: CONFIG,
+    api,
+    fetchImpl,
+    from,
+    now: () => 0,
+  });
   await respond(admitted({ rawPath: '/picture/1/current/' }), {});
   await respond(admitted({ rawPath: '/picture/2/current/' }), {});
   assert.deepEqual(seen, [
@@ -225,7 +248,13 @@ test('a failed fetch drops the connection and retries once with a new one', asyn
     return new Response('ok');
   };
   const { sent, from } = sink();
-  const respond = createProxy({ config: CONFIG, api, fetchImpl, from, now: () => 0 });
+  const respond = createProxy({
+    config: CONFIG,
+    api,
+    fetchImpl,
+    from,
+    now: () => 0,
+  });
   await respond(admitted(), {});
   assert.equal(calls, 2);
   assert.equal(api.calls.filter((c) => c.startsWith('token')).length, 2);
@@ -244,7 +273,10 @@ test('the proxy refuses without the cookie and answers 503 when motionEye stays 
     from,
     now: () => 0,
   });
-  await respond({ rawPath: '/', requestContext: { http: { method: 'GET' } } }, {});
+  await respond(
+    { rawPath: '/', requestContext: { http: { method: 'GET' } } },
+    {},
+  );
   assert.equal(sent[0].metadata.statusCode, 403);
   assert.deepEqual(api.calls, []);
   await respond(admitted(), {});
@@ -262,7 +294,10 @@ test('bodyless answers still send their status, the key redirect and an upstream
     from,
     now: () => 0,
   });
-  await respond({ rawPath: '/', rawQueryString: 'vivarium-key=open-sesame' }, {});
+  await respond(
+    { rawPath: '/', rawQueryString: 'vivarium-key=open-sesame' },
+    {},
+  );
   assert.equal(sent[0].metadata.statusCode, 302);
   assert.equal(sent[0].metadata.headers.location, '/');
   await respond(admitted(), {});
@@ -309,7 +344,10 @@ test('a write is not sent twice after a failed fetch', async () => {
     from,
     now: () => 0,
   });
-  await respond(admitted({ requestContext: { http: { method: 'POST' } }, body: '{}' }), {});
+  await respond(
+    admitted({ requestContext: { http: { method: 'POST' } }, body: '{}' }),
+    {},
+  );
   assert.equal(calls, 1);
   assert.equal(sent[0].metadata.statusCode, 503);
 });

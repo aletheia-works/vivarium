@@ -36,6 +36,15 @@ resource "github_repository_pages" "this" {
   build_type = "workflow"
 }
 
+resource "github_repository_environment" "aws_apply" {
+  repository  = github_repository.this.name
+  environment = "aws-apply"
+  deployment_branch_policy {
+    protected_branches     = true
+    custom_branch_policies = false
+  }
+}
+
 locals {
   required_checks = [
     "check / Commitlint",

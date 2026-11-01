@@ -219,27 +219,15 @@ description = "Apply OpenTofu changes (PRODUCTION — review the plan first)"
 dir = "infra/github"
 run = "tofu apply"
 
-[tasks."infra:aws:init"]
-description = "Initialise OpenTofu working directory for infra/aws"
-dir = "infra/aws"
-run = "tofu init"
+[tasks."infra:aws:check"]
+description = "Biome — format check + lint of the preview proxy (read-only)"
+dir = "docs"
+run = "bunx --bun biome check ../infra/aws/preview-proxy"
 
-[tasks."infra:aws:plan"]
-description = "Plan the preview environments in infra/aws"
-depends = ["infra:aws:init"]
-dir = "infra/aws"
-run = "tofu plan"
-
-[tasks."infra:aws:apply"]
-description = "Apply the preview environments in infra/aws (review the plan first)"
-depends = ["infra:aws:init"]
-dir = "infra/aws"
-run = "tofu apply"
-
-[tasks."infra:aws:links"]
-description = "Print each preview's link with its key"
-dir = "infra/aws"
-run = "tofu output -json preview_links"
+[tasks."infra:aws:check:fix"]
+description = "Biome — apply format + safe fixes to the preview proxy (in-place)"
+dir = "docs"
+run = "bunx --bun biome check --write ../infra/aws/preview-proxy"
 
 [tasks."ci:docs"]
 description = "Local docs build sanity (mirrors the build step inside test-docs.yml's E2E lane)"
@@ -280,9 +268,13 @@ description = "Local equivalent of test-fixed-guest-builder.yml"
 dir = "tools/fixed-guest-builder"
 run = "bun run typecheck && bun run test"
 
+[tasks."ci:previews"]
+description = "Local equivalent of test-previews.yml"
+run = "node --test infra/aws/preview-proxy/index.test.mjs"
+
 [tasks."ci:all"]
 description = "Run all local CI tasks (docs + lint + mcp + repro + docs-unit + docs-e2e)"
-depends = ["ci:docs", "lint:all", "ci:mcp", "ci:repro", "ci:docs-unit", "ci:docs-e2e", "ci:fixed-guest-builder"]
+depends = ["ci:docs", "lint:all", "ci:mcp", "ci:repro", "ci:docs-unit", "ci:docs-e2e", "ci:fixed-guest-builder", "ci:previews"]
 
 [tasks."php:check"]
 description = "Mago — PHP format check + lint (read-only)"
@@ -318,7 +310,7 @@ run = "rumdl fmt ."
 
 [tasks."lint:all"]
 description = "Run all formatters/linters (read-only) — Biome + Mago + Ruff + Tombi + rumdl + Rust + ShellCheck + actionlint + OpenTofu"
-depends = ["docs:check", "php:check", "python:check", "toml:check", "markdown:check", "rust:check", "shell:check", "actions:check", "fixed-guest-builder:check", "infra:check"]
+depends = ["docs:check", "php:check", "python:check", "toml:check", "markdown:check", "rust:check", "shell:check", "actions:check", "fixed-guest-builder:check", "infra:check", "infra:aws:check"]
 
 [tasks."lint:all:fix"]
 description = "Apply all autofixes (in-place) across every language"
@@ -331,4 +323,5 @@ depends = [
   "rust:check:fix",
   "fixed-guest-builder:check:fix",
   "infra:check:fix",
+  "infra:aws:check:fix",
 ]
