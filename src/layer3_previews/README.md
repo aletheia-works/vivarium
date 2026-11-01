@@ -46,6 +46,7 @@ The image template is [`infra/aws/motioneye/`](../../infra/aws/motioneye/).
 | Cameras | Four network cameras, seeded at build time, reading `http://127.0.0.1:9900/cam1.jpg` to `cam4.jpg`. |
 | Fake camera server | `fakecam.py` on `127.0.0.1:9900`. Each frame is a coloured 640×480 JPEG with a moving square and the time, so motion detection has something to see. |
 | Sign-in | `admin` and the normal user both have the password `password`, seeded at build time. |
+| Media | `media.py` gives every camera two days of recordings at build time, in the two days before the build: three pictures a day and one five-second H.264 MP4, in motion's `%Y-%m-%d/%H-%M-%S` layout under `/var/lib/motioneye/Camera<n>/`. The media browser, previews, downloads and playback have something to show without waiting for motion. |
 | Mail | [mailpit](https://mailpit.axllent.org) 1.33.0 catches e-mail and never relays it. SMTP on `127.0.0.1:1025` takes plain text or STARTTLS; `smtps.py` on `127.0.0.1:1465` takes implicit TLS and passes the session to it. Both accept any user name and password, and the certificate is self-signed for `localhost` and `127.0.0.1`. Its web UI is at `/mailpit/` of the preview link, on port 8025. |
 | Lifecycle hooks | `hooks.py` on port 9000. Lambda calls `ready` and `validate` while it builds the image; both sign in and expect a JPEG from every camera, and expect mailpit's UI and an SMTP greeting on 1025 and 1465. |
 

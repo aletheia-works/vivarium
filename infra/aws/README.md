@@ -45,6 +45,8 @@ and installs it, so the zip carries no file modes that matter. The image adds:
   `/mailpit/`. It is never given a relay, so mail stays in the MicroVM.
 - `smtps.py`: implicit TLS on `127.0.0.1:1465`, passed on to mailpit, for
   motionEye's TLS mode.
+- `media.py`: at build time, two days of pictures and short MP4 movies per
+  camera, dated before the build, so the media browser is not empty.
 
 The image is ARM_64 with 1 GB.
 
