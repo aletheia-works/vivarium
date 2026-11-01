@@ -37,8 +37,9 @@ and installs it, so the zip carries no file modes that matter. The image adds:
   strangers out, so the passwords only spare the reviewer that step.
 - `hooks.py`: the lifecycle hooks on port 9000. `ready` and `validate` answer
   200 only once motionEye serves a picture from every camera and mailpit
-  answers on its UI, on 1025 and over TLS on 1465, so Lambda snapshots a
-  running motionEye with frames flowing and mail being caught.
+  answers on its UI, on 1025 and over TLS on 1465, and the upload targets
+  and listing answer, so Lambda snapshots a running motionEye with frames
+  flowing, mail being caught and uploads being received.
 - mailpit 1.33.0, downloaded at build time and checked against its SHA-256,
   with a self-signed certificate made at build time. It takes SMTP on
   `127.0.0.1:1025` (plain or STARTTLS) and serves its UI on port 8025 under
@@ -47,6 +48,13 @@ and installs it, so the zip carries no file modes that matter. The image adds:
   motionEye's TLS mode.
 - `media.py`: at build time, two days of pictures and short MP4 movies per
   camera, dated before the build, so the media browser is not empty.
+- Upload targets for motionEye's upload and network-share settings: vsftpd
+  (FTP and explicit FTPS, `vsftpd.conf`), OpenSSH for SFTP only
+  (`sshd.conf`) and Samba (`smb.conf`), all on `127.0.0.1` with the user
+  `preview` and the password `password`, plus `uploads.py`, which lists what
+  arrived at `/uploads/` on port 8030. They are installed after
+  `motioneye_init`, because they pull in systemd and `motioneye_init` stops
+  before writing motionEye's configuration when it finds systemd.
 
 The image is ARM_64 with 1 GB.
 
@@ -62,8 +70,9 @@ function URL with `RESPONSE_STREAM`.
   The MicroVM suspends after 5 minutes without traffic, resumes on the next
   request, and ends after an hour suspended or 8 hours in all.
 - **Forwarding**: the proxy sends paths under `/mailpit/` to mailpit on port
-  8025 and everything else to motionEye on 8765, and streams the answers back
-  to the browser. Its MicroVM token allows only those two ports.
+  8025, paths under `/uploads/` to the upload listing on 8030 and everything
+  else to motionEye on 8765, and streams the answers back to the browser. Its
+  MicroVM token allows only those three ports.
 
 Before applying, the apply workflow ends the MicroVMs of every image the plan
 deletes or replaces ([preview-proxy/end-microvms.mjs](preview-proxy/end-microvms.mjs)):

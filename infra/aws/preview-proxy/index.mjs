@@ -4,8 +4,10 @@ import { pipeline } from 'node:stream/promises';
 
 const API_VERSION = '2025-09-09';
 const MOTIONEYE_PORT = 8765;
-const MAILPIT_PORT = 8025;
-const MAILPIT_PATH = '/mailpit';
+const ROUTES = [
+  { path: '/mailpit', port: 8025 },
+  { path: '/uploads', port: 8030 },
+];
 const LIVE_STATES = new Set(['PENDING', 'RUNNING', 'SUSPENDING', 'SUSPENDED']);
 const START_TIMEOUT_MS = 30_000;
 const POLL_MS = 1_000;
@@ -196,7 +198,11 @@ export async function connect(config, api, options = {}) {
     throw new Error(`the preview MicroVM is ${microvm.state}`);
   const { authToken } = await api.token(microvm.microvmId, {
     expirationInMinutes: config.tokenMinutes,
-    allowedPorts: [{ port: MOTIONEYE_PORT }, { port: MAILPIT_PORT }],
+    allowedPorts: [MOTIONEYE_PORT, ...ROUTES.map((r) => r.port)].map(
+      (port) => ({
+        port,
+      }),
+    ),
   });
   const token = authToken?.['X-aws-proxy-auth'];
   if (!token) throw new Error('Lambda returned no token');
@@ -241,9 +247,10 @@ export function admit(config, event) {
 }
 
 function upstreamPort(path) {
-  return path === MAILPIT_PATH || path.startsWith(`${MAILPIT_PATH}/`)
-    ? MAILPIT_PORT
-    : MOTIONEYE_PORT;
+  const route = ROUTES.find(
+    (r) => path === r.path || path.startsWith(`${r.path}/`),
+  );
+  return route ? route.port : MOTIONEYE_PORT;
 }
 
 export function upstreamRequest(event, connection) {

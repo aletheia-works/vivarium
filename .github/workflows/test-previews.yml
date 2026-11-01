@@ -8,7 +8,7 @@ permissions:
 
 jobs:
   test:
-    name: Test the preview proxy
+    name: Test the preview proxy and image scripts
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -16,12 +16,12 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Setup mise (node)
+      - name: Setup mise (node, uv)
         uses: jdx/mise-action@6612f0ef07ed2a736cd1e00a94a065522dd41195 # v5.2.5
         with:
           install: true
           cache: true
           experimental: true
-          install_args: node
+          install_args: node uv
 
       - run: mise run ci:previews

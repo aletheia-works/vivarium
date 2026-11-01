@@ -297,7 +297,7 @@ On a PR, `ci.yml` runs only the test workflows its changed files need:
 docs, repro, MCP, fixed-guest-builder and previews groups. An unknown path, a
 change to `ci.yml`, the classifier, `mise.toml` or `mise-tasks/`, and
 the release PR run every group; prose and `infra/` other than the
-preview proxy run none.
+preview proxy and the preview image scripts run none.
 Polyglot lint runs on every PR. The ruleset requires `ci-required`,
 which passes only when each needed group passed and each other one was
 skipped, plus Polyglot lint and Commitlint. A push to `main` still runs

@@ -51,7 +51,14 @@ RULES = (
         ),
     ),
     ({"mcp"}, ("packages/mcp-server/", ".github/workflows/test-mcp.yml")),
-    ({"previews"}, ("infra/aws/preview-proxy/", ".github/workflows/test-previews.yml")),
+    (
+        {"previews"},
+        (
+            "infra/aws/preview-proxy/",
+            "infra/aws/motioneye/",
+            ".github/workflows/test-previews.yml",
+        ),
+    ),
     (
         {"docs"},
         (
@@ -155,6 +162,8 @@ def self_test():
         ".github/workflows/test-mcp.yml": {"mcp"},
         "infra/aws/preview-proxy/index.mjs": {"previews"},
         "infra/aws/preview-proxy/end-microvms.mjs": {"previews"},
+        "infra/aws/motioneye/uploads.py": {"previews"},
+        "infra/aws/motioneye/Dockerfile.tftpl": {"previews"},
         ".github/workflows/test-previews.yml": {"previews"},
         "docs/site/en/roadmap.mdx": {"docs"},
         "docs/site/_components/LiveExamples.tsx": {"docs"},
