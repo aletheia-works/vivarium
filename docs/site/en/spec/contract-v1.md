@@ -24,10 +24,11 @@ How those are exposed depends on the layer:
 |---|---|---|
 | **Layer 1** (WASM) | DOM + JS globals, set by the page's reproduction code as it runs | n/a — verdict is live |
 | **Layer 2** (Docker) | DOM + JS globals, lifted from `verdict.json` at page load | `verdict.json` shipped alongside the recipe |
-| **Layer 3** (third way) | DOM + JS globals, lifted from `verdict.json` at page load | `verdict.json` committed by the maintainer |
 
-The DOM/global surface is therefore the same across all three
-layers; the file snapshot only exists for Layer 2 and Layer 3.
+The DOM/global surface is therefore the same across both layers;
+the file snapshot only exists for Layer 2. Layer 3 pages describe
+live previews of upstream pull requests, which produce no verdict,
+so they are not Contract pages.
 
 ## Verdict semantics
 
@@ -43,7 +44,7 @@ worth investigating — the page is no longer demonstrating what its
 README claims.
 
 `pending` is the default state until the reproduction code (Layer 1)
-or the verdict-snapshot fetch (Layer 2 / 3) settles.
+or the verdict-snapshot fetch (Layer 2) settles.
 
 ## In-page surface (all layers)
 
@@ -88,7 +89,7 @@ A divergence between them indicates a broken page; tests cross-check
 both.
 
 `__VIVARIUM_RESULT__` is the structured envelope (next section). It
-is set when the page produces (Layer 1) or fetches (Layer 2 / 3) its
+is set when the page produces (Layer 1) or fetches (Layer 2) its
 verdict.
 
 ### DOM evidence element (optional, revision 2+)
@@ -109,9 +110,9 @@ reproduction-comparison UI to render side-by-side panels.
 
 | `[data-evidence]` value | content | typical source |
 |---|---|---|
-| `stdout` | captured standard output | Layer 1: assertion-related text the reproduction emits. Layer 2 / 3: lifted from `verdict.json#stdout`. |
-| `stderr` | captured standard error (may be tail-truncated) | Layer 1: emitted by the reproduction. Layer 2 / 3: lifted from `verdict.json#stderr_tail` (renamed at the lift boundary; see [Verdict snapshot file](#verdict-snapshot-file-verdictjson) below). |
-| `exit-code` | integer exit code, or empty | Layer 2 / 3: `verdict.json#exit_code`. Layer 1: omitted (browser-side has no process exit code). |
+| `stdout` | captured standard output | Layer 1: assertion-related text the reproduction emits. Layer 2: lifted from `verdict.json#stdout`. |
+| `stderr` | captured standard error (may be tail-truncated) | Layer 1: emitted by the reproduction. Layer 2: lifted from `verdict.json#stderr_tail` (renamed at the lift boundary; see [Verdict snapshot file](#verdict-snapshot-file-verdictjson) below). |
+| `exit-code` | integer exit code, or empty | Layer 2: `verdict.json#exit_code`. Layer 1: omitted (browser-side has no process exit code). |
 | `duration-ms` | wall-clock duration in milliseconds | mirrors `__VIVARIUM_RESULT__.timing.duration_ms`. |
 
 A page MAY emit a subset of these children. Consumers MUST treat a
@@ -121,7 +122,7 @@ default rendering; presentation components style and reveal it.
 
 The `stdout` / `stderr` text MAY be truncated to bound page size; by
 convention, Layer 1 helpers cap each at 4 KiB to match the existing
-Layer 2 / 3 `verdict.json#stderr_tail` truncation rule.
+Layer 2 `verdict.json#stderr_tail` truncation rule.
 
 ## Result envelope (`VivariumResultV1`)
 
@@ -151,7 +152,7 @@ interface VivariumResultV1 {
   evidence?: {
     stdout?: string;       // may be truncated to 4 KiB
     stderr?: string;       // may be truncated to 4 KiB
-    exit_code?: number | null;  // null on Layer 1; integer on Layer 2 / 3
+    exit_code?: number | null;  // null on Layer 1; integer on Layer 2
     // duration_ms is NOT duplicated here — see `timing.duration_ms`
   };
 }
@@ -168,7 +169,7 @@ the gallery are:
 | `"php-wasm"` | PHP over WebAssembly |
 | `"rust-wasi"` | Rust compiled to `wasm32-wasip1` |
 | `"formicarium"` | a static Linux build of a CLI run by [formicarium](https://www.npmjs.com/package/@aletheia-works/formicarium) in a Worker of the page, driven through its terminal; `runtime.version` is the pinned npm version |
-| `"docker-snapshot"` | Layer 2 / Layer 3 page rendering a CI- or maintainer-captured `verdict.json` |
+| `"docker-snapshot"` | Layer 2 page rendering a CI-captured `verdict.json` |
 
 External reproductions are free to add new values; downstream
 tooling treats `runtime.name` as opaque.
@@ -189,9 +190,8 @@ reading the DOM see the same data through two paths.
 
 ## Verdict snapshot file (`verdict.json`)
 
-For Layer 2 and Layer 3, the gallery page does not run the
-reproduction live — it consumes a snapshot file that CI (Layer 2)
-or the maintainer (Layer 3) wrote at the time of the last
+For Layer 2, the gallery page does not run the reproduction live —
+it consumes a snapshot file that CI wrote at the time of the last
 reproduction attempt. The file is fetched on page load and lifted
 into the in-page surface (`__VIVARIUM_RESULT__` etc.) by
 [`src/layer2_docker/_layer2-shared/layer2.js`](https://github.com/aletheia-works/vivarium/blob/main/src/layer2_docker/_layer2-shared/layer2.js).
@@ -205,9 +205,9 @@ Field summary:
 |---|---|---|---|
 | `contract` | `"v1"` (literal) | ✅ | version literal — always `"v1"` for this spec |
 | `verdict` | `"reproduced"` \| `"unreproduced"` | ✅ | snapshot verdict (no `"pending"` — the snapshot is post-run) |
-| `exit_code` | integer | ✅ | recorded program / replay exit code |
+| `exit_code` | integer | ✅ | exit code of the in-container reproducer |
 | `image_tag` | string | ✅ | docker image tag the snapshot was captured against |
-| `image_digest` | string | ✅ | docker image identifier — CI-pushed captures use the registry RepoDigest, Layer 3 local-build captures use the local image ID (`docker inspect --format='{{.Id}}'`); empty string allowed when neither is available |
+| `image_digest` | string | ✅ | docker image identifier — CI-pushed captures use the registry RepoDigest, local-build captures use the local image ID (`docker inspect --format='{{.Id}}'`); empty string allowed when neither is available |
 | `captured_at` | ISO-8601 string | ✅ | wall-clock timestamp of the snapshot |
 | `stdout` | string | ✅ | full stdout, or page-specific JSON-encoded output |
 | `stderr_tail` | string | ✅ | last 4 KiB of stderr, truncated front-back to fit |
@@ -218,7 +218,7 @@ a `verdict.json`; its verdict is live in-page.
 
 ### Lift to the in-page evidence surface (revision 2+)
 
-Layer 2 / Layer 3 pages do not duplicate the snapshot's evidence
+Layer 2 pages do not duplicate the snapshot's evidence
 fields into their own DOM at write time — the snapshot is the source.
 The gallery loader lifts them into the [DOM evidence element](#dom-evidence-element-optional-revision-2)
 on page load:
@@ -240,7 +240,7 @@ were already present at the snapshot's top level and are reused as-is.
 
 ### Why no `"pending"` in the file
 
-The snapshot is written *after* the recorded program / replay
+The snapshot is written *after* the in-container reproducer
 finishes. There is no captured `"pending"` snapshot — by the time
 CI or the maintainer is writing the file, the run has already
 settled. A `"pending"` value would mean a writer bug.
@@ -312,8 +312,8 @@ pages stay conformant unchanged.
 
 | Revision | Date | Change |
 |---|---|---|
-| 1 | 2026-04-28 (locked) | Initial published surface: `<meta>`, `#verdict[data-verdict]`, JS globals, `VivariumResultV1` envelope, Layer 2/3 `verdict.json` snapshot. |
-| 2 | 2026-04-30 | Optional `#evidence` DOM container with `[data-evidence]` children (`stdout`, `stderr`, `exit-code`, `duration-ms`) and matching `__VIVARIUM_RESULT__.evidence` envelope field. Layer 2/3 lift renames `verdict.json#stderr_tail` → `evidence.stderr` at the lift boundary; `verdict.schema.json` is unchanged. |
+| 1 | 2026-04-28 (locked) | Initial published surface: `<meta>`, `#verdict[data-verdict]`, JS globals, `VivariumResultV1` envelope, Layer 2 `verdict.json` snapshot. |
+| 2 | 2026-04-30 | Optional `#evidence` DOM container with `[data-evidence]` children (`stdout`, `stderr`, `exit-code`, `duration-ms`) and matching `__VIVARIUM_RESULT__.evidence` envelope field. Layer 2 lift renames `verdict.json#stderr_tail` → `evidence.stderr` at the lift boundary; `verdict.schema.json` is unchanged. |
 | 3 | 2026-05-05 | Verdict enum values renamed: `"pass"` → `"reproduced"`, `"fail"` → `"unreproduced"` (`"pending"` unchanged). The contract version literal stays `v1`. `verdict.schema.json` enum is updated; old snapshots that still carry `"pass"` / `"fail"` no longer validate. CSS class names on `#verdict` and the `data-verdict` attribute follow the same rename. |
 | 4 | 2026-10-19 | The `runtime.name` table lists `"formicarium"`. `runtime.name` stays free-form, so the surface and the version literal are unchanged. |
 

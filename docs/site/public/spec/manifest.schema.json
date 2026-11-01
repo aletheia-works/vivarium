@@ -18,8 +18,8 @@
     },
     "layer": {
       "type": "integer",
-      "enum": [1, 2, 3],
-      "description": "The reproduction's runtime layer. 1 = WASM in-browser. 2 = Docker (visitor runs `docker run`). 3 = third way, for reproductions Layers 1 and 2 cannot reach. Vivarium ships no Layer 3 recipe today; the layer remains valid for third-party manifests."
+      "enum": [1, 2],
+      "description": "The reproduction's runtime layer. 1 = WASM in-browser. 2 = Docker (visitor runs `docker run`)."
     },
     "title": {
       "type": "string",
@@ -90,45 +90,18 @@
           "description": "Expected verdict at this manifest's last review. 'reproduced' = bug reproduces; 'unreproduced' = bug does not reproduce (sentinel). Renamed from 'pass'/'fail' in Contract v1 Revision 3 (ADR-0029)."
         }
       }
-    },
-    "layer3": {
-      "type": "object",
-      "required": ["image"],
-      "additionalProperties": false,
-      "properties": {
-        "image": {
-          "type": "string",
-          "minLength": 1,
-          "description": "Container image reference for a Layer 3 reproduction. Visitors run `docker run <image>` and the entrypoint produces the verdict. Vivarium ships no Layer 3 recipe today, so any runtime requirements beyond a container runtime are the manifest author's to document."
-        },
-        "dockerfile": {
-          "type": "string",
-          "minLength": 1,
-          "description": "Optional repo-relative path to the Dockerfile that produces the image. Informational only."
-        },
-        "expected_verdict": {
-          "enum": ["reproduced", "unreproduced"],
-          "default": "reproduced",
-          "description": "Expected verdict at this manifest's last review. Renamed from 'pass'/'fail' in Contract v1 Revision 3 (ADR-0029)."
-        }
-      }
     }
   },
   "oneOf": [
     {
       "properties": { "layer": { "const": 1 } },
       "required": ["layer1"],
-      "not": { "anyOf": [{ "required": ["layer2"] }, { "required": ["layer3"] }] }
+      "not": { "required": ["layer2"] }
     },
     {
       "properties": { "layer": { "const": 2 } },
       "required": ["layer2"],
-      "not": { "anyOf": [{ "required": ["layer1"] }, { "required": ["layer3"] }] }
-    },
-    {
-      "properties": { "layer": { "const": 3 } },
-      "required": ["layer3"],
-      "not": { "anyOf": [{ "required": ["layer1"] }, { "required": ["layer2"] }] }
+      "not": { "required": ["layer1"] }
     }
   ],
   "examples": [

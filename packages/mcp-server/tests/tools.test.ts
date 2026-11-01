@@ -1646,7 +1646,7 @@ describe('prepare_fix_candidate', () => {
     if (!r.ok) assert.match(r.error, /not found in the recipe catalogue/);
   });
 
-  it('rejects non-Layer-1 slugs (Layers 2/3 use verify_branch_fix instead)', async () => {
+  it('rejects non-Layer-1 slugs (Layer 2 uses verify_branch_fix instead)', async () => {
     const r = await prepareFixCandidate({
       slug: 'bash-local-shadows-exit',
       fork_url: 'https://github.com/example-fork/bash',

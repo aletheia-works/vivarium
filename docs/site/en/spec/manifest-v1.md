@@ -65,7 +65,7 @@ pattern.
 |---|---|---|
 | `manifest` | string | Must equal `"v1"`. Version literal. |
 | `slug` | string | Kebab-case `^[a-z0-9]+(-[a-z0-9]+)*$`. Identifier for the recipe; matches the `aletheia-works/vivarium` directory-name convention. |
-| `layer` | integer | One of `1`, `2`, `3`. Selects which layer-specific table is required (see below). |
+| `layer` | integer | `1` or `2`. Selects which layer-specific table is required (see below). |
 | `[bug]` | table | Required. Describes the upstream bug. |
 | `[bug] project` | string | Upstream project name (e.g. `"bash"`). |
 | `[bug] issue` | integer | Issue number. Use `0` if no upstream issue tracker entry exists. |
@@ -80,8 +80,10 @@ pattern.
 
 ## Layer-specific tables
 
-Exactly one of `[layer1]`, `[layer2]`, `[layer3]` is required —
-must match the top-level `layer` integer.
+Exactly one of `[layer1]`, `[layer2]` is required —
+must match the top-level `layer` integer. Vivarium's Layer 3 live
+previews are added in the Vivarium repository, not declared by a
+manifest.
 
 ### `[layer1]` — WASM in-browser
 
@@ -114,30 +116,6 @@ expected_verdict = "reproduced"
 | `image` | ✅ | Container image reference. Visitors run `docker run <image>`. The default CMD is the recipe's reproduction script; exit code 0 = bug reproduces (`reproduced`). |
 | `dockerfile` | ⏳ | Repo-relative path to the source Dockerfile. Informational — Vivarium does not build from it. |
 | `expected_verdict` | ⏳ | Default `"reproduced"`. |
-
-### `[layer3]` — Third-way catalogue
-
-```toml
-layer = 3
-
-[layer3]
-image = "ghcr.io/example-org/example-recipe:latest"
-dockerfile = "./Dockerfile"
-expected_verdict = "reproduced"
-```
-
-| Field | Required | Notes |
-|---|---|---|
-| `image` | ✅ | Container image reference. |
-| `dockerfile` | ⏳ | Informational. |
-| `expected_verdict` | ⏳ | Default `"reproduced"`. |
-
-> ⚠️ Layer 3 is reserved for reproductions that Layers 1 and 2
-> cannot reach — deterministic simulation, microVM snapshots and
-> the like. Vivarium ships none today, so this table is a
-> declaration rather than a described practice. A consumer
-> encountering a third-party `layer = 3` manifest should expect the
-> runtime requirements to be documented by that manifest's author.
 
 ## Verdict semantics
 
@@ -175,7 +153,7 @@ A manifest conforms to Vivarium Manifest v1 when:
 2. It validates against
    [`manifest.schema.json`](https://github.com/aletheia-works/vivarium/blob/main/docs/site/public/spec/manifest.schema.json)
    after a TOML→JSON conversion.
-3. Exactly one of `[layer1]` / `[layer2]` / `[layer3]` is
+3. Exactly one of `[layer1]` / `[layer2]` is
    present, matching the top-level `layer` integer.
 4. The pointed-at artefact (page or image) actually exists and
    produces a Contract-v1-conformant verdict at run time.
@@ -185,7 +163,7 @@ clause 4 is per-recipe.
 
 ## Reference implementations
 
-The `aletheia-works/vivarium` repo ships three example manifests
+The `aletheia-works/vivarium` repo ships two example manifests
 under
 [`src/external_examples/`](https://github.com/aletheia-works/vivarium/tree/main/src/external_examples)
 — one per layer — all pointing at vivarium's own publicly-deployed

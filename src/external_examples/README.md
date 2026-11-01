@@ -25,10 +25,10 @@ per layer that ships recipes:
 | [`layer1-pandas-56679/`](./layer1-pandas-56679/.vivarium/manifest.toml) | 1 (WASM) | `https://aletheia-works.github.io/vivarium/repro/pandas/56679/` |
 | [`layer2-bash-local-shadows-exit/`](./layer2-bash-local-shadows-exit/.vivarium/manifest.toml) | 2 (Docker) | `ghcr.io/aletheia-works/vivarium-bash-local-shadows-exit:latest` |
 
-The manifest spec still defines a `[layer3]` table, but Layer 3's
-recipes are live previews ([`src/layer3_previews/`](../layer3_previews/)),
-which a manifest does not describe, so there is no example for it here and
-the schema's layer-3 branch is unexercised by CI.
+A manifest covers Layers 1 and 2. Layer 3's recipes are live previews
+([`src/layer3_previews/`](../layer3_previews/)), which are added in this
+repository rather than declared by a manifest, so there is no example for
+them here.
 
 CI (`repro-regression.yml`) validates every
 `src/external_examples/*/.vivarium/manifest.toml` against

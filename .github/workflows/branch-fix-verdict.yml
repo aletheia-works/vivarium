@@ -99,7 +99,7 @@ jobs:
               '.recipes[] | select(.slug == $s) | .verdict_url' \
               docs/site/public/api/recipes.json)"
             if [ -z "$verdict_url" ] || [ "$verdict_url" = "null" ]; then
-              echo "::error::Recipe ${slug} has no verdict_url in recipes.json (Layer 1 recipes have no static snapshot; only Layer 2 / 3 do)."
+              echo "::error::Recipe ${slug} has no verdict_url in recipes.json (only Layer 2 recipes have a static snapshot)."
               exit 1
             fi
             url="$verdict_url"

@@ -65,10 +65,9 @@ const LAYER_DIRNAME: Record<Layer, string> = {
   3: 'layer3_previews',
 };
 
-const LAYER_SOURCE: Record<Layer, VerdictSource> = {
+const LAYER_SOURCE: Record<Exclude<Layer, 3>, VerdictSource> = {
   1: 'layer1-headless',
   2: 'layer2-ghcr',
-  3: 'layer3-trace',
 };
 
 export function computeNextAction(

@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://aletheia-works.github.io/vivarium/spec/verdict.schema.json",
   "title": "Vivarium verdict snapshot (contract v1)",
-  "description": "Verdict snapshot file shipped alongside Layer 2 (Docker catalogue) reproduction pages in the Vivarium gallery, and by any Layer 3 recipe that ships one — Vivarium has none today. Layer 1 (WASM in-page) reproductions do not ship this file — their verdict is published live in the page DOM and JS globals. As of Contract v1 Revision 3 (ADR-0029) the verdict enum values are 'reproduced' / 'unreproduced'; older snapshots that still carry 'pass' / 'fail' are no longer accepted by this schema. See https://aletheia-works.github.io/vivarium/spec/contract-v1 for the full contract.",
+  "description": "Verdict snapshot file shipped alongside Layer 2 (Docker catalogue) reproduction pages in the Vivarium gallery. Layer 1 (WASM in-page) reproductions do not ship this file — their verdict is published live in the page DOM and JS globals. As of Contract v1 Revision 3 (ADR-0029) the verdict enum values are 'reproduced' / 'unreproduced'; older snapshots that still carry 'pass' / 'fail' are no longer accepted by this schema. See https://aletheia-works.github.io/vivarium/spec/contract-v1 for the full contract.",
   "type": "object",
   "required": [
     "contract",
@@ -26,16 +26,16 @@
     },
     "exit_code": {
       "type": "integer",
-      "description": "Exit code of the recorded program (Layer 3) or the in-container reproducer (Layer 2) at the time of the snapshot. The contract does not constrain which exit-code value corresponds to which verdict — that is per-recipe and is interpreted alongside the 'verdict' field above."
+      "description": "Exit code of the in-container reproducer at the time of the snapshot. The contract does not constrain which exit-code value corresponds to which verdict — that is per-recipe and is interpreted alongside the 'verdict' field above."
     },
     "image_tag": {
       "type": "string",
       "minLength": 1,
-      "description": "Docker image tag the snapshot was captured against. Typically of the form 'ghcr.io/aletheia-works/vivarium-<slug>:<git-sha>' for CI-pushed images, or '<slug>:dev (local)' for locally-built captures (Layer 3 maintainer-side)."
+      "description": "Docker image tag the snapshot was captured against. Typically of the form 'ghcr.io/aletheia-works/vivarium-<slug>:<git-sha>' for CI-pushed images, or '<slug>:dev (local)' for locally-built captures."
     },
     "image_digest": {
       "type": "string",
-      "description": "Docker image identifier at capture time. CI-pushed captures use the registry RepoDigest ('sha256:…'). Layer 3 maintainer-side local-build captures use the local image ID ('sha256:…' from `docker inspect --format='{{.Id}}'`) since RepoDigests are unavailable for never-pushed images. Empty string is allowed when neither is available."
+      "description": "Docker image identifier at capture time. CI-pushed captures use the registry RepoDigest ('sha256:…'). Local-build captures use the local image ID ('sha256:…' from `docker inspect --format='{{.Id}}'`) since RepoDigests are unavailable for never-pushed images. Empty string is allowed when neither is available."
     },
     "captured_at": {
       "type": "string",

@@ -20,7 +20,7 @@
 
 - Anything needing real OS processes, sockets, or devices → Layer 2.
 - Anything whose repro depends on specific thread/scheduler interleavings
-  or on GDB/rr-style time travel → Layer 3.
+  → Layer 2.
 - Bugs that only manifest at GB+ data scales (WASM memory cap, browser
   tab practicality) → Layer 2.
 

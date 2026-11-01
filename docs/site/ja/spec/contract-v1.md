@@ -19,9 +19,8 @@ Vivarium Contract v1 に準拠するページは以下を公開する:
 |---|---|---|
 | **Layer 1** (WASM) | DOM + JS グローバル。再現コードが実行しながらページによって設定される | なし——verdict はライブ |
 | **Layer 2** (Docker) | DOM + JS グローバル。ページ読み込み時に `verdict.json` からリフト | レシピと同梱される `verdict.json` |
-| **Layer 3** (第三の道) | DOM + JS グローバル。ページ読み込み時に `verdict.json` からリフト | メンテナーがコミットする `verdict.json` |
 
-DOM/グローバルサーフェスは三つのレイヤー全体で同じだ。ファイルスナップショットは Layer 2 と Layer 3 にのみ存在する。
+DOM/グローバルサーフェスは両レイヤーで同じだ。ファイルスナップショットは Layer 2 にのみ存在する。Layer 3 のページは上流の pull request のライブプレビューを説明するもので、verdict を出さないため Contract のページではない。
 
 ## Verdict セマンティクス
 
@@ -34,7 +33,7 @@ DOM/グローバルサーフェスは三つのレイヤー全体で同じだ。�
 どちらの読み方も調査する価値がある——ページはもはや README が主張することを実証していない。
 
 `pending` は再現コード（Layer 1）または verdict スナップショットのフェッチ
-（Layer 2 / 3）が確定するまでのデフォルト状態だ。
+（Layer 2）が確定するまでのデフォルト状態だ。
 
 ## ページ内サーフェス（全レイヤー）
 
@@ -78,7 +77,7 @@ globalThis.__VIVARIUM_RESULT__: VivariumResultV1;  // 以下のエンベロー�
 両者の間に乖離があればページが壊れているサイン。テストは両方をクロスチェックする。
 
 `__VIVARIUM_RESULT__` は構造化エンベロープ（次のセクション）。
-ページが（Layer 1 の場合）verdict を生成するか、（Layer 2 / 3 の場合）フェッチしたときに設定される。
+ページが（Layer 1 の場合）verdict を生成するか、（Layer 2 の場合）フェッチしたときに設定される。
 
 ### DOM evidence 要素（オプション、リビジョン 2+）
 
@@ -97,9 +96,9 @@ v1 コンシューマーは不在を無視する。存在する場合、再現�
 
 | `[data-evidence]` 値 | コンテンツ | 典型的な出所 |
 |---|---|---|
-| `stdout` | キャプチャされた標準出力 | Layer 1: 再現が出力するアサーション関連テキスト。Layer 2 / 3: `verdict.json#stdout` からリフト。 |
-| `stderr` | キャプチャされた標準エラー（末尾切り詰めの場合あり） | Layer 1: 再現が出力。Layer 2 / 3: `verdict.json#stderr_tail` からリフト（リフト境界でリネーム）。 |
-| `exit-code` | 整数の終了コード、または空 | Layer 2 / 3: `verdict.json#exit_code`。Layer 1: 省略（ブラウザ側にプロセス終了コードなし）。 |
+| `stdout` | キャプチャされた標準出力 | Layer 1: 再現が出力するアサーション関連テキスト。Layer 2: `verdict.json#stdout` からリフト。 |
+| `stderr` | キャプチャされた標準エラー（末尾切り詰めの場合あり） | Layer 1: 再現が出力。Layer 2: `verdict.json#stderr_tail` からリフト（リフト境界でリネーム）。 |
+| `exit-code` | 整数の終了コード、または空 | Layer 2: `verdict.json#exit_code`。Layer 1: 省略（ブラウザ側にプロセス終了コードなし）。 |
 | `duration-ms` | ウォールクロック所要時間（ミリ秒） | `__VIVARIUM_RESULT__.timing.duration_ms` をミラー。 |
 
 ページはこれらの子要素の一部のみを出力してよい。コンシューマーは欠損した
@@ -107,7 +106,7 @@ v1 コンシューマーは不在を無視する。存在する場合、再現�
 `hidden` 属性でデフォルトレンダリングでは非表示になる。
 
 `stdout` / `stderr` テキストはページサイズを制限するために切り詰める場合がある。
-規約では Layer 1 ヘルパーは各々を 4 KiB に制限し、既存の Layer 2 / 3
+規約では Layer 1 ヘルパーは各々を 4 KiB に制限し、既存の Layer 2
 `verdict.json#stderr_tail` の切り詰めルールに合わせている。
 
 ## Result エンベロープ (`VivariumResultV1`)
@@ -138,7 +137,7 @@ interface VivariumResultV1 {
   evidence?: {
     stdout?: string;       // 4 KiB に切り詰める場合あり
     stderr?: string;       // 4 KiB に切り詰める場合あり
-    exit_code?: number | null;  // Layer 1 では null。Layer 2 / 3 では整数。
+    exit_code?: number | null;  // Layer 1 では null。Layer 2 では整数。
     // duration_ms はここには重複しない——`timing.duration_ms` 参照
   };
 }
@@ -154,7 +153,7 @@ interface VivariumResultV1 {
 | `"php-wasm"` | WebAssembly 上の PHP |
 | `"rust-wasi"` | `wasm32-wasip1` にコンパイルされた Rust |
 | `"formicarium"` | CLI の静的な Linux ビルドを [formicarium](https://www.npmjs.com/package/@aletheia-works/formicarium) がページの Worker で動かし、そのターミナル経由で操作する。`runtime.version` は固定した npm の版 |
-| `"docker-snapshot"` | CI またはメンテナーがキャプチャした `verdict.json` をレンダリングする Layer 2 / Layer 3 ページ |
+| `"docker-snapshot"` | CI がキャプチャした `verdict.json` をレンダリングする Layer 2 ページ |
 
 外部再現は新しい値を自由に追加できる。ダウンストリームツールは `runtime.name` を
 opaque として扱う。
@@ -171,8 +170,8 @@ regex 再現は `{ matched, expected_match }` を置くかもしれない）。
 
 ## Verdict スナップショットファイル (`verdict.json`)
 
-Layer 2 と Layer 3 では、ギャラリーページは再現をライブ実行しない——
-CI（Layer 2）またはメンテナー（Layer 3）が最後の再現試行時に書いたスナップショットを
+Layer 2 では、ギャラリーページは再現をライブ実行しない——
+CI が最後の再現試行時に書いたスナップショットを
 消費する。ファイルはページ読み込み時にフェッチされ、
 [`src/layer2_docker/_layer2-shared/layer2.js`](https://github.com/aletheia-works/vivarium/blob/main/src/layer2_docker/_layer2-shared/layer2.js)
 によってページ内サーフェス（`__VIVARIUM_RESULT__` など）にリフトされる。
@@ -185,9 +184,9 @@ CI（Layer 2）またはメンテナー（Layer 3）が最後の再現試行時�
 |---|---|---|---|
 | `contract` | `"v1"`（リテラル） | ✅ | バージョンリテラル——この仕様では常に `"v1"` |
 | `verdict` | `"reproduced"` \| `"unreproduced"` | ✅ | スナップショット verdict（`"pending"` はなし——スナップショットは実行後） |
-| `exit_code` | 整数 | ✅ | 記録されたプログラム / replay の終了コード |
+| `exit_code` | 整数 | ✅ | コンテナ内の再現スクリプトの終了コード |
 | `image_tag` | 文字列 | ✅ | スナップショットをキャプチャした docker イメージタグ |
-| `image_digest` | 文字列 | ✅ | docker イメージ識別子。CI プッシュキャプチャはレジストリ RepoDigest を使用し、Layer 3 ローカルビルドキャプチャはローカルイメージ ID を使用する（`docker inspect --format='{{.Id}}'`）。どちらも利用不可の場合は空文字列を許可 |
+| `image_digest` | 文字列 | ✅ | docker イメージ識別子。CI プッシュキャプチャはレジストリ RepoDigest を使用し、ローカルビルドキャプチャはローカルイメージ ID を使用する（`docker inspect --format='{{.Id}}'`）。どちらも利用不可の場合は空文字列を許可 |
 | `captured_at` | ISO-8601 文字列 | ✅ | スナップショットのウォールクロックタイムスタンプ |
 | `stdout` | 文字列 | ✅ | 完全な stdout、またはページ固有の JSON エンコード出力 |
 | `stderr_tail` | 文字列 | ✅ | stderr の最後の 4 KiB、前後に切り詰め |
@@ -197,7 +196,7 @@ Layer 1 は `verdict.json` を出荷しない。その verdict はページ内�
 
 ### ページ内 evidence サーフェスへのリフト（リビジョン 2+）
 
-Layer 2 / Layer 3 ページは書き込み時にスナップショットの evidence フィールドを
+Layer 2 ページは書き込み時にスナップショットの evidence フィールドを
 自身の DOM に複製しない——スナップショットがソースだ。
 ギャラリーローダーがページ読み込み時に [DOM evidence 要素](#dom-evidence-要素オプションリビジョン-2)
 にリフトする:
@@ -218,7 +217,7 @@ Layer 1（再現コードがキャプチャしたいテキストを直接出力�
 
 ### ファイルに `"pending"` がない理由
 
-スナップショットは記録されたプログラム / replay が完了した*後*に書き込まれる。
+スナップショットはコンテナ内の再現スクリプトが完了した*後*に書き込まれる。
 キャプチャされた `"pending"` スナップショットは存在しない——CI またはメンテナーが
 ファイルを書き込む時点ですでに実行は完了している。`"pending"` 値はライターのバグを意味する。
 
@@ -274,8 +273,8 @@ CI はこれらの条項を機械的に強制する——
 
 | リビジョン | 日付 | 変更内容 |
 |---|---|---|
-| 1 | 2026-04-28（ロック） | 初回公開サーフェス: `<meta>`、`#verdict[data-verdict]`、JS グローバル、`VivariumResultV1` エンベロープ、Layer 2/3 `verdict.json` スナップショット。 |
-| 2 | 2026-04-30 | オプションの `#evidence` DOM コンテナ（`stdout`、`stderr`、`exit-code`、`duration-ms` の `[data-evidence]` 子要素）と対応する `__VIVARIUM_RESULT__.evidence` エンベロープフィールド。Layer 2/3 リフトはリフト境界で `verdict.json#stderr_tail` → `evidence.stderr` にリネーム。`verdict.schema.json` は変更なし。 |
+| 1 | 2026-04-28（ロック） | 初回公開サーフェス: `<meta>`、`#verdict[data-verdict]`、JS グローバル、`VivariumResultV1` エンベロープ、Layer 2 `verdict.json` スナップショット。 |
+| 2 | 2026-04-30 | オプションの `#evidence` DOM コンテナ（`stdout`、`stderr`、`exit-code`、`duration-ms` の `[data-evidence]` 子要素）と対応する `__VIVARIUM_RESULT__.evidence` エンベロープフィールド。Layer 2 リフトはリフト境界で `verdict.json#stderr_tail` → `evidence.stderr` にリネーム。`verdict.schema.json` は変更なし。 |
 | 3 | 2026-05-05 | Verdict enum 値をリネーム: `"pass"` → `"reproduced"`、`"fail"` → `"unreproduced"`（`"pending"` は不変）。Contract バージョンリテラルは `v1` のまま。`verdict.schema.json` の enum も更新され、旧値（`"pass"` / `"fail"`）を持つスナップショットはバリデーションを通らなくなる。`#verdict` の CSS クラス名と `data-verdict` 属性値も同じくリネーム。 |
 | 4 | 2026-10-19 | `runtime.name` の表に `"formicarium"` を載せた。`runtime.name` は自由形式のままなので、surface とバージョンリテラルは変わらない。 |
 

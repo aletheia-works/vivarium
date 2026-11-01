@@ -34,8 +34,8 @@ import {
       <dt id="recipe"><strong>レシピ (Recipe)</strong></dt>
       <dd>
         1 つの再現。<code>src/layer{`{1,2,3}`}_*/&lt;slug&gt;/</code>
-        に配置され、実行可能なページ（Layer 1）またはピン留めされたイメージ手順
-        （Layer 2 / 3）として出荷される。1 つのレシピは 1 つのアップストリームバグを対象とする。
+        に配置され、実行可能なページ（Layer 1）、ピン留めされたイメージ手順
+        （Layer 2）、またはライブプレビューのページ（Layer 3）として出荷される。1 つのレシピは 1 つのアップストリームバグを対象とする。
         カタログとはこのリポジトリがホストするすべてのレシピの集合のこと。
       </dd>
 
@@ -75,7 +75,7 @@ import {
       <dd>
         verdict の根拠となるデータ——キャプチャされた stdout / stderr、
         終了コード、所要時間。Layer 1 はページ内に inline で公開し、
-        Layer 2 / 3 は <code>verdict.json</code> 内に同梱する。
+        Layer 2 は <code>verdict.json</code> 内に同梱する。
         Contract v1 rev 2 により、比較ページが「再現するか<em>どうか</em>」
         だけでなく「<em>なぜ</em>」も示せる。
       </dd>

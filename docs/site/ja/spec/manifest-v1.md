@@ -60,7 +60,7 @@ Cargo と pyproject マニフェストも同じパターンを使用する。
 |---|---|---|
 | `manifest` | 文字列 | `"v1"` と等しくなければならない。バージョンリテラル。 |
 | `slug` | 文字列 | ケバブケース `^[a-z0-9]+(-[a-z0-9]+)*$`。レシピの識別子。`aletheia-works/vivarium` のディレクトリ名規約に合わせる。 |
-| `layer` | 整数 | `1`、`2`、`3` のいずれか。必須のレイヤー固有テーブルを選択する（以下参照）。 |
+| `layer` | 整数 | `1` か `2`。必須のレイヤー固有テーブルを選択する（以下参照）。 |
 | `[bug]` | テーブル | 必須。アップストリームバグを記述。 |
 | `[bug] project` | 文字列 | アップストリームプロジェクト名（例: `"bash"`）。 |
 | `[bug] issue` | 整数 | Issue 番号。アップストリーム Issue トラッカーのエントリが存在しない場合は `0` を使用。 |
@@ -75,8 +75,9 @@ Cargo と pyproject マニフェストも同じパターンを使用する。
 
 ## レイヤー固有テーブル
 
-`[layer1]`、`[layer2]`、`[layer3]` のいずれか一つが必須——
-トップレベルの `layer` 整数と一致しなければならない。
+`[layer1]`、`[layer2]` のいずれか一つが必須——
+トップレベルの `layer` 整数と一致しなければならない。Vivarium の Layer 3 の
+ライブプレビューは Vivarium リポジトリに追加するもので、マニフェストでは宣言しない。
 
 ### `[layer1]` — ブラウザ内 WASM
 
@@ -109,30 +110,6 @@ expected_verdict = "reproduced"
 | `image` | ✅ | コンテナイメージ参照。訪問者は `docker run <image>` を実行する。デフォルト CMD はレシピの再現スクリプト。終了コード 0 = バグが再現される（`reproduced`）。 |
 | `dockerfile` | ⏳ | ソース Dockerfile へのリポジトリ相対パス。情報提供のみ——Vivarium はここからビルドしない。 |
 | `expected_verdict` | ⏳ | デフォルト `"reproduced"`。 |
-
-### `[layer3]` — 第三の道カタログ
-
-```toml
-layer = 3
-
-[layer3]
-image = "ghcr.io/example-org/example-recipe:latest"
-dockerfile = "./Dockerfile"
-expected_verdict = "reproduced"
-```
-
-| フィールド | 必須 | 注記 |
-|---|---|---|
-| `image` | ✅ | コンテナイメージ参照。 |
-| `dockerfile` | ⏳ | 情報提供のみ。 |
-| `expected_verdict` | ⏳ | デフォルト `"reproduced"`。 |
-
-> ⚠️ Layer 3 は Layer 1 / 2 が届かない再現——決定論的シミュレーション、
-> microVM スナップショットなど——のための枠。Vivarium は現在ひとつも
-> 出荷していないので、この表は実践の記述ではなく宣言に留まる。
-> 第三者の `layer = 3` マニフェストに出会った consumer は、
-> ランタイム要件がそのマニフェストの作者によって文書化されていることを
-> 期待してよい。
 
 ## Verdict セマンティクス
 
@@ -168,7 +145,7 @@ v2 JSON Schema の兄弟ファイル、別の ADR が必要。
 2. TOML→JSON 変換後に
    [`manifest.schema.json`](https://github.com/aletheia-works/vivarium/blob/main/docs/site/public/spec/manifest.schema.json)
    を検証パスする。
-3. `[layer1]` / `[layer2]` / `[layer3]` のうちちょうど一つが存在し、
+3. `[layer1]` / `[layer2]` のうちちょうど一つが存在し、
    トップレベルの `layer` 整数と一致する。
 4. 指定されたアーティファクト（ページまたはイメージ）が実際に存在し、
    実行時に Contract-v1 準拠の verdict を生成する。
@@ -179,7 +156,7 @@ v2 JSON Schema の兄弟ファイル、別の ADR が必要。
 
 `aletheia-works/vivarium` リポジトリは
 [`src/external_examples/`](https://github.com/aletheia-works/vivarium/tree/main/src/external_examples)
-以下にレイヤーごとに 3 つのサンプルマニフェストを出荷している——すべて Vivarium 自身の
+以下にレイヤーごとに 2 つのサンプルマニフェストを出荷している——すべて Vivarium 自身の
 公開デプロイページと GHCR イメージを指しているため、形だけ有効なのではなく実際に
 実行可能なものとして書かれている。
 
