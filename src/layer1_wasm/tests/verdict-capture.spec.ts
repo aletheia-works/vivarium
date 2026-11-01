@@ -59,7 +59,7 @@ function loadLayer1Recipes(): Layer1Recipe[] {
 function timeoutForRuntime(name: ExpectedRuntimeName): number {
   if (name === "browser") return 10_000;
   if (name === "pyodide") return 120_000;
-  if (name === "formicarium") return 600_000;
+  if (name === "formicarium") return 300_000;
   return 75_000;
 }
 
