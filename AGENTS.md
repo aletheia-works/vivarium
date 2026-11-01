@@ -280,8 +280,19 @@ or release tags.
 
 ### 4.11 Pre-PR local validation
 
-**Run the matching CI checks locally before pushing.** On a PR,
-`ci.yml` runs only the test workflows its changed files need:
+**Run the quick checks locally; leave the long lanes to CI.** Before
+pushing, run the unit tests, typecheck and lint for what you changed
+(`lint:all`, `ci:docs-unit`, `ci:mcp`, `ci:fixed-guest-builder`,
+`ci:previews`, `repro:typecheck`, a recipe's own `bun test`), and the
+docs build (`ci:docs`) when the docs site changed. Do not run the
+Playwright lanes (`ci:repro`, `ci:docs-e2e`, `ci:all`) or a guest
+build through `fixed-guest-build.yml` locally unless the human asks:
+they take tens of minutes to hours, and the PR's CI runs them on every
+browser anyway. Push, read the CI result, and fix what fails. Rebase
+onto the latest `main` right before each push, the first and every
+fix, and do not restart a local run because `main` moved meanwhile.
+
+On a PR, `ci.yml` runs only the test workflows its changed files need:
 [`scripts/ci-changes.py`](scripts/ci-changes.py) maps each path to the
 docs, repro, MCP, fixed-guest-builder and previews groups. An unknown path, a
 change to `ci.yml`, the classifier, `mise.toml` or `mise-tasks/`, and
@@ -317,8 +328,8 @@ tasks (`docs:check:fix`, `python:check:fix`, etc.); CI's
 commits any residual fixes back to the branch as a signed commit (a PR
 from a fork needs "Allow edits by maintainers").
 
-If a `ci:*` task is missing for the workflow you triggered, transcribe
-its `run:` steps from the YAML and execute them by hand. **When CI
+If a quick check has no `ci:*` task, transcribe its `run:` steps from
+the workflow YAML and execute them by hand. **When CI
 catches something local missed**, extend the matching `ci:*` task —
 local and CI should converge on the same surface in both directions.
 
