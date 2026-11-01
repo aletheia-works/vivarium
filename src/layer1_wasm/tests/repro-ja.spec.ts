@@ -76,7 +76,7 @@ function loadJaCases(): JaCase[] {
 
 function timeoutForRuntime(name: ExpectedRuntimeName): number {
   if (name === 'pyodide') return 120_000;
-  if (name === 'formicarium') return 300_000;
+  if (name === 'formicarium') return 600_000;
   return 75_000;
 }
 

@@ -40,10 +40,7 @@ result independent of how long each command takes. Both terminals run:
 
 ```sh
 jj git init
-jj config set --repo user.name Vivarium
-jj config set --repo user.email vivarium@example.invalid
 jj config set --repo debug.commit-timestamp 2001-02-03T04:05:06+07:00
-jj describe -m A
 jj new -m B
 jj describe @- -m NEW
 jj undo

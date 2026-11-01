@@ -6,10 +6,7 @@ export const COMMIT_TIMESTAMP = '2001-02-03T04:05:06+07:00';
 
 export const COMMANDS = [
   'jj git init',
-  'jj config set --repo user.name Vivarium',
-  'jj config set --repo user.email vivarium@example.invalid',
   `jj config set --repo debug.commit-timestamp ${COMMIT_TIMESTAMP}`,
-  'jj describe -m A',
   'jj new -m B',
   'jj describe @- -m NEW',
   'jj undo',

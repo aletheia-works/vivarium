@@ -71,7 +71,7 @@ describe('runSession', () => {
       `jj config set --repo debug.commit-timestamp ${COMMIT_TIMESTAMP}`,
     );
     expect(pin).toBeGreaterThan(COMMANDS.indexOf('jj git init'));
-    expect(pin).toBeLessThan(COMMANDS.indexOf('jj describe -m A'));
+    expect(pin).toBeLessThan(COMMANDS.indexOf('jj new -m B'));
     expect(COMMANDS.at(-1)).toBe('jj undo');
   });
 

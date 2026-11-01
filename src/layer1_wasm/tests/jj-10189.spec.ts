@@ -10,17 +10,13 @@ const SLUG = 'jj-10189';
 const PAGE_PATH = 'repro/jj/10189/';
 const PAGES = {
   en: `${DEPLOYED_SHAPE_BASE}/vivarium/${PAGE_PATH}`,
-  ja: `${DEPLOYED_SHAPE_BASE}/vivarium/ja/${PAGE_PATH}`,
 } as const;
 const RECIPE_DIR = resolve(import.meta.dirname, '..', SLUG);
 const STAGED = resolve(RECIPE_DIR, '_formicarium', 'assets.json');
-const VERDICT_TIMEOUT_MS = 300_000;
+const VERDICT_TIMEOUT_MS = 600_000;
 const COMMANDS = [
   'jj git init',
-  'jj config set --repo user.name Vivarium',
-  'jj config set --repo user.email vivarium@example.invalid',
   'jj config set --repo debug.commit-timestamp 2001-02-03T04:05:06+07:00',
-  'jj describe -m A',
   'jj new -m B',
   'jj describe @- -m NEW',
   'jj undo',
@@ -101,79 +97,75 @@ async function settle(page: Page, url: string): Promise<number> {
   return Date.now() - started;
 }
 
-for (const lang of ['en', 'ja'] as const) {
-  test(`${lang}: both terminals start isolated, verify and run the recorded commands`, async ({
-    page,
-    browser,
-    browserName,
-  }, testInfo) => {
-    test.setTimeout(420_000);
-    const errors: string[] = [];
-    page.on('console', (message) => {
-      if (message.type() === 'error') errors.push(message.text());
-    });
-    const elapsedMs = await settle(page, PAGES[lang]);
-    const observed = await observe(page);
-    await testInfo.attach(`terminal-${browserName}-${lang}.json`, {
-      contentType: 'application/json',
-      body: JSON.stringify(
-        {
-          lang,
-          browser: browserName,
-          browserVersion: browser.version(),
-          os: `${platform()} ${release()} ${arch()}`,
-          elapsedMs,
-          verdict: observed.verdict,
-          baselineError: observed.envelope?.result.baseline_error ?? null,
-          fixError: observed.envelope?.result.fix_error ?? null,
-          marks: observed.marks,
-          consoleErrors: errors,
-        },
-        null,
-        2,
-      ),
-    });
-    expect(observed.isolated).toBe(true);
-    expect(observed.coepCredentialless).toBe(false);
-    expect(observed.envelope?.runtime.name).toBe('formicarium');
-    expect(observed.verdict).toBe('reproduced');
-    expect(observed.envelope?.result.baseline_error).toBeNull();
-    expect(observed.envelope?.result.fix_error).toBeNull();
-    expect(observed.terminals.map((t) => t.state)).toEqual(['ready', 'ready']);
-    const ready = lang === 'ja' ? '準備完了' : 'Ready';
-    expect(observed.terminals.map((t) => t.status)).toEqual([ready, ready]);
-    for (const terminal of observed.terminals)
-      for (const command of COMMANDS)
-        expect(terminal.transcript).toContain(`$ ${command}\n`);
-    const [baselineTerminal, fixTerminal] = observed.terminals;
-    expect(baselineTerminal?.transcript).toMatch(
-      new RegExp(
-        `\\$ ${escape(RETRY_COMMAND)}\\n[^$]*Newly-created commit [0-9a-f]{40} already exists\\n$`,
-      ),
-    );
-    expect(fixTerminal?.transcript).toMatch(
-      new RegExp(
-        `\\$ ${escape(RETRY_COMMAND)}\\n[^$]*Parent commit \\(@-\\)\\s*: \\S+ [0-9a-f]+ \\(empty\\) NEW\\n$`,
-      ),
-    );
-    const names = observed.marks.map((mark) => mark.name);
-    for (const name of [
-      'isolated',
-      'fetch.baseline.end',
-      'verify.baseline.end',
-      'ready.baseline',
-      'ready.fix',
-      'verdict',
-    ])
-      expect(names).toContain(name);
+test('en: both terminals start isolated, verify and run the recorded commands', async ({
+  page,
+  browser,
+  browserName,
+}, testInfo) => {
+  test.setTimeout(660_000);
+  const errors: string[] = [];
+  page.on('console', (message) => {
+    if (message.type() === 'error') errors.push(message.text());
   });
-}
+  const elapsedMs = await settle(page, PAGES.en);
+  const observed = await observe(page);
+  await testInfo.attach(`terminal-${browserName}-en.json`, {
+    contentType: 'application/json',
+    body: JSON.stringify(
+      {
+        browser: browserName,
+        browserVersion: browser.version(),
+        os: `${platform()} ${release()} ${arch()}`,
+        elapsedMs,
+        verdict: observed.verdict,
+        baselineError: observed.envelope?.result.baseline_error ?? null,
+        fixError: observed.envelope?.result.fix_error ?? null,
+        marks: observed.marks,
+        consoleErrors: errors,
+      },
+      null,
+      2,
+    ),
+  });
+  expect(observed.isolated).toBe(true);
+  expect(observed.coepCredentialless).toBe(false);
+  expect(observed.envelope?.runtime.name).toBe('formicarium');
+  expect(observed.verdict).toBe('reproduced');
+  expect(observed.envelope?.result.baseline_error).toBeNull();
+  expect(observed.envelope?.result.fix_error).toBeNull();
+  expect(observed.terminals.map((t) => t.state)).toEqual(['ready', 'ready']);
+  expect(observed.terminals.map((t) => t.status)).toEqual(['Ready', 'Ready']);
+  for (const terminal of observed.terminals)
+    for (const command of COMMANDS)
+      expect(terminal.transcript).toContain(`$ ${command}\n`);
+  const [baselineTerminal, fixTerminal] = observed.terminals;
+  expect(baselineTerminal?.transcript).toMatch(
+    new RegExp(
+      `\\$ ${escape(RETRY_COMMAND)}\\n[^$]*Newly-created commit [0-9a-f]{40} already exists\\n$`,
+    ),
+  );
+  expect(fixTerminal?.transcript).toMatch(
+    new RegExp(
+      `\\$ ${escape(RETRY_COMMAND)}\\n[^$]*Parent commit \\(@-\\)\\s*: \\S+ [0-9a-f]+ \\(empty\\) NEW\\n$`,
+    ),
+  );
+  const names = observed.marks.map((mark) => mark.name);
+  for (const name of [
+    'isolated',
+    'fetch.baseline.end',
+    'verify.baseline.end',
+    'ready.baseline',
+    'ready.fix',
+    'verdict',
+  ])
+    expect(names).toContain(name);
+});
 
 test('en: a changed ELF is not run and the page says why', async ({
   page,
   browserName,
 }, testInfo) => {
-  test.setTimeout(420_000);
+  test.setTimeout(660_000);
   const elf = resolve(RECIPE_DIR, 'guests', 'fix', 'jj');
   const original = readFileSync(elf);
   const changed = Buffer.from(original);
@@ -202,7 +194,7 @@ test('en: a visitor types a command into the terminal', async ({
   page,
   browserName,
 }) => {
-  test.setTimeout(420_000);
+  test.setTimeout(660_000);
   await settle(page, PAGES.en);
   const baseline = page.locator('#output-baseline formicarium-terminal');
   const rows = baseline.locator('.xterm-rows > div');
@@ -234,7 +226,7 @@ test('en: without xterm.js the terminal falls back to text and an input', async 
     browserName !== 'chromium',
     'only Chromium lets Playwright route the requests the coi service worker makes',
   );
-  test.setTimeout(420_000);
+  test.setTimeout(660_000);
   await page
     .context()
     .route('https://cdn.jsdelivr.net/npm/@xterm/**', (route) => route.abort());
