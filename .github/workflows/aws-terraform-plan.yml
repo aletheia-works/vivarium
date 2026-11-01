@@ -4,6 +4,7 @@ on:
   pull_request_target:
     paths:
       - 'infra/aws/**'
+      - 'src/layer3_previews/**'
       - '.github/workflows/aws-terraform-plan.yml'
 
 permissions:

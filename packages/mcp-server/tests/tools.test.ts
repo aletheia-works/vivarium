@@ -646,7 +646,7 @@ describe('verify_and_report_fix', () => {
     }
   });
 
-  it('Layer 3 + no state → roundtrip_path under layer3_thirdway', async () => {
+  it('Layer 3 + no state → roundtrip_path under layer3_previews', async () => {
     const r = await verifyAndReportFix({
       slug: 'lost-update',
       auto_execute: false,
@@ -656,7 +656,7 @@ describe('verify_and_report_fix', () => {
       assert.equal(r.layer, 3);
       assert.equal(
         r.roundtrip_path,
-        'src/layer3_thirdway/lost-update/roundtrip.json',
+        'src/layer3_previews/lost-update/roundtrip.json',
       );
     }
   });

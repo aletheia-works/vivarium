@@ -26,7 +26,7 @@ We don't lock ourselves into a single technology. We combine:
 
 - **WASM** for instant, browser-native reproduction (Pyodide, sqlite-wasm, etc.)
 - **Docker** for full-fidelity environment reproduction
-- **Third-way approaches** like deterministic simulation and microVM snapshots
+- **Live previews** on Lambda MicroVMs, where a reviewer uses a pull request's whole application in a browser
 
 The goal is not to be "a WASM service" — the goal is to **reproduce bugs**.
 The technology is chosen by the problem, not the other way around.

@@ -64,16 +64,16 @@ import {
           accent: 'violet',
           icon: <Container />,
           title: '完全忠実度、コンテナ実行',
-          body: 'Docker または microVM の中で再現が実行されます。起動は数秒〜分単位。実ファイルシステム、実プロセス、実ネットワークが必要なバグのための層です。',
+          body: 'Docker の中で再現が実行されます。起動は数秒〜分単位。実ファイルシステム、実プロセス、実ネットワークが必要なバグのための層です。',
           runtimes: 'Docker · Firecracker · gVisor',
         },
         {
           pill: 'L3',
           accent: 'coral',
           icon: <History />,
-          title: '第三の道',
-          body: '決定論的シミュレーション、WASI Preview 3+、スナップショットベースの復元、そしてまだ発明されていない技法。L1 でも L2 でも届かない問題のために。まだレシピはありません。',
-          runtimes: 'Antithesis · CRIU · WASI Preview 3+',
+          title: 'ライブプレビュー',
+          body: 'プルリクエストのアプリケーション全体を、バックエンドも含めてそのコミットで Lambda MicroVM にビルドし、キー付きのリンクで開きます。レビュアーが使ってみて確かめる変更のために。ビルド後の起動は数秒です。',
+          runtimes: 'Lambda MicroVMs · OpenTofu',
         },
       ]}
     />

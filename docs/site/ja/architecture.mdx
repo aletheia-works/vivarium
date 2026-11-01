@@ -18,7 +18,7 @@ import { LiveExamples } from '../_components/LiveExamples';
   <PageHero
     eyebrow="// ARCHITECTURE"
     title="3 つの実行レイヤー、1 つのバグに 1 つだけ。"
-    sub="Layer 1 のブラウザ内 WebAssembly、Layer 2 のコンテナ、そのどちらでも届かないもののための Layer 3。どのレイヤーで動くかはレシピが宣言します——あなたが選ぶ必要はありません。下表で 3 層を一望してから、深掘りに進めます。"
+    sub="Layer 1 のブラウザ内 WebAssembly、Layer 2 のコンテナ、プルリクエストのライブプレビューの Layer 3。どのレイヤーで動くかはレシピが宣言します——あなたが選ぶ必要はありません。下表で 3 層を一望してから、深掘りに進めます。"
   />
 
   <LayerMatrix
@@ -46,7 +46,7 @@ import { LiveExamples } from '../_components/LiveExamples';
       {
         pill: 'L2 / DOCKER',
         accent: 'violet',
-        title: 'Docker / microVM で、忠実度を。',
+        title: 'Docker で、忠実度を。',
         cells: [
           <>
             <strong>秒〜分</strong>。訪問者の Docker か Codespaces で動かすカタログ配信。
@@ -55,7 +55,7 @@ import { LiveExamples } from '../_components/LiveExamples';
             プロジェクト全体の再現、syscall 依存、ツールチェーン固有、マルチプロセス。
           </>,
           <>
-            ページ内では実行不可、Docker か Codespaces が必要、ハイゼンバグ自体の再現性確保。
+            ページ内では実行不可、Docker か Codespaces が必要、再実行で再現しないレース。
           </>,
           <>
             ピン留め <code>Dockerfile</code> + <code>ghcr.io/aletheia-works/vivarium-&lt;slug&gt;</code> + Codespaces バッジ。
@@ -63,21 +63,21 @@ import { LiveExamples } from '../_components/LiveExamples';
         ],
       },
       {
-        pill: 'L3 / THIRD WAY',
+        pill: 'L3 / PREVIEW',
         accent: 'coral',
-        title: 'L1・L2 が届かないもののための枠。',
+        title: 'プルリクエストを、そのまま動かす。',
         cells: [
           <>
-            <strong>未定</strong>。レシピがひとつも無いため、性格づけすべきランタイムが存在しない。
+            一時停止中のプレビューの再開は<strong>数秒</strong>。新しいコミットからのビルドは数分。
           </>,
           <>
-            データレース、メモリ順序、長時間 replay、特定の interleave に依存する分散バグ。
+            レビュアーが動くアプリケーションを使って確かめる変更。UI の裏のバックエンドの挙動や、動くバックエンドが要る UI。
           </>,
           <>
-            読み手が普通のマシンで実行して確かめられないもの。この基準がこの層を空のままにしている。
+            アプリケーションに効果が現れない変更。読み手が自分のマシンで再現できるバグ。
           </>,
           <>
-            まだ無い。決定論的シミュレーション、microVM スナップショット、WASI Preview 3+ が候補。
+            プルリクエストごとの Lambda MicroVM イメージ。キー付きの function URL の奥で動き、OpenTofu で管理。
           </>,
         ],
       },
@@ -117,7 +117,7 @@ import { LiveExamples } from '../_components/LiveExamples';
       <ul>
         <li><strong>メモリ。</strong> ブラウザタブはピーク 1 GB 超で性能が劣化、4 GB が実質上限。本番規模のデータは Layer 2 へ。</li>
         <li><strong>システムコール。</strong> 本物の <code>fork</code>/<code>exec</code>、本物のソケットは使えない。WASI シムが一般的なケースをカバー。</li>
-        <li><strong>並行性バグ。</strong> デフォルトはシングルスレッド。データレースやハイゼンバグは Layer 3 へ。</li>
+        <li><strong>並行性バグ。</strong> デフォルトはシングルスレッドなので、データレースは現れない。</li>
         <li><strong>コンパイラ自体のビルド。</strong> Rust のバグはブラウザ内で再現できますが、Rust コンパイラ自体のビルドは Layer 2。</li>
       </ul>
     }
@@ -136,7 +136,7 @@ import { LiveExamples } from '../_components/LiveExamples';
     pill="L2 / DOCKER"
     accent="violet"
     eyebrow="// 02 · LAYER 2"
-    heading="Docker / microVM、訪問者のマシン上で。"
+    heading="Docker、訪問者のマシン上で。"
     intro={
       <p>本物のファイルシステム、本物のプロセス、本物のネットワークが必要なバグのための層です。Vivarium 側で再現を実行するのではなく、訪問者自身の Docker（または Codespaces）で動かす<strong>カタログ型</strong>の配信モデルを採用しています。</p>
     }
@@ -161,47 +161,50 @@ import { LiveExamples } from '../_components/LiveExamples';
       <ul>
         <li><strong>ページ内では実行されない。</strong> 訪問者がローカルか Codespaces で実行します。</li>
         <li><strong>Docker（または Codespaces アカウント）が必要。</strong> どちらもない場合は、レシピと verdict スナップショットの閲覧のみ可能。</li>
-        <li><strong>並行性そのものをデバッグするバグ。</strong> Layer 2 は本物のスレッドで動きますが、ハイゼンバグの再現性確保は Layer 3 の領分。</li>
+        <li><strong>ハイゼンバグ。</strong> Layer 2 は本物のスレッドで動きますが、再実行でレースが再現する保証はありません。</li>
       </ul>
     }
     runtimes={<LiveExamples layer={2} lang="ja" />}
   />
 
   <LayerSection
-    pill="L3 / THIRD WAY"
+    pill="L3 / PREVIEW"
     accent="coral"
     eyebrow="// 03 · LAYER 3"
-    heading="L1・L2 が届かないもののための枠。"
+    heading="プルリクエストのアプリケーション全体を、ブラウザで。"
     intro={
-      <p>数回再実行しても再現する保証がない<strong>ハイゼンバグ</strong>のための層です。区分としては宣言されていますが、<strong>現在レシピはひとつもありません</strong>。</p>
+      <p>レビュアーが<strong>使ってみて</strong>確かめる変更のための層です。上流のプルリクエストを 1 つのコミットで、バックエンドも含めて Lambda MicroVM のイメージにビルドし、キー付きのリンクで開きます。最初のプレビューは、4 台の偽カメラを付けた motionEye です。</p>
     }
     cellLabels={{
-      fits: '向くバグ',
-      startup: 'なぜ空なのか',
-      cantReach: '空である理由',
-      runtimes: '候補',
+      fits: '向く変更',
+      startup: '動き方',
+      cantReach: 'この層で届かないもの',
+      runtimes: 'レシピ',
     }}
     fits={
       <ul>
-        <li>データレース、メモリ順序バグ、単純な再実行では再現しない use-after-free。</li>
-        <li>長時間 replay シナリオ：何時間ものキャプチャ実行を数分で巻き戻す。</li>
-        <li>特定のメッセージインターリーブに依存する分散システムバグ。</li>
-        <li>事後フォレンジック分析——録音済みトレースを後ろに戻る形のデバッグ。</li>
+        <li>レビュアーが UI から確かめるバックエンドの挙動。たとえば、スケジュールより手動の設定が優先されるか。</li>
+        <li>動くバックエンドが裏に要る UI の変更。</li>
+        <li>スクリーンショットやテスト結果では説明しかできず、実際に試せばレビューが決まる変更。</li>
       </ul>
     }
     startup={
-      <p>最初の試みは <code>rr</code> の record-replay でしたが、撤去しました。<code>rr</code> は Linux/x86_64 専用で、PMU の露出と CPUID faulting を要求します。Windows や macOS の読み手はレシピを検証すらできず、実行できる環境がここまで限られると、正しい再現と壊れた再現を安く見分ける手段もありません。</p>
+      <ul>
+        <li>MicroVM は最初のリクエストで起動し、5 分間通信が無いと一時停止し、次のリクエストで数秒で再開します。</li>
+        <li>リンクのキーが無いリクエストは 403 になります。リンクはギャラリーではなく、上流のプルリクエストで共有します。</li>
+        <li>読み手に要るのはブラウザだけです。Linux/x86_64 と PMU の露出を要求した <code>rr</code> の record-replay が通れなかった基準を満たします。</li>
+      </ul>
     }
     cantReach={
       <ul>
-        <li><strong>参入基準。</strong> レシピは読み手自身が再現できなければならない。誰も独立に確認できない verdict は証拠ではない。</li>
-        <li><strong>カーネル依存の技術。</strong> CRIU や Firecracker スナップショットも同じ Linux 依存を引き継ぐため、同じ基準を通す必要がある。</li>
+        <li><strong>アプリケーションの外の効果。</strong> ネットワーク共有上のファイルの扱いや、カーネルの挙動は UI に現れません。</li>
+        <li><strong>差分で判断がつく変更。</strong> ドキュメントやリファクタリングにプレビューは要りません。</li>
       </ul>
     }
     runtimes={
       <ul>
-        <li>決定論的シミュレーション（Antithesis 系）と WASI Preview 3+ が有望。ホストのカーネル機能に依存しないため。</li>
-        <li>どれかが着地するまで、ギャラリーに L3 のエントリは出ません。</li>
+        <li><code>src/layer3_previews/</code> の下に、プルリクエストごとに 1 つのディレクトリを置き、リポジトリ、プルリクエスト、コミットを書いた <code>preview.json</code> を入れます。置けばプレビューができ、消せばプレビューも消えます。</li>
+        <li>プレビューはまだギャラリーには載りません。</li>
       </ul>
     }
   />

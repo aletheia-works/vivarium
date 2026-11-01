@@ -62,7 +62,7 @@ export type VerifyAndReportFixResult =
 const LAYER_DIRNAME: Record<Layer, string> = {
   1: 'layer1_wasm',
   2: 'layer2_docker',
-  3: 'layer3_thirdway',
+  3: 'layer3_previews',
 };
 
 const LAYER_SOURCE: Record<Layer, VerdictSource> = {

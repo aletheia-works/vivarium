@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - 'infra/aws/**'
+      - 'src/layer3_previews/**'
       - '.github/workflows/aws-terraform-apply.yml'
   workflow_dispatch:
 

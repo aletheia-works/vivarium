@@ -379,13 +379,13 @@ interface ProjectsIndex {
 const LAYERS: ReadonlyArray<{ layer: Layer; dir: string }> = [
   { layer: 1, dir: 'src/layer1_wasm' },
   { layer: 2, dir: 'src/layer2_docker' },
-  { layer: 3, dir: 'src/layer3_thirdway' },
+  { layer: 3, dir: 'src/layer3_previews' },
 ];
 
 const LAYER_DIRNAME: Record<Layer, string> = {
   1: 'layer1_wasm',
   2: 'layer2_docker',
-  3: 'layer3_thirdway',
+  3: 'layer3_previews',
 };
 
 const NON_RECIPE_NAMES = new Set([
@@ -405,13 +405,14 @@ async function isDir(p: string): Promise<boolean> {
   }
 }
 
-async function listRecipeSlugs(layerDir: string): Promise<string[]> {
+export async function listRecipeSlugs(layerDir: string): Promise<string[]> {
   const entries = await readdir(layerDir);
   const slugs: string[] = [];
   for (const entry of entries) {
     if (entry.startsWith('_') || entry.startsWith('.')) continue;
     if (NON_RECIPE_NAMES.has(entry)) continue;
     if (!(await isDir(join(layerDir, entry)))) continue;
+    if (existsSync(join(layerDir, entry, 'preview.json'))) continue;
     slugs.push(entry);
   }
   return slugs.sort();

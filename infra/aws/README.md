@@ -16,8 +16,10 @@ step by step in the `spikes/motioneye-microvm` spike first.
 | [storage.tf](storage.tf) | The private, versioned S3 bucket for the images' code artifacts |
 | [previews.tf](previews.tf) | Per preview: the MicroVM image, the proxy function, its URL, key and log group. Shared: the build and proxy roles and the build log group |
 
-`local.previews` in `previews.tf` lists the previews, each a repository and a
-commit.
+Each preview is a recipe under [`src/layer3_previews/`](../../src/layer3_previews/README.md):
+a `<project>-<pull>/preview.json` naming the repository, the pull request and
+the commit. `previews.tf` reads them, so adding a recipe adds a preview and
+removing it removes the preview.
 
 ### The image
 
@@ -82,7 +84,6 @@ and a plan reports any change made to them since.
 
 - motionEye's admin and user passwords are empty. motionEye applies no
   setting until both are set.
-- `local.previews` is edited by hand. A recipe per preview is the next stage.
 
 ## Setup (日本語)
 

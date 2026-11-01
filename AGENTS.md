@@ -111,7 +111,7 @@ vivarium/
 ├── src/
 │   ├── layer1_wasm/       # Layer 1 reproductions (Pyodide, Ruby.wasm, php-wasm, Rust wasm32-wasip1)
 │   ├── layer2_docker/     # Layer 2 reproductions (Docker images, GHCR-published)
-│   ├── layer3_thirdway/   # Layer 3 catalogue — declared, no recipes yet
+│   ├── layer3_previews/   # Layer 3 live previews — one preview.json per upstream PR
 │   └── external_examples/ # reference Manifest v1 fixtures, one per shipping layer
 └── tools/
     └── fixed-guest-builder/ # Bun/TypeScript builder the fixed-guest-* workflows run (CI only, not published)
@@ -380,14 +380,16 @@ conflate "which layer does this problem fit" with "which library do we use."
 - **Layer 2 — Docker (full fidelity).** Devcontainer images, Firecracker
   exploration. Target: arbitrary projects, complex dependencies, network
   behaviour. Startup: s–min.
-- **Layer 3 — Third way.** microVM (Firecracker, Kata), deterministic
-  simulation (Antithesis-style), WASI Preview 3+, snapshot-based (CRIU).
-  Target: problems Layers 1 and 2 cannot reach.
+- **Layer 3 — Live previews.** An upstream pull request's whole
+  application, backend included, built at its commit into a Lambda MicroVM
+  image and opened through a keyed link (`infra/aws/`). Target: changes a
+  reviewer checks by using the running application. Startup: s on resume,
+  min to build.
 
-Layers 1 and 2 ship recipes today; Layer 3 is declared but empty. A
-runtime earns a place there only if a reader on an ordinary machine can
-reproduce and check the result — the bar `rr` failed. See
-`src/layer{1,2,3}_*/README.md` for the per-layer catalogue model.
+A recipe in any layer must let a reader on an ordinary machine
+reproduce and check the result — the bar `rr` failed; a preview needs
+only a browser. Layer 3 previews are not in the recipes index yet. See `src/layer{1,2,3}_*/README.md` for the per-layer catalogue
+model.
 
 ## 6. When in doubt
 
