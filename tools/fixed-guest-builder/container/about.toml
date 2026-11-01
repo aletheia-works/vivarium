@@ -16,3 +16,6 @@ accepted = [
   "CDLA-Permissive-2.0",
   "MPL-2.0",
 ]
+
+[terminfo]
+accepted = ["WTFPL"]
