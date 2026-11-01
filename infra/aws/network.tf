@@ -3,8 +3,9 @@ data "aws_availability_zones" "available" {
 }
 
 resource "aws_vpc" "preview" {
-  cidr_block = "10.80.0.0/24"
-  tags       = { Name = "vivarium-preview" }
+  cidr_block         = "10.80.0.0/24"
+  enable_dns_support = false
+  tags               = { Name = "vivarium-preview" }
 }
 
 resource "aws_subnet" "preview" {

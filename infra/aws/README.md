@@ -16,7 +16,7 @@ step by step in a spike first
 | [iam.tf](iam.tf) | The CI roles for plan and apply and the permissions boundary, created by hand and imported |
 | [storage.tf](storage.tf) | The private, versioned S3 bucket for the images' code artifacts |
 | [previews.tf](previews.tf) | Per preview: the MicroVM image, the proxy function, its URL, key and log group. Shared: the build and proxy roles and the build log group |
-| [network.tf](network.tf) | The egress connector the proxy runs every preview MicroVM with: a VPC with no internet gateway or NAT, two subnets, a security group with no rules, and the role Lambda uses for the connector's network interfaces |
+| [network.tf](network.tf) | The egress connector the proxy runs every preview MicroVM with: a VPC with no internet gateway, NAT or DNS resolver, two subnets, a security group with no rules, and the role Lambda uses for the connector's network interfaces |
 
 Each preview is a recipe under [`src/layer3_previews/`](../../src/layer3_previews/README.md):
 a `<project>-<pull>/preview.json` naming the repository, the pull request and
