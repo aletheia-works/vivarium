@@ -55,6 +55,12 @@ and installs it, so the zip carries no file modes that matter. The image adds:
   arrived at `/uploads/` on port 8030. They are installed after
   `motioneye_init`, because they pull in systemd and `motioneye_init` stops
   before writing motionEye's configuration when it finds systemd.
+- RustFS, for a recipe whose `preview.json` lists `"s3"` in `services`:
+  `Dockerfile.tftpl` adds it in a block of its own, `s3bucket.py` makes the
+  `motioneye` bucket at build time, and it serves S3 over TLS on
+  `127.0.0.1:9100` with the shared certificate. `entrypoint.sh`, the hooks
+  and `uploads.py` use it only when `/usr/local/bin/rustfs` exists. A plan
+  refuses any other value in `services`.
 
 The image is ARM_64 with 1 GB.
 

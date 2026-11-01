@@ -49,7 +49,8 @@ The image template is [`infra/aws/motioneye/`](../../infra/aws/motioneye/).
 | Media | `media.py` gives every camera two days of recordings at build time, in the two days before the build: three pictures a day and one five-second H.264 MP4, in motion's `%Y-%m-%d/%H-%M-%S` layout under `/var/lib/motioneye/Camera<n>/`. The media browser, previews, downloads and playback have something to show without waiting for motion. |
 | Mail | [mailpit](https://mailpit.axllent.org) 1.33.0 catches e-mail and never relays it. SMTP on `127.0.0.1:1025` takes plain text or STARTTLS; `smtps.py` on `127.0.0.1:1465` takes implicit TLS and passes the session to it. Both accept any user name and password, and the certificate is self-signed for `localhost` and `127.0.0.1`. Its web UI is at `/mailpit/` of the preview link, on port 8025. |
 | Upload targets | FTP and explicit FTPS (vsftpd) on `127.0.0.1:21`, SFTP (OpenSSH, SFTP only) on `127.0.0.1:22` and an SMB share `//127.0.0.1/preview` (Samba), all with the user `preview` and the password `password`. FTPS uses the same self-signed certificate as mail. Files land in `/srv/uploads/ftp`, `/srv/uploads/sftp` and `/srv/uploads/smb`, and `uploads.py` lists them, with download links, at `/uploads/` of the preview link, on port 8030. Whether motionEye can mount the SMB share inside a Lambda MicroVM, which needs the kernel's CIFS support, has not been checked yet. |
-| Lifecycle hooks | `hooks.py` on port 9000. Lambda calls `ready` and `validate` while it builds the image; both sign in and expect a JPEG from every camera, and expect mailpit's UI, an SMTP greeting on 1025 and 1465, the FTP and SSH greetings, SMB listening and the upload listing. |
+| S3 (opt-in) | Only in a preview whose `preview.json` has `"services": ["s3"]`: RustFS 1.0.4 on `https://127.0.0.1:9100`, with the same self-signed certificate, the access key `preview`, the secret key `password` and a bucket `motioneye` made at build time. Objects are listed at `/uploads/` too. It adds about 264 MB to the image and about 170 MiB of memory, so it stays out of previews that do not need it. |
+| Lifecycle hooks | `hooks.py` on port 9000. Lambda calls `ready` and `validate` while it builds the image; both sign in and expect a JPEG from every camera, and expect mailpit's UI, an SMTP greeting on 1025 and 1465, the FTP and SSH greetings, SMB listening and the upload listing, plus a TLS handshake on 9100 in a preview with the S3 target. |
 
 ## Network
 
@@ -91,6 +92,9 @@ merged) had it:
   "commit": "b1a4692397339c75a5d1ce93fa017612c0e80214"
 }
 ```
+
+`services` is optional. `["s3"]` adds the S3 target above; no other value is
+accepted.
 
 `commit` is a full SHA, so a preview shows exactly one state of the pull
 request. A new push to the pull request is a new commit here.

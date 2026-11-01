@@ -10,5 +10,8 @@ mkdir -p /run/sshd
 /usr/sbin/sshd
 vsftpd /etc/vsftpd.conf &
 smbd --daemon
+if [ -x /usr/local/bin/rustfs ]; then
+  sh /usr/local/lib/preview/rustfs.sh &
+fi
 python3 /usr/local/lib/preview/uploads.py &
 exec /usr/local/bin/meyectl startserver -c /etc/motioneye/motioneye.conf

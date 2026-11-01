@@ -34,6 +34,19 @@ RUN set -e; \
     python3 /usr/local/lib/preview/seed.py; \
     python3 /usr/local/lib/preview/media.py
 
+%{ if s3 ~}
+RUN set -e; \
+    curl -sSfL -o /tmp/rustfs.zip 'https://github.com/rustfs/rustfs/releases/download/1.0.4/rustfs-linux-aarch64-musl-v1.0.4.zip'; \
+    echo '81414fd0e41969f4f5c2e0555951cee76d3f224c112c269c80f52b31276f187a  /tmp/rustfs.zip' | sha256sum -c -; \
+    python3 -c 'import zipfile; zipfile.ZipFile("/tmp/rustfs.zip").extract("rustfs", "/usr/local/bin")'; \
+    chmod 755 /usr/local/bin/rustfs; \
+    rm /tmp/rustfs.zip; \
+    mkdir -p /srv/s3 /etc/preview/rustfs; \
+    cp /etc/preview/cert.pem /etc/preview/rustfs/rustfs_cert.pem; \
+    cp /etc/preview/key.pem /etc/preview/rustfs/rustfs_key.pem; \
+    python3 /usr/local/lib/preview/s3bucket.py
+
+%{ endif ~}
 EXPOSE 8765 8025 8030 9000
 
 ENTRYPOINT ["sh", "/usr/local/lib/preview/entrypoint.sh"]

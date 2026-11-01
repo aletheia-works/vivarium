@@ -9,7 +9,7 @@ locals {
   base_image_arn     = "arn:aws:lambda:${var.aws_region}:aws:microvm-image:al2023-1"
   base_image_version = "2"
   connector          = "arn:aws:lambda:${var.aws_region}:aws:network-connector:aws-network-connector"
-  motioneye_files    = ["entrypoint.sh", "fakecam.py", "hooks.py", "seed.py", "smtps.py", "media.py", "uploads.py", "vsftpd.conf", "sshd.conf", "smb.conf"]
+  motioneye_files    = ["entrypoint.sh", "fakecam.py", "hooks.py", "seed.py", "smtps.py", "media.py", "uploads.py", "s3bucket.py", "rustfs.sh", "vsftpd.conf", "sshd.conf", "smb.conf"]
   preview_tags       = [for key, value in { Project = "vivarium", ManagedBy = "opentofu" } : { key = key, value = value }]
 }
 
@@ -19,7 +19,7 @@ data "archive_file" "preview" {
   output_path = "${path.module}/.build/${each.key}.zip"
   source {
     filename = "Dockerfile"
-    content  = templatefile("${path.module}/motioneye/Dockerfile.tftpl", each.value)
+    content  = templatefile("${path.module}/motioneye/Dockerfile.tftpl", merge(each.value, { s3 = contains(try(each.value.services, []), "s3") }))
   }
   dynamic "source" {
     for_each = local.motioneye_files
@@ -126,6 +126,10 @@ resource "awscc_lambda_microvm_image" "preview" {
     precondition {
       condition     = can(regex("^[0-9a-f]{40}$", each.value.commit)) && each.key == "motioneye-${each.value.pull}"
       error_message = "${each.key}: commit must be a full SHA and the directory must be motioneye-<pull>."
+    }
+    precondition {
+      condition     = alltrue([for service in try(each.value.services, []) : contains(["s3"], service)])
+      error_message = "${each.key}: services may only list \"s3\"."
     }
   }
 }

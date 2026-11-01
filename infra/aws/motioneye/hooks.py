@@ -1,5 +1,6 @@
 import http.cookiejar
 import json
+import os
 import socket
 import ssl
 import urllib.request
@@ -14,6 +15,8 @@ SMTPS = ("127.0.0.1", 1465)
 UPLOADS_UI = "http://127.0.0.1:8030/uploads/"
 GREETINGS = {("127.0.0.1", 21): b"220", ("127.0.0.1", 22): b"SSH-"}
 SMB = ("127.0.0.1", 445)
+S3 = ("127.0.0.1", 9100)
+RUSTFS = "/usr/local/bin/rustfs"
 HOOKS = "/aws/lambda-microvms/runtime/v1/"
 
 
@@ -69,6 +72,12 @@ def receiving_uploads() -> bool:
                 if not s.recv(64).startswith(greeting):
                     return False
         socket.create_connection(SMB, timeout=3).close()
+        if os.path.exists(RUSTFS):
+            insecure = ssl.create_default_context()
+            insecure.check_hostname = False
+            insecure.verify_mode = ssl.CERT_NONE
+            with socket.create_connection(S3, timeout=3) as raw, insecure.wrap_socket(raw):
+                pass
     except OSError:
         return False
     return True
