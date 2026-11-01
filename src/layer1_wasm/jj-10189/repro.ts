@@ -175,10 +175,12 @@ try {
     }
   }
   setVerdict('pending', S.running, 'running');
-  for (const role of ROLES) {
-    const terminal = terminals[role];
-    if (terminal) outcomes[role] = await settle(runSession(role, terminal));
-  }
+  await Promise.all(
+    ROLES.map(async (role) => {
+      const terminal = terminals[role];
+      if (terminal) outcomes[role] = await settle(runSession(role, terminal));
+    }),
+  );
   record();
   for (const terminal of Object.values(terminals)) terminal.enableInput();
 } catch (error) {

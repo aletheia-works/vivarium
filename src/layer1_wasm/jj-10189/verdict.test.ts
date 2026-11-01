@@ -66,13 +66,10 @@ describe('output parsing', () => {
 });
 
 describe('runSession', () => {
-  test('pins the commit timestamp before the first rewrite', () => {
-    const pin = COMMANDS.indexOf(
-      `jj config set --repo debug.commit-timestamp ${COMMIT_TIMESTAMP}`,
-    );
-    expect(pin).toBeGreaterThan(COMMANDS.indexOf('jj git init'));
-    expect(pin).toBeLessThan(COMMANDS.indexOf('jj new -m B'));
-    expect(COMMANDS.at(-1)).toBe('jj undo');
+  test('pins the commit timestamp on every command', () => {
+    for (const command of [...COMMANDS, RETRY_COMMAND])
+      expect(command).toStartWith(`JJ_TIMESTAMP=${COMMIT_TIMESTAMP} jj `);
+    expect(COMMANDS.at(-1)).toEndWith(' jj undo');
   });
 
   test('a retry rejected as already existing is reproduced', async () => {
@@ -97,11 +94,12 @@ describe('runSession', () => {
   });
 
   test('a recorded command that fails stops the session', async () => {
-    const run = runner({}, { 'jj undo': { code: 1 } });
+    const undo = COMMANDS.at(-1) ?? '';
+    const run = runner({}, { [undo]: { code: 1 } });
     expect(await failure(runSession('baseline', run))).toBe(
-      'baseline: jj undo exited 1',
+      `baseline: ${undo} exited 1`,
     );
-    expect(run.calls.at(-1)).toBe('jj undo');
+    expect(run.calls.at(-1)).toBe(undo);
   });
 
   test('a first rewrite without a parent commit is an error', async () => {

@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "package": "@aletheia-works/formicarium",
-  "packageVersion": "0.10.0",
-  "tarballSha256": "1701d482ec8fd7c0f142cc48222931518df06dd472791fbac9eae94abf867f72",
-  "sourceCommit": "6218c44676b4618a5eadfa7e1901ed5ce9ad9795",
+  "packageVersion": "0.11.0",
+  "tarballSha256": "fe749372695046febe0b191abe923a296e09c6b6d3b96e059eec4a10f9034661",
+  "sourceCommit": "a53cb83aca35efffeeecd5e4db46448d83ad3270",
   "files": [
     {
       "path": "LICENSE",
@@ -11,7 +11,7 @@
     },
     {
       "path": "README.md",
-      "sha256": "bea763624a9a04a1c5e84c746f3492c0404e64f601f72bf04e07211871cb5a17"
+      "sha256": "9eef38b0104660365af95bb5a864915286272ed469dc8fce93c2d3f8d88bd8f3"
     },
     {
       "path": "THIRD_PARTY_NOTICES.md",
@@ -59,15 +59,15 @@
     },
     {
       "path": "package.json",
-      "sha256": "6fcb08f9c5aedb7ca77e0c0b1d7f4f3e4b90d5efc7828e41f02dee6e1d21f77d"
+      "sha256": "483b8d635d0f54687617a2a0ffbba7938e95c6017f2400bfd83e4133ecbec40f"
     },
     {
       "path": "runtime/command-parse.js",
-      "sha256": "924c1da5d7f6ffaa412537cc8c4b302d12deabde5ba61f2f6802f53ecb70fd1d"
+      "sha256": "b57d91b9cee24e3225c2a7e757679deb86c98f3182153c3c185f501fbc622470"
     },
     {
       "path": "runtime/command.js",
-      "sha256": "d05f8ebcacd45a26a10696ffd374c3023dd341dcee4100590b3962132595b9f7"
+      "sha256": "e602b0230b31091b765235c8f68bdfc39dbb4f4b81f8378b781e9e9faf8ee335"
     },
     {
       "path": "runtime/contracts.js",
@@ -143,15 +143,15 @@
     },
     {
       "path": "runtime/web/api.js",
-      "sha256": "b94a995ee94f2702a49ef41278cf97a375115facf9f14ef2767568949c8365fd"
+      "sha256": "3da7953710416592db361816b8103def0848d9e0d32af3891d782c989119ca97"
     },
     {
       "path": "runtime/web/package-worker.bundle.js",
-      "sha256": "27df60a201aa3c2658312565ad3067fa25a0ab4d3ab52134c2156720c926f6d2"
+      "sha256": "9e08c7fbce1f63753ce2102c01841f705c8bc8d36e61f0766355381756361b8c"
     },
     {
       "path": "runtime/web/package-worker.js",
-      "sha256": "eda48617c1d5983381e5b74ff55fe3919a0d33959679b586d349fd08bb49fc7b"
+      "sha256": "15e77b2034963929439dc9d45c16b120a5313835de942cd8820b75ee77635102"
     },
     {
       "path": "runtime/worker-execution.js",
@@ -163,7 +163,7 @@
     },
     {
       "path": "types/index.d.ts",
-      "sha256": "42ba444f1803239258f729e17fb2c2a073a6d5011b056e49ff7e3a6d8187d302"
+      "sha256": "7a0a17c7c3963ad44cca1812eabb2004f6040074cf618f3f565356d3f9b40b95"
     },
     {
       "path": "types/node.d.ts",
