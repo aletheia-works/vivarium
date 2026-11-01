@@ -81,6 +81,11 @@ write access; and the state is encrypted with `TF_STATE_PASSPHRASE` and kept
 as the `terraform-state-aws` artifact of the run that
 `LATEST_AWS_APPLY_RUN_ID` names.
 
+Retry a failed apply with a new run (`gh workflow run aws-terraform-apply.yml
+--ref main`), not a re-run. A re-run of a failed apply loaded the state the
+failed attempt had read, even after a later apply had saved a newer one. It
+then pointed `LATEST_AWS_APPLY_RUN_ID` back at that older state.
+
 The account runs other stacks, so the roles are narrow. Both read through
 `tofu-read` ([bootstrap/read-policy.json.tftpl](bootstrap/read-policy.json.tftpl)).
 The apply role, which only the `aws-apply` environment on `main` can assume,
@@ -134,6 +139,14 @@ $tags = 'Key=Project,Value=vivarium', 'Key=ManagedBy,Value=opentofu'
 GitHub の OIDC provider（`token.actions.githubusercontent.com`）は、この account に既に
 あるもの（formicarium と共有）を使います。新しくは作りません。
 
+network connector を作るには、account に 1 つの service-linked role
+`AWSServiceRoleForLambda` が要ります。apply の role には作る権限が無いので、まだ無い
+account では 1 度だけ手で作ります。
+
+```powershell
+& $aws iam create-service-linked-role --aws-service-name lambda.amazonaws.com
+```
+
 ### 2. GitHub 側
 
 - [vivarium の Actions の変数](https://github.com/aletheia-works/vivarium/settings/variables/actions)
@@ -150,7 +163,7 @@ GitHub の OIDC provider（`token.actions.githubusercontent.com`）は、この 
 マージすると AWS Terraform Apply が走り、import block で手作りの role と boundary を
 取り込み、残りを作って、state を保存します。infra/github の Apply より先に走って
 `aws-apply` environment がまだ無いと失敗するので、そのときは infra/github の Apply が
-終わってから AWS Terraform Apply を re-run してください。
+終わってから AWS Terraform Apply を `workflow_dispatch` で新しく実行してください。
 
 ### 4. レビュアーに渡すリンク
 
