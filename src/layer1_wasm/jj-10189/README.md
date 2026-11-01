@@ -33,18 +33,16 @@ the regression suite.
 
 ## The input
 
-Each terminal starts in an empty `/work/app`. formicarium's commands take no
-environment variables, so instead of `JJ_TIMESTAMP` the run pins
-`debug.commit-timestamp` in the new repository's config, which makes the
-result independent of how long each command takes. Both terminals run:
+Each terminal starts in an empty `/work/app`. Every command pins
+`JJ_TIMESTAMP`, which makes the result independent of how long each command
+takes. Both terminals run, side by side:
 
 ```sh
-jj git init
-jj config set --repo debug.commit-timestamp 2001-02-03T04:05:06+07:00
-jj new -m B
-jj describe @- -m NEW
-jj undo
-jj describe @- -m NEW
+JJ_TIMESTAMP=2001-02-03T04:05:06+07:00 jj git init
+JJ_TIMESTAMP=2001-02-03T04:05:06+07:00 jj new -m B
+JJ_TIMESTAMP=2001-02-03T04:05:06+07:00 jj describe @- -m NEW
+JJ_TIMESTAMP=2001-02-03T04:05:06+07:00 jj undo
+JJ_TIMESTAMP=2001-02-03T04:05:06+07:00 jj describe @- -m NEW
 ```
 
 Every command but the last must succeed, and the first `jj describe @- -m

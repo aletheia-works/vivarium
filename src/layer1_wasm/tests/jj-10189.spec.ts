@@ -14,14 +14,14 @@ const PAGES = {
 const RECIPE_DIR = resolve(import.meta.dirname, '..', SLUG);
 const STAGED = resolve(RECIPE_DIR, '_formicarium', 'assets.json');
 const VERDICT_TIMEOUT_MS = 600_000;
+const PINNED = 'JJ_TIMESTAMP=2001-02-03T04:05:06+07:00';
 const COMMANDS = [
-  'jj git init',
-  'jj config set --repo debug.commit-timestamp 2001-02-03T04:05:06+07:00',
-  'jj new -m B',
-  'jj describe @- -m NEW',
-  'jj undo',
+  `${PINNED} jj git init`,
+  `${PINNED} jj new -m B`,
+  `${PINNED} jj describe @- -m NEW`,
+  `${PINNED} jj undo`,
 ];
-const RETRY_COMMAND = 'jj describe @- -m NEW';
+const RETRY_COMMAND = `${PINNED} jj describe @- -m NEW`;
 
 interface Envelope {
   runtime: { name: string; version: string; extras: Record<string, string> };
@@ -234,7 +234,7 @@ test('en: without xterm.js the terminal falls back to text and an input', async 
   const baseline = page.locator('#output-baseline formicarium-terminal');
   await expect(baseline.locator('.xterm')).toHaveCount(0);
   await expect(baseline.locator('.vh-terminal__plain')).toContainText(
-    '$ jj git init',
+    `$ ${COMMANDS[0]}`,
   );
   const input = baseline.locator('.vh-terminal__plain-input');
   await expect(input).toBeEnabled({ timeout: 30_000 });

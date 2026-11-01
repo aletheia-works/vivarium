@@ -4,15 +4,16 @@ export type GuestRole = 'baseline' | 'fix';
 
 export const COMMIT_TIMESTAMP = '2001-02-03T04:05:06+07:00';
 
+const PINNED = `JJ_TIMESTAMP=${COMMIT_TIMESTAMP}`;
+
 export const COMMANDS = [
-  'jj git init',
-  `jj config set --repo debug.commit-timestamp ${COMMIT_TIMESTAMP}`,
-  'jj new -m B',
-  'jj describe @- -m NEW',
-  'jj undo',
+  `${PINNED} jj git init`,
+  `${PINNED} jj new -m B`,
+  `${PINNED} jj describe @- -m NEW`,
+  `${PINNED} jj undo`,
 ] as const;
 
-export const RETRY_COMMAND = 'jj describe @- -m NEW';
+export const RETRY_COMMAND = `${PINNED} jj describe @- -m NEW`;
 
 export interface CommandResult {
   command: string;
