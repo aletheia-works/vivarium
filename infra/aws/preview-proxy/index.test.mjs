@@ -275,6 +275,11 @@ test('the key redirect stays on the preview host', () => {
     rawQueryString: 'vivarium-key=open-sesame',
   });
   assert.equal(admission.location, '/evil.example/x');
+  const backslashed = admit(CONFIG, {
+    rawPath: '/\\evil.example/x',
+    rawQueryString: 'vivarium-key=open-sesame',
+  });
+  assert.equal(backslashed.location, '/evil.example/x');
 });
 
 test('a reused MicroVM that is still starting is waited for', async () => {

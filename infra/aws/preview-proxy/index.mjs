@@ -218,7 +218,7 @@ export function admit(config, event) {
     const rest = query.toString();
     return {
       status: 302,
-      location: `/${(event.rawPath ?? '').replace(/^\/+/, '')}${rest ? `?${rest}` : ''}`,
+      location: `/${(event.rawPath ?? '').replace(/^[/\\]+/, '')}${rest ? `?${rest}` : ''}`,
       cookie: `${COOKIE}=${cookieValue(config.accessKey)}; Path=/; Max-Age=86400; HttpOnly; Secure; SameSite=Lax`,
     };
   }
