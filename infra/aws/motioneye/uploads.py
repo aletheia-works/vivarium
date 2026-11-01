@@ -10,6 +10,7 @@ ROOT = "/uploads"
 AREAS = {"ftp": "/srv/uploads/ftp", "sftp": "/srv/uploads/sftp", "smb": "/srv/uploads/smb"}
 RUSTFS = "/usr/local/bin/rustfs"
 S3_ENDPOINT = "https://127.0.0.1:9100"
+MISSING = {"NoSuchKey", "NoSuchBucket", "404"}
 
 
 def area_files(area: str) -> list[str]:
@@ -95,8 +96,12 @@ class Handler(BaseHTTPRequestHandler):
         bucket, _, key = rest.partition("/")
         try:
             item = s3_client().get_object(Bucket=bucket, Key=key)
-        except Exception:
-            self.send(404, "text/plain", b"not found")
+        except Exception as error:
+            code = getattr(error, "response", {}).get("Error", {}).get("Code")
+            if code in MISSING:
+                self.send(404, "text/plain", b"not found")
+            else:
+                self.send(502, "text/plain", repr(error).encode())
             return
         self.send_download(key.rsplit("/", 1)[-1], item["ContentLength"], item["Body"])
 

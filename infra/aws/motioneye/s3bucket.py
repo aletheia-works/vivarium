@@ -1,4 +1,3 @@
-import os
 import subprocess
 import time
 
@@ -7,15 +6,7 @@ import boto3
 ENDPOINT = "https://127.0.0.1:9100"
 BUCKET = "motioneye"
 
-server = subprocess.Popen(
-    ["/usr/local/bin/rustfs", "server", "--address", "127.0.0.1:9100", "/srv/s3"],
-    env={
-        **os.environ,
-        "RUSTFS_ACCESS_KEY": "preview",
-        "RUSTFS_SECRET_KEY": "password",
-        "RUSTFS_TLS_PATH": "/etc/preview/rustfs",
-    },
-)
+server = subprocess.Popen(["sh", "/usr/local/lib/preview/rustfs.sh"])
 s3 = boto3.client(
     "s3",
     endpoint_url=ENDPOINT,

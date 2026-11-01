@@ -163,6 +163,7 @@ def self_test():
         "infra/aws/preview-proxy/index.mjs": {"previews"},
         "infra/aws/preview-proxy/end-microvms.mjs": {"previews"},
         "infra/aws/motioneye/uploads.py": {"previews"},
+        "infra/aws/motioneye/s3bucket.py": {"previews"},
         "infra/aws/motioneye/Dockerfile.tftpl": {"previews"},
         ".github/workflows/test-previews.yml": {"previews"},
         "docs/site/en/roadmap.mdx": {"docs"},
