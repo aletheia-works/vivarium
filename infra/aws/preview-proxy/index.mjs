@@ -141,6 +141,7 @@ export function microvms(config, fetchImpl = fetch) {
       }),
     get: (id) => call('GET', `/microvms/${encodeURIComponent(id)}`),
     run: (body) => call('POST', '/microvms', { body }),
+    terminate: (id) => call('DELETE', `/microvms/${encodeURIComponent(id)}`),
     token: (id, body) =>
       call('POST', `/microvms/${encodeURIComponent(id)}/auth-token`, { body }),
   };

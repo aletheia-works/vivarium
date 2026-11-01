@@ -155,6 +155,7 @@ def self_test():
         "packages/mcp-server/README.md": {"mcp"},
         ".github/workflows/test-mcp.yml": {"mcp"},
         "infra/aws/preview-proxy/index.mjs": {"previews"},
+        "infra/aws/preview-proxy/end-microvms.mjs": {"previews"},
         ".github/workflows/test-previews.yml": {"previews"},
         "docs/site/en/roadmap.mdx": {"docs"},
         "docs/site/_components/LiveExamples.tsx": {"docs"},
