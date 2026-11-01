@@ -49,7 +49,9 @@ function fakeApi(items = []) {
       return { microvmId: 'mvm-new', state: 'PENDING' };
     },
     token: async (id, body) => {
-      calls.push(`token ${id} ${body.allowedPorts[0].port}`);
+      calls.push(
+        `token ${id} ${body.allowedPorts.map((p) => p.port).join(',')}`,
+      );
       return { authToken: { 'X-aws-proxy-auth': `jwe-${calls.length}` } };
     },
   };
@@ -178,11 +180,11 @@ test('settings refuses a missing egress connector', () => {
   );
 });
 
-test('connect asks for a token to the motionEye port only', async () => {
+test('connect asks for a token to the motionEye and mailpit ports only', async () => {
   const api = fakeApi([{ microvmId: 'mvm-live', state: 'RUNNING' }]);
   const connection = await connect(CONFIG, api, { now: () => 1000 });
   assert.equal(connection.endpoint, 'mvm-live.example');
-  assert.equal(api.calls.at(-1), 'token mvm-live 8765');
+  assert.equal(api.calls.at(-1), 'token mvm-live 8765,8025');
   assert.equal(connection.expiresAt, 1000 + 60 * 60_000);
 });
 
@@ -214,6 +216,19 @@ test('the upstream request carries the token, the port and only motionEye cookie
   });
   assert.equal(init.body.toString(), '{"a":1}');
   assert.equal(init.redirect, 'manual');
+});
+
+test('paths under /mailpit/ go to the mailpit port and the rest to motionEye', () => {
+  const port = (rawPath) =>
+    upstreamRequest(admitted({ rawPath }), {
+      endpoint: 'mvm.example',
+      token: 'jwe',
+    }).init.headers['x-aws-proxy-port'];
+  assert.equal(port('/mailpit/'), '8025');
+  assert.equal(port('/mailpit/api/v1/messages'), '8025');
+  assert.equal(port('/mailpit'), '8025');
+  assert.equal(port('/mailpitx/'), '8765');
+  assert.equal(port('/picture/1/current/'), '8765');
 });
 
 test('response cookies go to the cookies list and encoding headers are dropped', () => {

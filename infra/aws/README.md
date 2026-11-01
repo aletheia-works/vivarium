@@ -38,6 +38,12 @@ and installs it, so the zip carries no file modes that matter. The image adds:
 - `hooks.py`: the lifecycle hooks on port 9000. `ready` and `validate` answer
   200 only once motionEye serves a picture from every camera, so Lambda
   snapshots a running motionEye with frames flowing.
+- mailpit 1.33.0, downloaded at build time and checked against its SHA-256,
+  with a self-signed certificate made at build time. It takes SMTP on
+  `127.0.0.1:1025` (plain or STARTTLS) and serves its UI on port 8025 under
+  `/mailpit/`. It is never given a relay, so mail stays in the MicroVM.
+- `smtps.py`: implicit TLS on `127.0.0.1:1465`, passed on to mailpit, for
+  motionEye's TLS mode.
 
 The image is ARM_64 with 1 GB.
 
@@ -52,7 +58,9 @@ function URL with `RESPONSE_STREAM`.
 - **The MicroVM**: the proxy reuses the image's live MicroVM, or starts one.
   The MicroVM suspends after 5 minutes without traffic, resumes on the next
   request, and ends after an hour suspended or 8 hours in all.
-- **Forwarding**: the proxy streams motionEye's answers back to the browser.
+- **Forwarding**: the proxy sends paths under `/mailpit/` to mailpit on port
+  8025 and everything else to motionEye on 8765, and streams the answers back
+  to the browser. Its MicroVM token allows only those two ports.
 
 Before applying, the apply workflow ends the MicroVMs of every image the plan
 deletes or replaces ([preview-proxy/end-microvms.mjs](preview-proxy/end-microvms.mjs)):

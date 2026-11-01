@@ -2,7 +2,7 @@ FROM debian:trixie-slim
 
 RUN set -e; \
     apt-get -q update; \
-    DEBIAN_FRONTEND='noninteractive' apt-get -qq -o 'Dpkg::Options::=--force-confnew' --no-install-recommends install ca-certificates curl python3 fdisk; \
+    DEBIAN_FRONTEND='noninteractive' apt-get -qq -o 'Dpkg::Options::=--force-confnew' --no-install-recommends install ca-certificates curl openssl python3 fdisk; \
     mkdir /tmp/motioneye; \
     curl -sSfL 'https://codeload.github.com/${repository}/tar.gz/${commit}' | tar -xz -C /tmp/motioneye --strip-components=1; \
     printf '%s\n' '[global]' 'break-system-packages=true' 'no-cache-dir=true' 'root-user-action=ignore' > /etc/pip.conf; \
@@ -10,14 +10,19 @@ RUN set -e; \
     python3 get-pip.py; \
     python3 -m pip install -U /tmp/motioneye; \
     motioneye_init --skip-systemd --skip-apt-update; \
+    curl -sSfL -o /tmp/mailpit.tar.gz 'https://github.com/axllent/mailpit/releases/download/v1.33.0/mailpit-linux-arm64.tar.gz'; \
+    echo '1d27c819e1a5dd2761ed9fd07022443e35a47793b2e92de5b49cf3656a649ef9  /tmp/mailpit.tar.gz' | sha256sum -c -; \
+    tar -xzf /tmp/mailpit.tar.gz -C /usr/local/bin mailpit; \
+    mkdir /etc/mailpit; \
+    openssl req -x509 -newkey rsa:2048 -nodes -days 3650 -subj '/CN=localhost' -addext 'subjectAltName=DNS:localhost,IP:127.0.0.1' -keyout /etc/mailpit/key.pem -out /etc/mailpit/cert.pem; \
     python3 -m pip uninstall -y pip; \
     apt-get clean; \
-    rm -r /var/lib/apt/lists /var/cache/apt /tmp/motioneye get-pip.py
+    rm -r /var/lib/apt/lists /var/cache/apt /tmp/motioneye /tmp/mailpit.tar.gz get-pip.py
 
 COPY preview /usr/local/lib/preview
 
 RUN python3 /usr/local/lib/preview/seed.py
 
-EXPOSE 8765 9000
+EXPOSE 8765 8025 9000
 
 ENTRYPOINT ["sh", "/usr/local/lib/preview/entrypoint.sh"]
