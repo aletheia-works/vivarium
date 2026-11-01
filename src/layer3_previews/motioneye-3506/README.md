@@ -7,8 +7,10 @@ schedule changes. Before it, wsswitch set the scheduled state again within
 
 ## Checking it in the preview
 
-1. Open a camera's settings, turn on **Working Schedule**, set every day to
-   all day, choose **Detect motion during working schedule**, and apply.
-2. Pause motion detection with the camera's detection button.
-3. Wait 30 seconds. With the PR the camera stays paused; without it,
-   detection is active again.
+1. Log in as `admin` with the password `password`.
+2. Open a camera's settings. Under **Motion Detection**, turn on **Motion
+   detection toggle button**. Turn on **Working Schedule**, set every day to
+   00:00–23:59, choose **During Working Schedule**, and apply.
+3. Pause motion detection with the camera's detection button.
+4. Wait 30 seconds. With the PR the camera stays paused, and the button
+   offers to start detection; without it, detection is active again.
