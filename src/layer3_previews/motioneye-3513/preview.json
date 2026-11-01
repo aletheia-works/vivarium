@@ -2,7 +2,7 @@
   "repository": "motioneye-project/motioneye",
   "pull": 3513,
   "issue": 0,
-  "commit": "1d61991961fb71a5b3a6626480ba7410053c059f",
+  "commit": "1165cafb106cee6447ba7f0bd0148dff476449ed",
   "services": [
     "s3"
   ]
