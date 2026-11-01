@@ -5,8 +5,9 @@ a preview a reviewer opens in a browser. Each preview is a
 [Lambda MicroVM](https://docs.aws.amazon.com/lambda/latest/dg/microvms-launching.html)
 image built from that commit, and a public function URL in front of it.
 
-The first preview is motionEye with four fake cameras. The approach was tried
-step by step in the `spikes/motioneye-microvm` spike first.
+The first preview ran motionEye with four fake cameras. The approach was tried
+step by step in a spike first
+([aletheia-works/vivarium#615](https://github.com/aletheia-works/vivarium/pull/615)).
 
 ## What is managed
 
