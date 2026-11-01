@@ -658,6 +658,30 @@ describe('verify_and_report_fix', () => {
     }
   });
 
+  it('Layer 3 + auto_execute → rejected without starting a workflow', async () => {
+    let ghCalls = 0;
+    _setLayer23GhRunnerForTesting(() => {
+      ghCalls += 1;
+      return { status: 0, stdout: '', stderr: '' };
+    });
+
+    const r = await verifyAndReportFix({
+      slug: 'motioneye-3506',
+      branch_image: 'ghcr.io/test/motioneye:fix',
+      current_state: {
+        verdicts: {
+          unfixed: {
+            verdict: 'reproduced',
+            captured_at: '2026-05-17T00:00:00Z',
+            source: 'layer2-ghcr',
+          },
+        },
+      },
+    });
+    assert.equal(r.ok, false);
+    assert.equal(ghCalls, 0, 'gh must NOT be called for a Layer 3 preview');
+  });
+
   it('verified state without vivarium_pr → next_action=open_vivarium_pr + jj git push', async () => {
     const r = await verifyAndReportFix({
       slug: 'pandas-56679',
