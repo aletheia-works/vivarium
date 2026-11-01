@@ -41,6 +41,33 @@
       "Resource": "*"
     },
     {
+      "Sid": "ManageConnectorNetworkInterfaces",
+      "Effect": "Allow",
+      "Action": ["ec2:CreateNetworkInterface", "ec2:DeleteNetworkInterface"],
+      "Resource": [
+        "arn:aws:ec2:*:${account_id}:network-interface/*",
+        "arn:aws:ec2:*:${account_id}:subnet/*",
+        "arn:aws:ec2:*:${account_id}:security-group/*"
+      ]
+    },
+    {
+      "Sid": "TagConnectorNetworkInterfaces",
+      "Effect": "Allow",
+      "Action": "ec2:CreateTags",
+      "Resource": "arn:aws:ec2:*:${account_id}:network-interface/*",
+      "Condition": {
+        "StringEquals": {
+          "ec2:ManagedResourceOperator": "network-connectors.lambda.amazonaws.com"
+        }
+      }
+    },
+    {
+      "Sid": "DescribeNetworks",
+      "Effect": "Allow",
+      "Action": "ec2:Describe*",
+      "Resource": "*"
+    },
+    {
       "Sid": "ListMicrovms",
       "Effect": "Allow",
       "Action": "lambda:ListMicrovms",
