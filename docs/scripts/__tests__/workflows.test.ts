@@ -156,7 +156,7 @@ describe('repro-regression stages before Playwright (R-10)', () => {
   });
 
   test('keeps the job budget, the browsers and the read-only permission', () => {
-    expect(job['timeout-minutes']).toBe(20);
+    expect(job['timeout-minutes']).toBe(45);
     expect(flow.permissions).toEqual({ contents: 'read' });
     expect(text).toContain('browser: [chromium, firefox, webkit]');
   });

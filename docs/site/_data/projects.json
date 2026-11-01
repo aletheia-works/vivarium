@@ -19,6 +19,15 @@
       "homepage": "https://numpy.org/",
       "github": "https://github.com/numpy/numpy"
     },
+    "jj": {
+      "display_name": "Jujutsu",
+      "tagline": "A Git-compatible version control system.",
+      "tagline_ja": "Git 互換のバージョン管理システム。",
+      "description": "CLI reproductions run fixed static Linux builds of jj in formicarium, as terminal sessions in a fresh repository, with the baseline and the fix side by side.",
+      "description_ja": "jj の固定した静的 Linux ビルドを formicarium で、新しいリポジトリでのターミナルのセッションとして動かす。baseline と fix を並べて実行する。",
+      "homepage": "https://jj-vcs.github.io/jj/",
+      "github": "https://github.com/jj-vcs/jj"
+    },
     "pandas": {
       "display_name": "pandas",
       "tagline": "DataFrames for Python.",

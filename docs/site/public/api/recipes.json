@@ -65,6 +65,27 @@
       }
     },
     {
+      "slug": "jj-10189",
+      "layer": 1,
+      "project": "jj",
+      "issue": 10189,
+      "title": "jj-vcs/jj#10189 — re-running a rewrite within the same second after jj undo fails with an internal error",
+      "page_url": "https://aletheia-works.github.io/vivarium/repro/jj/10189/",
+      "source_url": "https://github.com/aletheia-works/vivarium/tree/main/src/layer1_wasm/jj-10189",
+      "language": "shell",
+      "tags": [
+        "jj",
+        "vcs",
+        "undo",
+        "commit-id"
+      ],
+      "symptom": "duplicate-commit-after-undo",
+      "severity": "bug",
+      "expected_verdict": "reproduced",
+      "expected_runtime": "formicarium",
+      "page_url_ja": "https://aletheia-works.github.io/vivarium/ja/repro/jj/10189/"
+    },
+    {
       "slug": "lark-1585",
       "layer": 1,
       "project": "lark",
