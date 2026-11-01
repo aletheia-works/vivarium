@@ -1,7 +1,7 @@
 # Vivarium Contract v1
 
 > The reproduction-verdict surface that every Vivarium-compatible
-> reproduction page emits. Currently at **revision 3** — see the
+> reproduction page emits. Currently at **revision 4** — see the
 > [revision history](#revision-history) at the foot of this page.
 
 ## At a glance

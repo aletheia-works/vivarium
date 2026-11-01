@@ -42,7 +42,7 @@ One directory per pull request, named `<project>-<pull>`:
 
 ```text
 src/layer3_previews/
-└── motioneye-3506/
+└── <project>-<pull>/
     ├── preview.json   # repository, pull, issue, commit
     ├── recipe.json    # language, severity, tags, as in the other layers
     ├── page.en.html   # the gallery page's text: title, lede, check steps
@@ -50,7 +50,8 @@ src/layer3_previews/
     └── README.md      # what the pull request changes and how to check it
 ```
 
-`preview.json`:
+`preview.json`, as the first preview (motionEye #3506, removed once it
+merged) had it:
 
 ```json
 {

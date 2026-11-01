@@ -137,10 +137,12 @@ The version is carried in one place:
 
 - `manifest = "v1"` at the top of the document.
 
-Adding fields, removing fields, or changing semantics requires a
-v2 manifest spec page, a v2 JSON Schema sibling, and a separate
-ADR. Consumers should be free to support v1 and v2 simultaneously
-by dispatching on the `manifest` literal.
+A new optional field that v1 consumers can ignore is a revision of
+this page, and `manifest` stays `"v1"`. Renaming or removing a
+field, changing its type or semantics, or making an optional field
+required needs a v2 manifest spec page and a v2 JSON Schema
+sibling. Consumers should be free to support v1 and v2
+simultaneously by dispatching on the `manifest` literal.
 
 There is no current v2.
 
