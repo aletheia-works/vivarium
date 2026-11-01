@@ -46,7 +46,7 @@ export type RoundtripStatus =
   | 'merged'
   | 'blocked';
 
-export type VerdictSource = 'layer1-headless' | 'layer2-ghcr' | 'layer3-trace';
+export type VerdictSource = 'layer1-headless' | 'layer2-ghcr';
 
 export interface RoundtripVerdict {
   verdict: Verdict;

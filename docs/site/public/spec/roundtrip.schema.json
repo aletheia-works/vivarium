@@ -52,7 +52,7 @@
         },
         "image_tag": {
           "type": "string",
-          "description": "Optional. For Layer 2/3 round-trips, the branch-fix Docker image tag pushed to GHCR (matches the `branch_image` input of branch-fix-verdict.yml). Absent for Layer 1 round-trips, which substitute fix sources in-browser via Path A."
+          "description": "Optional. For Layer 2 round-trips, the branch-fix Docker image tag pushed to GHCR (matches the `branch_image` input of branch-fix-verdict.yml). Absent for Layer 1 round-trips, which substitute fix sources in-browser via Path A."
         }
       }
     },
@@ -108,8 +108,8 @@
           "description": "Wall-clock timestamp of the verdict capture, ISO-8601 with 'Z' suffix."
         },
         "source": {
-          "enum": ["layer1-headless", "layer2-ghcr", "layer3-trace"],
-          "description": "How the verdict was captured. `layer1-headless` = Playwright-driven WASM run targeted by --grep <slug>. `layer2-ghcr` = branch-fix-verdict.yml workflow run consuming a GHCR-pushed image. `layer3-trace` = maintainer-side capture for a Layer 3 recipe. Retained for compatibility; Vivarium ships no Layer 3 recipe today."
+          "enum": ["layer1-headless", "layer2-ghcr"],
+          "description": "How the verdict was captured. `layer1-headless` = Playwright-driven WASM run targeted by --grep <slug>. `layer2-ghcr` = branch-fix-verdict.yml workflow run consuming a GHCR-pushed image."
         }
       }
     }

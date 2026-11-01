@@ -3,7 +3,7 @@ import validateManifestRaw from '../_generated/validators/manifest-validator.mjs
 import './manifest-scaffolder.css';
 
 type Lang = 'en' | 'ja';
-type LayerLiteral = 1 | 2 | 3;
+type LayerLiteral = 1 | 2;
 type ExpectedVerdict = '' | 'reproduced' | 'unreproduced';
 
 interface FormState {
@@ -21,11 +21,6 @@ interface FormState {
     expected_verdict: ExpectedVerdict;
   };
   layer2: {
-    image: string;
-    dockerfile: string;
-    expected_verdict: ExpectedVerdict;
-  };
-  layer3: {
     image: string;
     dockerfile: string;
     expected_verdict: ExpectedVerdict;
@@ -82,13 +77,6 @@ function buildCandidate(state: FormState): Record<string, unknown> {
     if (state.layer2.expected_verdict)
       layer2.expected_verdict = state.layer2.expected_verdict;
     candidate.layer2 = layer2;
-  } else if (state.layer === 3) {
-    const layer3: Record<string, unknown> = {};
-    if (state.layer3.image) layer3.image = state.layer3.image;
-    if (state.layer3.dockerfile) layer3.dockerfile = state.layer3.dockerfile;
-    if (state.layer3.expected_verdict)
-      layer3.expected_verdict = state.layer3.expected_verdict;
-    candidate.layer3 = layer3;
   }
 
   return candidate;
@@ -226,18 +214,6 @@ function buildToml(state: FormState): string {
         `expected_verdict = ${emitTomlString(state.layer2.expected_verdict)}`,
       );
     }
-  } else if (state.layer === 3) {
-    lines.push('');
-    lines.push('[layer3]');
-    lines.push(`image = ${emitTomlString(state.layer3.image)}`);
-    if (state.layer3.dockerfile) {
-      lines.push(`dockerfile = ${emitTomlString(state.layer3.dockerfile)}`);
-    }
-    if (state.layer3.expected_verdict) {
-      lines.push(
-        `expected_verdict = ${emitTomlString(state.layer3.expected_verdict)}`,
-      );
-    }
   }
 
   return `${lines.join('\n')}\n`;
@@ -293,9 +269,7 @@ const STRINGS: Record<Lang, Strings> = {
         ? 'Layer-specific'
         : layer === 1
           ? 'Layer 1 (WASM)'
-          : layer === 2
-            ? 'Layer 2 (Docker)'
-            : 'Layer 3 (third way)',
+          : 'Layer 2 (Docker)',
     outputEyebrow: '// 02 · GENERATED TOML',
     slugLabel: 'slug',
     slugHelp:
@@ -307,9 +281,8 @@ const STRINGS: Record<Lang, Strings> = {
       'Long-form description. Markdown allowed; consumers may render it or display verbatim.',
     layerLabel: 'layer',
     layerHelp:
-      "1 = WASM in-browser, 2 = Docker, 3 = third way. Selecting a layer reveals that layer's required fields below.",
-    layerOption: (n) =>
-      n === 1 ? '1 · WASM' : n === 2 ? '2 · Docker' : '3 · third way',
+      "1 = WASM in-browser, 2 = Docker. Selecting a layer reveals that layer's required fields below.",
+    layerOption: (n) => (n === 1 ? '1 · WASM' : '2 · Docker'),
     bugProjectLabel: 'bug.project',
     bugIssueLabel: 'bug.issue',
     bugIssueHelp:
@@ -347,9 +320,7 @@ const STRINGS: Record<Lang, Strings> = {
         ? 'レイヤー固有'
         : layer === 1
           ? 'レイヤー 1 (WASM)'
-          : layer === 2
-            ? 'レイヤー 2 (Docker)'
-            : 'レイヤー 3 (第三の道)',
+          : 'レイヤー 2 (Docker)',
     outputEyebrow: '// 02 · 生成された TOML',
     slugLabel: 'slug',
     slugHelp:
@@ -361,9 +332,8 @@ const STRINGS: Record<Lang, Strings> = {
       '長文の説明。Markdown 可。コンシューマー側がレンダリングするかそのまま表示するかを選ぶ。',
     layerLabel: 'layer',
     layerHelp:
-      '1 = ブラウザ内 WASM、2 = Docker、3 = 第三の道。レイヤーを選ぶと、そのレイヤーに必要なフィールドが下に出る。',
-    layerOption: (n) =>
-      n === 1 ? '1 · WASM' : n === 2 ? '2 · Docker' : '3 · 第三の道',
+      '1 = ブラウザ内 WASM、2 = Docker。レイヤーを選ぶと、そのレイヤーに必要なフィールドが下に出る。',
+    layerOption: (n) => (n === 1 ? '1 · WASM' : '2 · Docker'),
     bugProjectLabel: 'bug.project',
     bugIssueLabel: 'bug.issue',
     bugIssueHelp:
@@ -402,7 +372,6 @@ const INITIAL_STATE: FormState = {
   bug: { project: '', issue: '', upstream_url: '' },
   layer1: { page_url: '', expected_verdict: '' },
   layer2: { image: '', dockerfile: '', expected_verdict: '' },
-  layer3: { image: '', dockerfile: '', expected_verdict: '' },
 };
 
 function Field({
@@ -451,7 +420,7 @@ export function ManifestScaffolder({ lang }: { lang: Lang }) {
   const updateBug = (k: keyof FormState['bug'], v: string) => {
     setState((prev) => ({ ...prev, bug: { ...prev.bug, [k]: v } }));
   };
-  const updateLayer = <L extends 'layer1' | 'layer2' | 'layer3'>(
+  const updateLayer = <L extends 'layer1' | 'layer2'>(
     layer: L,
     k: keyof FormState[L],
     v: string,
@@ -560,7 +529,7 @@ export function ManifestScaffolder({ lang }: { lang: Lang }) {
           requiredText={s.required}
         >
           <div className="v-mfs__chips">
-            {([1, 2, 3] as LayerLiteral[]).map((n) => (
+            {([1, 2] as LayerLiteral[]).map((n) => (
               <button
                 key={n}
                 type="button"
@@ -667,7 +636,7 @@ export function ManifestScaffolder({ lang }: { lang: Lang }) {
               </select>
             </Field>
           </>
-        ) : state.layer === 2 ? (
+        ) : (
           <>
             <Field
               label={s.imageLabel}
@@ -708,55 +677,6 @@ export function ManifestScaffolder({ lang }: { lang: Lang }) {
                 value={state.layer2.expected_verdict}
                 onChange={(e) =>
                   updateLayer('layer2', 'expected_verdict', e.target.value)
-                }
-              >
-                <option value="">{s.expectedVerdictUnset}</option>
-                <option value="reproduced">reproduced</option>
-                <option value="unreproduced">unreproduced</option>
-              </select>
-            </Field>
-          </>
-        ) : (
-          <>
-            <Field
-              label={s.imageLabel}
-              error={errors['layer3.image']}
-              required
-              requiredText={s.required}
-            >
-              <input
-                type="text"
-                className="v-mfs__input"
-                value={state.layer3.image}
-                onChange={(e) => updateLayer('layer3', 'image', e.target.value)}
-                placeholder="ghcr.io/example-org/example-recipe:latest"
-              />
-            </Field>
-            <Field
-              label={s.dockerfileLabel}
-              help={s.dockerfileHelp}
-              requiredText={s.required}
-            >
-              <input
-                type="text"
-                className="v-mfs__input"
-                value={state.layer3.dockerfile}
-                onChange={(e) =>
-                  updateLayer('layer3', 'dockerfile', e.target.value)
-                }
-                placeholder="./Dockerfile"
-              />
-            </Field>
-            <Field
-              label={s.expectedVerdictLabel}
-              help={s.expectedVerdictHelp}
-              requiredText={s.required}
-            >
-              <select
-                className="v-mfs__input"
-                value={state.layer3.expected_verdict}
-                onChange={(e) =>
-                  updateLayer('layer3', 'expected_verdict', e.target.value)
                 }
               >
                 <option value="">{s.expectedVerdictUnset}</option>

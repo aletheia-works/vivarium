@@ -17,7 +17,7 @@
     "language": {
       "type": "string",
       "minLength": 1,
-      "description": "Primary source language of the reproduction. Layer 1 uses the value to pick a Shiki bundle for syntax highlighting (so the value must be a Shiki BundledLanguage ID such as 'python', 'ruby', 'php', 'rust', 'javascript', 'shell', 'sql', 'c'); Layer 2/3 only use it for gallery filtering. 'unknown' is allowed as a degraded default but should be replaced as soon as a maintainer can label the recipe."
+      "description": "Primary source language of the reproduction. Layer 1 uses the value to pick a Shiki bundle for syntax highlighting (so the value must be a Shiki BundledLanguage ID such as 'python', 'ruby', 'php', 'rust', 'javascript', 'shell', 'sql', 'c'); Layers 2 and 3 use it only for gallery filtering. 'unknown' is allowed as a degraded default but should be replaced as soon as a maintainer can label the recipe."
     },
     "symptom": {
       "type": "string",
@@ -47,7 +47,7 @@
     "expected_runtime": {
       "type": "string",
       "minLength": 1,
-      "description": "Runtime identifier the recipe's verdict envelope reports in `__VIVARIUM_RESULT__.runtime.name`. For Layer 1: 'pyodide' / 'ruby.wasm' / 'php-wasm' / 'rust-wasi' / 'formicarium' / 'browser' (the smoke test). For Layer 2: 'docker-snapshot'. Layer 3 ships no recipes, so it has no established value. Asserted by the regression suite alongside expected_verdict, and required in practice on the same terms: src/layer1_wasm/tests/repro.spec.ts refuses to start when the value is missing or unrecognised."
+      "description": "Runtime identifier the recipe's verdict envelope reports in `__VIVARIUM_RESULT__.runtime.name`. For Layer 1: 'pyodide' / 'ruby.wasm' / 'php-wasm' / 'rust-wasi' / 'formicarium' / 'browser' (the smoke test). For Layer 2: 'docker-snapshot'. Layer 3 live previews produce no verdict and omit it. Asserted by the regression suite alongside expected_verdict, and required in practice on the same terms: src/layer1_wasm/tests/repro.spec.ts refuses to start when the value is missing or unrecognised."
     },
     "path_a": {
       "type": "boolean",
