@@ -72,13 +72,27 @@ jobs:
             echo 'TF_ENCRYPTION_EOF'
           } >> "$GITHUB_ENV"
 
+      # vars.* is fixed when the run is queued, before the previous apply saves its state.
+      - name: Read LATEST_AWS_APPLY_RUN_ID
+        id: state
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          github-token: ${{ secrets.TF_TOKEN_GITHUB }}
+          script: |
+            try {
+              const { data } = await github.rest.actions.getRepoVariable({ owner: context.repo.owner, repo: context.repo.repo, name: 'LATEST_AWS_APPLY_RUN_ID' });
+              core.setOutput('run-id', data.value);
+            } catch (error) {
+              if (error.status !== 404) throw error;
+            }
+
       - name: Download state artifact
-        if: vars.LATEST_AWS_APPLY_RUN_ID != ''
+        if: steps.state.outputs.run-id != ''
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: terraform-state-aws
           path: infra/aws/
-          run-id: ${{ vars.LATEST_AWS_APPLY_RUN_ID }}
+          run-id: ${{ steps.state.outputs.run-id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - run: tofu init -input=false -lockfile=readonly
