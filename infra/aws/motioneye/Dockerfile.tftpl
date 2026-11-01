@@ -25,7 +25,7 @@ COPY preview /usr/local/lib/preview
 RUN set -e; \
     useradd --home-dir /srv/uploads --shell /bin/sh preview; \
     echo 'preview:password' | chpasswd; \
-    mkdir -p /srv/uploads/ftp /srv/uploads/sftp /srv/uploads/smb /var/run/vsftpd/empty; \
+    mkdir -p /srv/uploads/ftp /srv/uploads/sftp /srv/uploads/smb; \
     chown preview /srv/uploads/ftp /srv/uploads/sftp /srv/uploads/smb; \
     cp /usr/local/lib/preview/vsftpd.conf /etc/vsftpd.conf; \
     cp /usr/local/lib/preview/sshd.conf /etc/ssh/sshd_config.d/preview.conf; \

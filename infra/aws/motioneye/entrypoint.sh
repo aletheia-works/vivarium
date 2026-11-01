@@ -6,7 +6,7 @@ python3 /usr/local/lib/preview/hooks.py &
   --smtp-tls-cert /etc/preview/cert.pem --smtp-tls-key /etc/preview/key.pem \
   --smtp-auth-accept-any --smtp-auth-allow-insecure --disable-version-check &
 python3 /usr/local/lib/preview/smtps.py &
-mkdir -p /run/sshd
+mkdir -p /run/sshd /run/vsftpd/empty
 /usr/sbin/sshd
 vsftpd /etc/vsftpd.conf &
 smbd --daemon
