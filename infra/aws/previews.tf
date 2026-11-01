@@ -44,8 +44,9 @@ resource "aws_cloudwatch_log_group" "preview_build" {
 }
 
 resource "aws_iam_role" "preview_build" {
-  name        = "vivarium-preview-build"
-  description = "Builds the preview MicroVM images from their zips in S3."
+  name                 = "vivarium-preview-build"
+  description          = "Builds the preview MicroVM images from their zips in S3."
+  permissions_boundary = aws_iam_policy.workload_boundary.arn
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
@@ -135,8 +136,9 @@ resource "aws_cloudwatch_log_group" "preview_proxy" {
 }
 
 resource "aws_iam_role" "preview_proxy" {
-  name        = "vivarium-preview-proxy"
-  description = "Starts the preview MicroVMs and forwards to them."
+  name                 = "vivarium-preview-proxy"
+  description          = "Starts the preview MicroVMs and forwards to them."
+  permissions_boundary = aws_iam_policy.workload_boundary.arn
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{

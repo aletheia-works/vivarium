@@ -5,7 +5,7 @@ import argparse
 import os
 import sys
 
-GROUPS = ("docs", "repro", "mcp", "builder")
+GROUPS = ("docs", "repro", "mcp", "builder", "previews")
 ALL = frozenset(GROUPS)
 NONE = frozenset()
 # The pull-request files API lists at most 3000 files; a longer list may be cut.
@@ -51,6 +51,7 @@ RULES = (
         ),
     ),
     ({"mcp"}, ("packages/mcp-server/", ".github/workflows/test-mcp.yml")),
+    ({"previews"}, ("infra/aws/preview-proxy/", ".github/workflows/test-previews.yml")),
     (
         {"docs"},
         (
@@ -125,6 +126,8 @@ def self_test():
         "README.md": NONE,
         "SECURITY.md": NONE,
         "infra/github/main.tf": NONE,
+        "infra/aws/previews.tf": NONE,
+        ".github/workflows/aws-terraform-plan.yml": NONE,
         ".github/labeler.yml": NONE,
         ".github/workflows/claude-review.yml": NONE,
         ".github/workflows/terraform-plan.yml": NONE,
@@ -150,6 +153,8 @@ def self_test():
         "packages/mcp-server/src/server.ts": {"mcp"},
         "packages/mcp-server/README.md": {"mcp"},
         ".github/workflows/test-mcp.yml": {"mcp"},
+        "infra/aws/preview-proxy/index.mjs": {"previews"},
+        ".github/workflows/test-previews.yml": {"previews"},
         "docs/site/en/roadmap.mdx": {"docs"},
         "docs/site/_components/LiveExamples.tsx": {"docs"},
         ".github/workflows/deploy-docs.yml": {"docs"},

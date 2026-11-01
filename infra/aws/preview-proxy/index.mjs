@@ -159,16 +159,18 @@ async function liveMicrovm(config, api) {
 }
 
 export async function previewMicrovm(config, api, { now = Date.now } = {}) {
-  let microvm = (await liveMicrovm(config, api)) ?? await api.run({
-    imageIdentifier: config.imageArn,
-    ingressNetworkConnectors: [config.ingressConnector],
-    idlePolicy: config.idlePolicy,
-    maximumDurationInSeconds: config.maximumDurationInSeconds,
-    clientToken: `preview-${new Date(now())
-      .toISOString()
-      .slice(0, 16)
-      .replace(/\D/g, '')}`,
-  });
+  let microvm =
+    (await liveMicrovm(config, api)) ??
+    (await api.run({
+      imageIdentifier: config.imageArn,
+      ingressNetworkConnectors: [config.ingressConnector],
+      idlePolicy: config.idlePolicy,
+      maximumDurationInSeconds: config.maximumDurationInSeconds,
+      clientToken: `preview-${new Date(now())
+        .toISOString()
+        .slice(0, 16)
+        .replace(/\D/g, '')}`,
+    }));
   const deadline = now() + START_TIMEOUT_MS;
   while (microvm.state === 'PENDING' && now() < deadline) {
     await sleep(POLL_MS);
@@ -271,14 +273,23 @@ function open(from, responseStream, metadata) {
 function plain(responseStream, from, statusCode, text, extra = {}) {
   const stream = open(from, responseStream, {
     statusCode,
-    headers: { 'content-type': 'text/plain; charset=utf-8', 'cache-control': 'no-store' },
+    headers: {
+      'content-type': 'text/plain; charset=utf-8',
+      'cache-control': 'no-store',
+    },
     ...extra,
   });
   stream.write(text);
   stream.end();
 }
 
-export function createProxy({ config, api, fetchImpl = fetch, from, now = Date.now }) {
+export function createProxy({
+  config,
+  api,
+  fetchImpl = fetch,
+  from,
+  now = Date.now,
+}) {
   let connection;
   async function current() {
     if (!connection || connection.expiresAt - TOKEN_MARGIN_MS < now())
@@ -288,7 +299,12 @@ export function createProxy({ config, api, fetchImpl = fetch, from, now = Date.n
   return async function respond(event, responseStream) {
     const admission = admit(config, event);
     if (admission.status === 403)
-      return plain(responseStream, from, 403, 'This preview needs the link with its key.\n');
+      return plain(
+        responseStream,
+        from,
+        403,
+        'This preview needs the link with its key.\n',
+      );
     if (admission.status === 302)
       return plain(responseStream, from, 302, '', {
         headers: { location: admission.location, 'cache-control': 'no-store' },
@@ -307,7 +323,12 @@ export function createProxy({ config, api, fetchImpl = fetch, from, now = Date.n
       }
     }
     if (!response)
-      return plain(responseStream, from, 503, 'The preview is starting or unavailable. Reload in a moment.\n');
+      return plain(
+        responseStream,
+        from,
+        503,
+        'The preview is starting or unavailable. Reload in a moment.\n',
+      );
     const stream = open(from, responseStream, responseMetadata(response));
     if (response.body) await pipeline(Readable.fromWeb(response.body), stream);
     else stream.end();

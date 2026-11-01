@@ -23,6 +23,7 @@ jobs:
       repro: ${{ steps.groups.outputs.repro }}
       mcp: ${{ steps.groups.outputs.mcp }}
       builder: ${{ steps.groups.outputs.builder }}
+      previews: ${{ steps.groups.outputs.previews }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -67,9 +68,14 @@ jobs:
     if: needs.changes.outputs.builder == 'true'
     uses: ./.github/workflows/test-fixed-guest-builder.yml
 
+  previews:
+    needs: changes
+    if: needs.changes.outputs.previews == 'true'
+    uses: ./.github/workflows/test-previews.yml
+
   ci-required:
     if: always()
-    needs: [changes, docs, repro, mcp, builder]
+    needs: [changes, docs, repro, mcp, builder, previews]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -84,6 +90,8 @@ jobs:
           MCP_RESULT: ${{ needs.mcp.result }}
           BUILDER_NEEDED: ${{ needs.changes.outputs.builder }}
           BUILDER_RESULT: ${{ needs.builder.result }}
+          PREVIEWS_NEEDED: ${{ needs.changes.outputs.previews }}
+          PREVIEWS_RESULT: ${{ needs.previews.result }}
         run: |
           set -euo pipefail
           gate() {
@@ -100,3 +108,4 @@ jobs:
           gate repro "$REPRO_NEEDED" "$REPRO_RESULT"
           gate mcp "$MCP_NEEDED" "$MCP_RESULT"
           gate builder "$BUILDER_NEEDED" "$BUILDER_RESULT"
+          gate previews "$PREVIEWS_NEEDED" "$PREVIEWS_RESULT"

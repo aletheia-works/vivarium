@@ -1,0 +1,62 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "ReadOwnBucketSettings",
+      "Effect": "Allow",
+      "Action": ["s3:Get*", "s3:List*"],
+      "Resource": "arn:aws:s3:::vivarium-*"
+    },
+    {
+      "Sid": "ReadPreviewArtifacts",
+      "Effect": "Allow",
+      "Action": ["s3:GetObject", "s3:GetObjectTagging", "s3:GetObjectVersion"],
+      "Resource": "arn:aws:s3:::vivarium-preview-artifacts-${account_id}/previews/*"
+    },
+    {
+      "Sid": "ReadOwnFunctionsAndImages",
+      "Effect": "Allow",
+      "Action": ["lambda:Get*", "lambda:List*"],
+      "Resource": [
+        "arn:aws:lambda:*:${account_id}:function:vivarium-*",
+        "arn:aws:lambda:*:${account_id}:microvm-image:vivarium-*"
+      ]
+    },
+    {
+      "Sid": "ListingIsNotResourceScoped",
+      "Effect": "Allow",
+      "Action": [
+        "lambda:ListFunctions",
+        "lambda:ListMicrovmImages",
+        "lambda:ListMicrovms",
+        "logs:DescribeLogGroups"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "ReadOwnLogGroups",
+      "Effect": "Allow",
+      "Action": ["logs:Describe*", "logs:ListTags*", "logs:GetDataProtectionPolicy"],
+      "Resource": [
+        "arn:aws:logs:*:${account_id}:log-group:/vivarium/*",
+        "arn:aws:logs:*:${account_id}:log-group:/vivarium/*:*"
+      ]
+    },
+    {
+      "Sid": "ReadThroughCloudControl",
+      "Effect": "Allow",
+      "Action": [
+        "cloudformation:GetResource",
+        "cloudformation:ListResources",
+        "cloudformation:GetResourceRequestStatus"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "ReadIdentities",
+      "Effect": "Allow",
+      "Action": ["iam:Get*", "iam:List*"],
+      "Resource": "*"
+    }
+  ]
+}
