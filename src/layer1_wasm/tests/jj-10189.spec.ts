@@ -13,7 +13,7 @@ const PAGES = {
 } as const;
 const RECIPE_DIR = resolve(import.meta.dirname, '..', SLUG);
 const STAGED = resolve(RECIPE_DIR, '_formicarium', 'assets.json');
-const VERDICT_TIMEOUT_MS = 600_000;
+const VERDICT_TIMEOUT_MS = 300_000;
 const PINNED = 'JJ_TIMESTAMP=2001-02-03T04:05:06+07:00';
 const COMMANDS = [
   `${PINNED} jj git init`,
@@ -102,7 +102,7 @@ test('en: both terminals start isolated, verify and run the recorded commands', 
   browser,
   browserName,
 }, testInfo) => {
-  test.setTimeout(660_000);
+  test.setTimeout(360_000);
   const errors: string[] = [];
   page.on('console', (message) => {
     if (message.type() === 'error') errors.push(message.text());
@@ -165,7 +165,7 @@ test('en: a changed ELF is not run and the page says why', async ({
   page,
   browserName,
 }, testInfo) => {
-  test.setTimeout(660_000);
+  test.setTimeout(360_000);
   const elf = resolve(RECIPE_DIR, 'guests', 'fix', 'jj');
   const original = readFileSync(elf);
   const changed = Buffer.from(original);
@@ -194,7 +194,7 @@ test('en: a visitor types a command into the terminal', async ({
   page,
   browserName,
 }) => {
-  test.setTimeout(660_000);
+  test.setTimeout(360_000);
   await settle(page, PAGES.en);
   const baseline = page.locator('#output-baseline formicarium-terminal');
   const rows = baseline.locator('.xterm-rows > div');
@@ -226,7 +226,7 @@ test('en: without xterm.js the terminal falls back to text and an input', async 
     browserName !== 'chromium',
     'only Chromium lets Playwright route the requests the coi service worker makes',
   );
-  test.setTimeout(660_000);
+  test.setTimeout(360_000);
   await page
     .context()
     .route('https://cdn.jsdelivr.net/npm/@xterm/**', (route) => route.abort());
