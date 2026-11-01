@@ -36,8 +36,9 @@ and installs it, so the zip carries no file modes that matter. The image adds:
   setting while either password is empty, and the preview's key already keeps
   strangers out, so the passwords only spare the reviewer that step.
 - `hooks.py`: the lifecycle hooks on port 9000. `ready` and `validate` answer
-  200 only once motionEye serves a picture from every camera, so Lambda
-  snapshots a running motionEye with frames flowing.
+  200 only once motionEye serves a picture from every camera and mailpit
+  answers on its UI, on 1025 and over TLS on 1465, so Lambda snapshots a
+  running motionEye with frames flowing and mail being caught.
 - mailpit 1.33.0, downloaded at build time and checked against its SHA-256,
   with a self-signed certificate made at build time. It takes SMTP on
   `127.0.0.1:1025` (plain or STARTTLS) and serves its UI on port 8025 under
