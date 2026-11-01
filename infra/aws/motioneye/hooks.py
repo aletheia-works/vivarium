@@ -11,6 +11,9 @@ CAMERAS = range(1, 5)
 MAILPIT_UI = "http://127.0.0.1:8025/mailpit/"
 SMTP = ("127.0.0.1", 1025)
 SMTPS = ("127.0.0.1", 1465)
+UPLOADS_UI = "http://127.0.0.1:8030/uploads/"
+GREETINGS = {("127.0.0.1", 21): b"220", ("127.0.0.1", 22): b"SSH-"}
+SMB = ("127.0.0.1", 445)
 HOOKS = "/aws/lambda-microvms/runtime/v1/"
 
 
@@ -56,11 +59,26 @@ def catching_mail() -> bool:
     return True
 
 
+def receiving_uploads() -> bool:
+    try:
+        with urllib.request.urlopen(UPLOADS_UI, timeout=10) as r:
+            if r.status != 200:
+                return False
+        for address, greeting in GREETINGS.items():
+            with socket.create_connection(address, timeout=3) as s:
+                if not s.recv(64).startswith(greeting):
+                    return False
+        socket.create_connection(SMB, timeout=3).close()
+    except OSError:
+        return False
+    return True
+
+
 class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         hook = self.path.removeprefix(HOOKS)
         if hook in ("ready", "validate"):
-            status = 200 if serving_pictures() and catching_mail() else 503
+            status = 200 if serving_pictures() and catching_mail() and receiving_uploads() else 503
         elif hook in ("run", "resume", "suspend", "terminate"):
             status = 200
         else:

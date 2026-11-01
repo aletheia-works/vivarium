@@ -180,11 +180,11 @@ test('settings refuses a missing egress connector', () => {
   );
 });
 
-test('connect asks for a token to the motionEye and mailpit ports only', async () => {
+test('connect asks for a token to the motionEye, mailpit and uploads ports only', async () => {
   const api = fakeApi([{ microvmId: 'mvm-live', state: 'RUNNING' }]);
   const connection = await connect(CONFIG, api, { now: () => 1000 });
   assert.equal(connection.endpoint, 'mvm-live.example');
-  assert.equal(api.calls.at(-1), 'token mvm-live 8765,8025');
+  assert.equal(api.calls.at(-1), 'token mvm-live 8765,8025,8030');
   assert.equal(connection.expiresAt, 1000 + 60 * 60_000);
 });
 
@@ -228,6 +228,9 @@ test('paths under /mailpit/ go to the mailpit port and the rest to motionEye', (
   assert.equal(port('/mailpit/api/v1/messages'), '8025');
   assert.equal(port('/mailpit'), '8025');
   assert.equal(port('/mailpitx/'), '8765');
+  assert.equal(port('/uploads/'), '8030');
+  assert.equal(port('/uploads/files/ftp/a.jpg'), '8030');
+  assert.equal(port('/uploadsx'), '8765');
   assert.equal(port('/picture/1/current/'), '8765');
 });
 

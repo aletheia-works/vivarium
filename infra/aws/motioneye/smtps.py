@@ -4,8 +4,8 @@ import sys
 
 LISTEN = ("127.0.0.1", 1465)
 MAILPIT = ("127.0.0.1", 1025)
-CERT = "/etc/mailpit/cert.pem"
-KEY = "/etc/mailpit/key.pem"
+CERT = "/etc/preview/cert.pem"
+KEY = "/etc/preview/key.pem"
 
 
 async def pipe(reader: asyncio.StreamReader, writer: asyncio.StreamWriter) -> None:

@@ -10,19 +10,30 @@ RUN set -e; \
     python3 get-pip.py; \
     python3 -m pip install -U /tmp/motioneye; \
     motioneye_init --skip-systemd --skip-apt-update; \
+    DEBIAN_FRONTEND='noninteractive' apt-get -qq -o 'Dpkg::Options::=--force-confnew' --no-install-recommends install vsftpd openssh-server samba cifs-utils; \
     curl -sSfL -o /tmp/mailpit.tar.gz 'https://github.com/axllent/mailpit/releases/download/v1.33.0/mailpit-linux-arm64.tar.gz'; \
     echo '1d27c819e1a5dd2761ed9fd07022443e35a47793b2e92de5b49cf3656a649ef9  /tmp/mailpit.tar.gz' | sha256sum -c -; \
     tar -xzf /tmp/mailpit.tar.gz -C /usr/local/bin mailpit; \
-    mkdir /etc/mailpit; \
-    openssl req -x509 -newkey rsa:2048 -nodes -days 3650 -subj '/CN=localhost' -addext 'subjectAltName=DNS:localhost,IP:127.0.0.1' -keyout /etc/mailpit/key.pem -out /etc/mailpit/cert.pem; \
+    mkdir /etc/preview; \
+    openssl req -x509 -newkey rsa:2048 -nodes -days 3650 -subj '/CN=localhost' -addext 'subjectAltName=DNS:localhost,IP:127.0.0.1' -keyout /etc/preview/key.pem -out /etc/preview/cert.pem; \
     python3 -m pip uninstall -y pip; \
     apt-get clean; \
     rm -r /var/lib/apt/lists /var/cache/apt /tmp/motioneye /tmp/mailpit.tar.gz get-pip.py
 
 COPY preview /usr/local/lib/preview
 
-RUN python3 /usr/local/lib/preview/seed.py && python3 /usr/local/lib/preview/media.py
+RUN set -e; \
+    useradd --home-dir /srv/uploads --shell /bin/sh preview; \
+    echo 'preview:password' | chpasswd; \
+    mkdir -p /srv/uploads/ftp /srv/uploads/sftp /srv/uploads/smb /var/run/vsftpd/empty; \
+    chown preview /srv/uploads/ftp /srv/uploads/sftp /srv/uploads/smb; \
+    cp /usr/local/lib/preview/vsftpd.conf /etc/vsftpd.conf; \
+    cp /usr/local/lib/preview/sshd.conf /etc/ssh/sshd_config.d/preview.conf; \
+    cp /usr/local/lib/preview/smb.conf /etc/samba/smb.conf; \
+    printf 'password\npassword\n' | smbpasswd -a -s preview; \
+    python3 /usr/local/lib/preview/seed.py; \
+    python3 /usr/local/lib/preview/media.py
 
-EXPOSE 8765 8025 9000
+EXPOSE 8765 8025 8030 9000
 
 ENTRYPOINT ["sh", "/usr/local/lib/preview/entrypoint.sh"]
