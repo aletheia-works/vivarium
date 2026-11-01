@@ -38,11 +38,11 @@ const COI_COPY = readFileSync(
 const VERSION = '0.4.0';
 const SOURCE_COMMIT = 'c'.repeat(40);
 const BASELINE = {
-  repository: 'https://github.com/biomejs/biome',
+  repository: 'https://github.com/jj-vcs/jj',
   commit: '1'.repeat(40),
 };
 const FIX = {
-  repository: 'https://github.com/jambalaya56562/biome',
+  repository: 'https://github.com/marukome0743/jj',
   commit: 'a5bd0ce883a22980be20dfc87ba62006a43c3de8',
 };
 
@@ -193,7 +193,7 @@ function guestSet(
 ) {
   const elf = encoder.encode(elfText);
   const inputs = {
-    tool: 'biome',
+    tool: 'jj',
     repository: source.repository,
     commit: source.commit,
     target: 'x86_64-unknown-linux-musl' as const,
@@ -205,7 +205,7 @@ function guestSet(
   const key = buildKey(inputs);
   const info: GuestBuildInfo = {
     schemaVersion: 1,
-    tool: 'biome',
+    tool: 'jj',
     versionOrName: source.commit,
     source,
     target: inputs.target,
@@ -223,14 +223,14 @@ function guestSet(
         info,
         buildInfo,
         elf,
-        `https://github.com/aletheia-works/vivarium/releases/download/guest-biome-${key}/biome`,
+        `https://github.com/aletheia-works/vivarium/releases/download/guest-jj-${key}/jj`,
       ),
     ),
   );
   return {
     key,
     files: {
-      biome: elf,
+      jj: elf,
       'build-info.json': buildInfo,
       'catalog.json': catalog,
     },
@@ -274,10 +274,10 @@ async function writeRecipe(
     set: typeof baselineSet,
   ) => ({
     role,
-    tool: 'biome',
+    tool: 'jj',
     repository: source.repository,
     commit: source.commit,
-    fixture: 'biome-migrate-prettier-override',
+    fixture: 'jj-migrate-prettier-override',
     ...(options.accepted ? { accepted: set.accepted } : {}),
   });
   await writeFile(
@@ -354,7 +354,7 @@ interface Call {
 }
 
 function releaseUrl(set: typeof baselineSet, asset: string) {
-  return `https://github.com/aletheia-works/vivarium/releases/download/guest-biome-${set.key}/${asset}`;
+  return `https://github.com/aletheia-works/vivarium/releases/download/guest-jj-${set.key}/${asset}`;
 }
 
 function objectUrl(asset: string, key: string) {
@@ -614,8 +614,8 @@ describe('stageAssets local mode (S5)', () => {
       expect(sha(readFileSync(path.join(dir, '_formicarium', file.path)))).toBe(
         file.sha256,
       );
-    expect(readFileSync(path.join(dir, 'guests', 'fix', 'biome'))).toEqual(
-      Buffer.from(fixSet.files.biome),
+    expect(readFileSync(path.join(dir, 'guests', 'fix', 'jj'))).toEqual(
+      Buffer.from(fixSet.files.jj),
     );
     expect(
       JSON.parse(
@@ -704,7 +704,7 @@ describe('stageAssets pin mode (S2)', () => {
       expect(new Headers(call.init.headers).has('authorization')).toBe(false);
     }
     const elfRow = report.rows.find((row) => row.item === 'demo fix ELF');
-    expect(elfRow?.source).toBe(objectUrl('biome', fixSet.key));
+    expect(elfRow?.source).toBe(objectUrl('jj', fixSet.key));
   });
 
   test('without a pin every formicarium recipe is pending and nothing is fetched', async () => {
@@ -867,17 +867,17 @@ describe('stageAssets pin mode (S2)', () => {
     });
     let error = await stageError(() => stageAssets(swapped.options));
     expect(error.code).toBe('VERIFY_FAILED');
-    expect(error.message).toContain(`tag guest-biome-${baselineSet.key}`);
+    expect(error.message).toContain(`tag guest-jj-${baselineSet.key}`);
     await writeRecipe('demo', {
       accepted: true,
-      fixRepository: 'https://github.com/biomejs/biome',
+      fixRepository: 'https://github.com/jj-vcs/jj',
     });
     const moved = await pinOptions();
     error = await stageError(() => stageAssets(moved.options));
     expect(error.message).toContain('build-info is for another source');
     await writeRecipe('demo', { accepted: true });
     const elf = await pinOptions(packageTarball(), {
-      [objectUrl('biome', fixSet.key)]: () => new Response('\x7fELF-other'),
+      [objectUrl('jj', fixSet.key)]: () => new Response('\x7fELF-other'),
     });
     error = await stageError(() => stageAssets(elf.options));
     expect(error.code).toBe('VERIFY_FAILED');
@@ -921,11 +921,11 @@ describe('checkSite (NFR6.4, S4, S9)', () => {
     const guests = path.join(site, 'repro', 'demo', 'guests', 'baseline');
     await mkdir(guests, { recursive: true });
     expect(await checkSite(site)).toMatchObject({ bundles: 0, largest: null });
-    await writeFile(path.join(guests, 'biome'), 'elf-bytes');
+    await writeFile(path.join(guests, 'jj'), 'elf-bytes');
     expect(await checkSite(site)).toMatchObject({
-      largest: { path: 'repro/demo/guests/baseline/biome', bytes: 9 },
+      largest: { path: 'repro/demo/guests/baseline/jj', bytes: 9 },
     });
-    rmSync(path.join(guests, 'biome'));
+    rmSync(path.join(guests, 'jj'));
     await writeFile(path.join(guests, 'accepted.json'), '{}');
     const error = await stageError(() => checkSite(site));
     expect(error.code).toBe('VERIFY_FAILED');
@@ -950,7 +950,7 @@ describe('checkSite against the Pages upload of hidden files (Step 18a)', () => 
     const site = await siteWith([
       'repro/demo/fixture/.prettierrc',
       'repro/demo/.cache/a.json',
-      'repro/demo/fixture/biome.json',
+      'repro/demo/fixture/jj.json',
     ]);
     const report = await checkSite(site, undefined, KEEP);
     expect(report.hiddenFiles).toEqual([
@@ -977,7 +977,7 @@ describe('checkSite against the Pages upload of hidden files (Step 18a)', () => 
   });
 
   test('passes a site without hidden files whatever the setting', async () => {
-    const site = await siteWith(['repro/demo/fixture/biome.json']);
+    const site = await siteWith(['repro/demo/fixture/jj.json']);
     expect((await checkSite(site, undefined, DROP)).hiddenFiles).toEqual([]);
   });
 
@@ -997,7 +997,7 @@ describe('checkSite against the Pages upload of hidden files (Step 18a)', () => 
 
   test('a site with a fixture dotfile passes under the deploy-docs upload setting', async () => {
     const site = await siteWith([
-      'repro/biome/migrate-top-level-bracket-spacing/fixture/.prettierrc',
+      'repro/jj/migrate-top-level-bracket-spacing/fixture/.prettierrc',
     ]);
     const report = await checkSite(site, undefined, readUploadSettings());
     expect(report.hiddenFiles).toHaveLength(1);

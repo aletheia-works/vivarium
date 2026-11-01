@@ -41,7 +41,7 @@ async function artifacts() {
     JSON.stringify({
       schemaVersion: 1,
       buildKey: set.key,
-      tag: `guest-biome-${set.key}`,
+      tag: `guest-jj-${set.key}`,
       compiled: true,
       elfSha256: sha(set.files.elf),
       buildInfoSha256: sha(set.files.buildInfo),
@@ -113,7 +113,7 @@ describe('main', () => {
       GITHUB_RUN_ID: '5',
     });
     const code = await main(
-      ['release', '--workflow', 'x.yml', '--tool', 'biome'],
+      ['release', '--workflow', 'x.yml', '--tool', 'jj'],
       terminal,
       {
         api: () => {
@@ -136,7 +136,7 @@ describe('main', () => {
       new Bun.CryptoHasher('sha256').update(bytes).digest('hex'),
     );
     expect(printed.plan.action).toBe('publish');
-    expect(printed.identity).toMatchObject({ tool: 'biome', key: set.key });
+    expect(printed.identity).toMatchObject({ tool: 'jj', key: set.key });
     expect(await readFile(paths.summary, 'utf8')).toContain(printed.planSha256);
     expect(api.writes).toEqual([]);
   });
@@ -195,7 +195,7 @@ describe('main', () => {
     await writeFile(
       recipe,
       JSON.stringify({
-        guests: [{ role: 'fix', tool: 'biome', ...SOURCE, fixture: 'f' }],
+        guests: [{ role: 'fix', tool: 'jj', ...SOURCE, fixture: 'f' }],
       }),
     );
     const terminal = io();
@@ -325,7 +325,7 @@ describe('build', () => {
     const shipped = await Bun.file(
       new URL('../tools.json', import.meta.url),
     ).json();
-    const image = shipped.images['1.98.1'] as string;
+    const image = shipped.images['1.99.1'] as string;
     const docker = new URL('./fixtures/fake-docker.sh', import.meta.url)
       .pathname;
     await chmod(docker, 0o755);
@@ -333,23 +333,23 @@ describe('build', () => {
     Object.assign(process.env, {
       FAKE_DOCKER_LOG: join(root, 'docker.log'),
       FAKE_REPO_DIGEST: image.split('@')[1] as string,
-      FAKE_RUST: '1.98.1',
+      FAKE_RUST: '1.99.1',
       FAKE_TARGET: 'x86_64-unknown-linux-musl',
-      FAKE_BINARY: 'biome',
+      FAKE_BINARY: 'jj',
     });
     const upstream = await createUpstream({
       'Cargo.toml': '[workspace]\n',
       'Cargo.lock': 'version = 4\n[[package]]\nname = "x"\nversion = "1.0.0"\n',
-      'rust-toolchain.toml': '[toolchain]\nchannel = "1.98.1"\n',
+      'rust-toolchain.toml': '[toolchain]\nchannel = "1.99.1"\n',
     });
     const declaration = join(root, 'declaration.json');
     await writeFile(
       declaration,
       JSON.stringify({
-        tool: 'biome',
-        repository: 'https://github.com/biomejs/biome',
+        tool: 'jj',
+        repository: 'https://github.com/jj-vcs/jj',
         commit: upstream.main,
-        fixture: 'biome-12265',
+        fixture: 'jj-10189',
       }),
     );
     const receipt = join(root, 'receipt.json');
