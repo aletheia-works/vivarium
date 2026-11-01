@@ -46,18 +46,21 @@ The image template is [`infra/aws/motioneye/`](../../infra/aws/motioneye/).
 | Cameras | Four network cameras, seeded at build time, reading `http://127.0.0.1:9900/cam1.jpg` to `cam4.jpg`. |
 | Fake camera server | `fakecam.py` on `127.0.0.1:9900`. Each frame is a coloured 640×480 JPEG with a moving square and the time, so motion detection has something to see. |
 | Sign-in | `admin` and the normal user both have the password `password`, seeded at build time. |
-| Lifecycle hooks | `hooks.py` on port 9000. Lambda calls `ready` and `validate` while it builds the image; both sign in and expect a JPEG from every camera. |
+| Mail | [mailpit](https://mailpit.axllent.org) 1.33.0 catches e-mail and never relays it. SMTP on `127.0.0.1:1025` takes plain text or STARTTLS; `smtps.py` on `127.0.0.1:1465` takes implicit TLS and passes the session to it. Both accept any user name and password, and the certificate is self-signed for `localhost` and `127.0.0.1`. Its web UI is at `/mailpit/` of the preview link, on port 8025. |
+| Lifecycle hooks | `hooks.py` on port 9000. Lambda calls `ready` and `validate` while it builds the image; both sign in and expect a JPEG from every camera, and expect mailpit's UI and an SMTP greeting on 1025 and 1465. |
 
 ## Network
 
 | Direction | What is open |
 |---|---|
-| In | Only port 8765, through the preview's function URL and its key. The proxy asks Lambda for a token limited to that port, so the hooks port and the fake cameras are not reachable from outside. |
+| In | Only ports 8765 and 8025, through the preview's function URL and its key. The proxy sends paths under `/mailpit/` to mailpit on 8025 and everything else to motionEye on 8765, and asks Lambda for a token limited to those two ports, so the hooks port, the fake cameras and the SMTP ports are not reachable from outside. |
 | Out | Nothing. The proxy runs every preview MicroVM with the egress connector in [`infra/aws/network.tf`](../../infra/aws/network.tf). Its VPC has no internet gateway, no NAT and no DNS resolver, and its security group has no rules. The block sits outside the MicroVM, so commands run inside it cannot lift it. Only the image build uses `INTERNET_EGRESS`, to fetch the pull request and its packages. |
 
-So a feature that sends something out, such as a test e-mail, a webhook
-or an upload, fails in a preview. The sign-in is still shared, so share the
-link only on the pull request it previews.
+So a feature that sends something out, such as a webhook or an upload,
+fails in a preview. E-mail works when it goes to mailpit: set motionEye's
+SMTP server to `127.0.0.1`, port 1025 (no TLS or STARTTLS) or 1465 (TLS),
+with any account, then read the message at `/mailpit/`. The sign-in is still
+shared, so share the link only on the pull request it previews.
 
 ## Recipes
 

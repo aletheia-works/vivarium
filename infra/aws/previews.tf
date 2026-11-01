@@ -9,7 +9,7 @@ locals {
   base_image_arn     = "arn:aws:lambda:${var.aws_region}:aws:microvm-image:al2023-1"
   base_image_version = "2"
   connector          = "arn:aws:lambda:${var.aws_region}:aws:network-connector:aws-network-connector"
-  motioneye_files    = ["entrypoint.sh", "fakecam.py", "hooks.py", "seed.py"]
+  motioneye_files    = ["entrypoint.sh", "fakecam.py", "hooks.py", "seed.py", "smtps.py"]
   preview_tags       = [for key, value in { Project = "vivarium", ManagedBy = "opentofu" } : { key = key, value = value }]
 }
 

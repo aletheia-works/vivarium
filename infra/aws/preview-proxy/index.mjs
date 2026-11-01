@@ -4,6 +4,8 @@ import { pipeline } from 'node:stream/promises';
 
 const API_VERSION = '2025-09-09';
 const MOTIONEYE_PORT = 8765;
+const MAILPIT_PORT = 8025;
+const MAILPIT_PATH = '/mailpit';
 const LIVE_STATES = new Set(['PENDING', 'RUNNING', 'SUSPENDING', 'SUSPENDED']);
 const START_TIMEOUT_MS = 30_000;
 const POLL_MS = 1_000;
@@ -194,7 +196,7 @@ export async function connect(config, api, options = {}) {
     throw new Error(`the preview MicroVM is ${microvm.state}`);
   const { authToken } = await api.token(microvm.microvmId, {
     expirationInMinutes: config.tokenMinutes,
-    allowedPorts: [{ port: MOTIONEYE_PORT }],
+    allowedPorts: [{ port: MOTIONEYE_PORT }, { port: MAILPIT_PORT }],
   });
   const token = authToken?.['X-aws-proxy-auth'];
   if (!token) throw new Error('Lambda returned no token');
@@ -238,6 +240,12 @@ export function admit(config, event) {
   return { status: 403 };
 }
 
+function upstreamPort(path) {
+  return path === MAILPIT_PATH || path.startsWith(`${MAILPIT_PATH}/`)
+    ? MAILPIT_PORT
+    : MOTIONEYE_PORT;
+}
+
 export function upstreamRequest(event, connection) {
   const headers = {};
   for (const [name, value] of Object.entries(event.headers ?? {}))
@@ -248,7 +256,7 @@ export function upstreamRequest(event, connection) {
   );
   if (cookies.length) headers.cookie = cookies.join('; ');
   headers['x-aws-proxy-auth'] = connection.token;
-  headers['x-aws-proxy-port'] = String(MOTIONEYE_PORT);
+  headers['x-aws-proxy-port'] = String(upstreamPort(event.rawPath || '/'));
   const method = event.requestContext?.http?.method ?? 'GET';
   const body =
     event.body === undefined || event.body === null || method === 'GET'
