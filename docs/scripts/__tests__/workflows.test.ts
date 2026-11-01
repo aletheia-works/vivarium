@@ -70,10 +70,14 @@ describe('deploy-docs stages formicarium assets in pin mode only (S2, NFR8.4)', 
     expectNoSecrets(steps[stage] as Step);
   });
 
-  test('checks the bundled site after both bundles and before the upload', () => {
+  test('checks the bundled site after every bundle and before the upload', () => {
     const layer2 = index(
       steps,
       (s) => s.run === 'bash scripts/bundle-layer2-pages.sh',
+    );
+    const layer3 = index(
+      steps,
+      (s) => s.run === 'bash scripts/bundle-layer3-pages.sh',
     );
     const check = index(
       steps,
@@ -83,7 +87,8 @@ describe('deploy-docs stages formicarium assets in pin mode only (S2, NFR8.4)', 
       steps,
       (s) => s.uses?.startsWith('actions/upload-pages-artifact@') ?? false,
     );
-    expect(check).toBe(layer2 + 1);
+    expect(layer3).toBe(layer2 + 1);
+    expect(check).toBe(layer3 + 1);
     expect(upload).toBe(check + 1);
     expectNoSecrets(steps[check] as Step);
   });

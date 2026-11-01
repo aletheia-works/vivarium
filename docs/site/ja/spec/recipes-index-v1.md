@@ -49,13 +49,14 @@ URL: <https://aletheia-works.github.io/vivarium/api/recipes.json>
 | フィールド | 型 | 必須 | 注記 |
 |---|---|---|---|
 | `slug` | 文字列（ケバブケース） | ✅ | `src/layer{N}_*/` 以下のレシピディレクトリ名。Manifest v1 の `slug` と同じ規約。 |
-| `layer` | 整数（`1` \| `2` \| `3`） | ✅ | Layer 1 = ブラウザ内 WASM。Layer 2 = Docker。Layer 3 = 第三の道。 |
+| `layer` | 整数（`1` \| `2` \| `3`） | ✅ | Layer 1 = ブラウザ内 WASM。Layer 2 = Docker。Layer 3 = 上流のプルリクエストのライブプレビュー。 |
 | `project` | 文字列 | ✅ | アップストリームプロジェクト名（例: `"pandas"`、`"bash"`）。 |
-| `issue` | 整数 | ✅ | アップストリーム Issue 番号。アップストリームトラッカーのエントリが存在しない場合は `0`。 |
+| `issue` | 整数 | ✅ | アップストリーム Issue 番号。アップストリームトラッカーのエントリが存在しない場合は `0`。Layer 3 のプレビューでは、そのプルリクエストが直す Issue。 |
+| `pull` | 整数 | ⏳ | オプション。Layer 3 のみ——プレビューが動かす上流のプルリクエスト。 |
 | `title` | 文字列 | ✅ | レシピ README の最初の H1 から取得した人間可読なタイトル。 |
-| `page_url` | URI | ✅ | ライブ再現ページ（Layer 1: WASM ページ。Layer 2 / 3: docker-run 手順ページ）。 |
+| `page_url` | URI | ✅ | ライブ再現ページ（Layer 1: WASM ページ。Layer 2: docker-run 手順ページ。Layer 3: プレビューと確かめ方を説明するページ——プレビュー自体のリンクはキーを含むので、プルリクエスト上で共有する）。 |
 | `page_url_ja` | URI | ⏳ | オプション。同じページの日本語版で、サイトの `/ja/` ツリー配下にある。**レシピが翻訳（`src/layer*/<slug>/i18n.ja.json`）を持つ場合のみ**出力され、無い場合は日本語ページが存在しないことを意味する。`page_url` に `/ja/` を挿入して導出してはならない——未翻訳のレシピでは 404 になる。2026-09-02 に追加。 |
-| `verdict_url` | URI | ⏳ | Layer 2 / 3 のみ——デプロイ済みの `verdict.json` スナップショット。Layer 1 の verdict はページ内でライブ生成されるため静的スナップショットを持たない。 |
+| `verdict_url` | URI | ⏳ | Layer 2 のみ——デプロイ済みの `verdict.json` スナップショット。Layer 1 の verdict はページ内でライブ生成されるため静的スナップショットを持たない。 |
 | `source_url` | URI | ✅ | レシピディレクトリへの GitHub リンク。 |
 | `language` | 文字列 | ⏳ | オプション。主要な実装言語の小文字表記（例: `"python"`、`"rust"`、`"shell"`）。`src/layer*_*/<slug>/` 配下のレシピごとの [`recipe.json`](https://aletheia-works.github.io/vivarium/spec/recipe.schema.json) から供給される。2026-05-03 リビジョンで追加。2026-05-18 リビジョンで供給元を廃止された `docs/site/_data/recipe-facets.json` オーバーレイからレシピごとのファイルへ移行。 |
 | `symptom` | 文字列（ケバブケース） | ⏳ | オプション。エラー → レシピマッチャーが利用する短い症状スラッグ（例: `"dtype-mismatch"`、`"ordering-non-transitive"`）。`recipe.json` から供給。2026-05-03 追加。 |
@@ -87,6 +88,7 @@ URL: <https://aletheia-works.github.io/vivarium/api/recipes.json>
 | 2026-10-04 | [`recipe.schema.json`](https://aletheia-works.github.io/vivarium/spec/recipe.schema.json) にオプションの `upstream` を追加。Layer 1 レシピの baseline が固定している upstream のリリースで、毎日の upstream-bump ワークフローが読む。index には出力しないため、レシピのエントリは変わらない。 |
 | 2026-10-04 | `recipe.schema.json` にオプションの `fix_candidate` も追加。レシピの fix 候補ペインがソースからビルドするブランチと、固定したコミットで、同じワークフローが読む。これも index には出力しない。 |
 | 2026-10-06 | `recipe.schema.json` にオプションの `upstream_pr` を追加。レシピの bug を直す upstream の pull request で、毎日の retire-merged ワークフローが読み、その pull request がマージされるとレシピを削除する。index には出力しない。 |
+| 2026-11-01 | Layer 3 を上流のプルリクエストのライブプレビュー（`src/layer3_previews/`）とした。それまで Layer 3 のエントリは 1 件も無かった。オプションの `pull` を追加。Layer 3 のエントリの `issue` はそのプルリクエストが直す Issue で、`verdict_url` は持たないため、コンフォーマンス条項 4 は Layer 2 だけを対象にした。v1 のコンシューマーが見得たエントリについては後方互換。 |
 
 ## 生成方法
 
@@ -96,7 +98,8 @@ URL: <https://aletheia-works.github.io/vivarium/api/recipes.json>
 スクリプトはレシピディレクトリを走査し、各レシピ README の最初の H1 からタイトルを取得し、
 slug パターン（末尾に Issue 番号を持つ slug の場合は `<project>-<digits>`。
 それ以外は最初のダッシュセグメント。形が異なるレシピには小さなオーバーライドマップ）から
-`project` / `issue` を導出する。
+`project` / `issue` を導出する。Layer 3 のプレビューの slug はプルリクエスト番号で終わるので、
+その `issue` と `pull` はレシピの `preview.json` から取る。
 
 出力は git でトラッキングされるため、レシピを追加する PR の diff にインデックス更新も表示される。
 オプションのファセットフィールド（`language` / `symptom` / `severity` / `tags` /
@@ -114,10 +117,10 @@ v1 では `project` フィールドは引き続き slug 由来のままにして
    を検証パスする。
 2. `index === "v1"` かつ `contract === "v1"`。
 3. すべてのエントリの `slug` が `^[a-z0-9]+(-[a-z0-9]+)*$` に一致する。
-4. すべての Layer 2 / 3 エントリが `verdict_url` を含む。Layer 1 エントリはこれを省略する。
+4. すべての Layer 2 エントリが `verdict_url` を含む。Layer 1 と Layer 3 のエントリはこれを省略する。
 
 条項 1〜3 はスキーマバリデーションで機械的に強制できる。条項 4 はスキーマの `oneOf`
-に意図的に組み込まれていない導出ルール制約だ（MCP サーバは Layer 2 / 3 エントリに
+に意図的に組み込まれていない導出ルール制約だ（MCP サーバは Layer 2 エントリに
 `verdict_url` がない場合と、`verdict_url` が 404 を返す場合を同じように扱う——
 両方とも「スナップショットなし」としてコンシューマーに通知する）。
 

@@ -311,6 +311,7 @@ export interface RecipeEntry {
   layer: Layer;
   project: string;
   issue: number;
+  pull?: number;
   title: string;
   page_url: string;
   page_url_ja?: string;
@@ -330,6 +331,17 @@ interface RecipesIndex {
   index: 'v1';
   contract: 'v1';
   recipes: RecipeEntry[];
+}
+
+interface PreviewRecipe {
+  pull: number;
+  issue?: number;
+}
+
+function readPreview(recipeDir: string): PreviewRecipe | undefined {
+  const path = join(recipeDir, 'preview.json');
+  if (!existsSync(path)) return undefined;
+  return JSON.parse(readFileSync(path, 'utf-8')) as PreviewRecipe;
 }
 
 interface RecipeMeta {
@@ -412,7 +424,6 @@ export async function listRecipeSlugs(layerDir: string): Promise<string[]> {
     if (entry.startsWith('_') || entry.startsWith('.')) continue;
     if (NON_RECIPE_NAMES.has(entry)) continue;
     if (!(await isDir(join(layerDir, entry)))) continue;
-    if (existsSync(join(layerDir, entry, 'preview.json'))) continue;
     slugs.push(entry);
   }
   return slugs.sort();
@@ -596,7 +607,7 @@ function aggregateProjects(
   return projects;
 }
 
-async function buildEntry(
+export async function buildEntry(
   layer: Layer,
   slug: string,
   recipeDir: string,
@@ -606,11 +617,13 @@ async function buildEntry(
   const pageUrl = `${PAGES_BASE}/repro/${project}/${issuePath}/`;
   const sourceUrl = `${REPO_BASE}/tree/main/src/${LAYER_DIRNAME[layer]}/${slug}`;
   const meta = await loadRecipeMeta(recipeDir);
+  const preview = readPreview(recipeDir);
   const entry: RecipeEntry = {
     slug,
     layer,
     project,
-    issue,
+    issue: preview ? (preview.issue ?? 0) : issue,
+    ...(preview ? { pull: preview.pull } : {}),
     title,
     page_url: pageUrl,
     source_url: sourceUrl,
@@ -625,7 +638,7 @@ async function buildEntry(
   if (existsSync(join(recipeDir, 'i18n.ja.json'))) {
     entry.page_url_ja = `${PAGES_BASE}/ja/repro/${project}/${issuePath}/`;
   }
-  if (layer === 2 || layer === 3) {
+  if (layer === 2) {
     entry.verdict_url = `${PAGES_BASE}/repro/${project}/${issuePath}/verdict.json`;
   }
   const roundtrip = await loadRoundtripState(recipeDir, slug);

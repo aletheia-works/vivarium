@@ -72,7 +72,6 @@ RULES = (
     # The MCP package bundles the recipes index and its tests read it.
     ({"docs", "repro", "mcp"}, ("docs/site/public/api/recipes.json",)),
     (NONE, ("scripts/schedule-watch.py", ".github/workflows/schedule-watch.yml")),
-    (NONE, ("src/layer3_previews/",)),
     (
         {"docs", "repro"},
         (
@@ -166,8 +165,8 @@ def self_test():
         "docs/scripts/stage-formicarium-assets.ts": {"docs", "repro"},
         "docs/site/public/api/recipes.json": {"docs", "repro", "mcp"},
         "docs/site/public/api/projects.json": {"docs", "repro"},
-        "src/layer3_previews/motioneye-3506/preview.json": NONE,
-        "src/layer3_previews/README.md": NONE,
+        "src/layer3_previews/motioneye-3506/preview.json": {"docs", "repro"},
+        "scripts/bundle-layer3-pages.sh": {"docs", "repro"},
         "src/layer1_wasm/_shared/style.css": {"docs", "repro"},
         "src/layer1_wasm/dateutil-1478/README.md": {"docs", "repro"},
         "src/layer2_docker/bash-local-shadows-exit/Dockerfile": {"docs", "repro"},

@@ -51,13 +51,14 @@ URL: <https://aletheia-works.github.io/vivarium/api/recipes.json>
 | Field | Type | Required | Notes |
 |---|---|---|---|
 | `slug` | string (kebab-case) | ✅ | Recipe directory name under `src/layer{N}_*/`. Same convention as Manifest v1's `slug`. |
-| `layer` | integer (`1` \| `2` \| `3`) | ✅ | Layer 1 = WASM in browser; Layer 2 = Docker; Layer 3 = third way. |
+| `layer` | integer (`1` \| `2` \| `3`) | ✅ | Layer 1 = WASM in browser; Layer 2 = Docker; Layer 3 = live preview of an upstream pull request. |
 | `project` | string | ✅ | Upstream project name (e.g. `"pandas"`, `"bash"`). |
-| `issue` | integer | ✅ | Upstream issue number; `0` if no upstream tracker entry. |
+| `issue` | integer | ✅ | Upstream issue number; `0` if no upstream tracker entry. For a Layer 3 preview, the issue its pull request fixes. |
+| `pull` | integer | ⏳ | Optional. Layer 3 only — the upstream pull request the preview runs. |
 | `title` | string | ✅ | Human-readable title, from the recipe README's first H1. |
-| `page_url` | URI | ✅ | Live reproduction page (Layer 1: WASM page; Layer 2 / 3: docker-run instructions page). |
+| `page_url` | URI | ✅ | Live reproduction page (Layer 1: WASM page; Layer 2: docker-run instructions page; Layer 3: a page describing the preview and how to check it — the preview's own link carries a key and is shared on the pull request). |
 | `page_url_ja` | URI | ⏳ | Optional. The Japanese rendering of the same page, under the site's `/ja/` tree. Present **only when the recipe ships a translation** (`src/layer*/<slug>/i18n.ja.json`); its absence means no Japanese page exists. Do not derive this URL by inserting `/ja/` into `page_url` — an untranslated recipe would 404. Added 2026-09-02. |
-| `verdict_url` | URI | ⏳ | Layer 2 / 3 only — deployed `verdict.json` snapshot. Layer 1 verdicts are produced live in-page and have no static snapshot. |
+| `verdict_url` | URI | ⏳ | Layer 2 only — deployed `verdict.json` snapshot. Layer 1 verdicts are produced live in-page and have no static snapshot. |
 | `source_url` | URI | ✅ | GitHub link to the recipe directory. |
 | `language` | string | ⏳ | Optional. Primary implementation language, lowercase (e.g. `"python"`, `"rust"`, `"shell"`). Sourced from the per-recipe [`recipe.json`](https://aletheia-works.github.io/vivarium/spec/recipe.schema.json) under `src/layer*_*/<slug>/`. Added in the 2026-05-03 revision; the 2026-05-18 revision moved the source from the retired `docs/site/_data/recipe-facets.json` overlay to the per-recipe file. |
 | `symptom` | string (kebab-case) | ⏳ | Optional. Short symptom slug used by the error → recipe matcher (e.g. `"dtype-mismatch"`, `"ordering-non-transitive"`). Sourced from `recipe.json`. Added 2026-05-03. |
@@ -89,6 +90,7 @@ There is no current v2.
 | 2026-10-04 | [`recipe.schema.json`](https://aletheia-works.github.io/vivarium/spec/recipe.schema.json) gains optional `upstream`, the upstream release a Layer 1 recipe's baseline pins, read by the daily upstream-bump workflow. The index does not export it, so recipe entries are unchanged. |
 | 2026-10-04 | `recipe.schema.json` also gains optional `fix_candidate`, the branch and pinned commit a recipe's fix-candidate pane builds from source, read by the same workflow. Not exported to the index either. |
 | 2026-10-06 | `recipe.schema.json` gains optional `upstream_pr`, the upstream pull request that fixes the recipe's bug, read by the daily retire-merged workflow, which removes the recipe once that pull request is merged. Not exported to the index. |
+| 2026-11-01 | Layer 3 now means a live preview of an upstream pull request (`src/layer3_previews/`); no entry used Layer 3 before. Added optional `pull`. A Layer 3 entry's `issue` is the issue its pull request fixes, and it carries no `verdict_url`, so conformance clause 4 now covers Layer 2 only. Backwards-compatible for every entry a v1 consumer could have seen. |
 
 ## Generation
 
@@ -99,7 +101,9 @@ wired into the rspress `dev` and `build` scripts in
 recipe README's first H1 for the title, and derives `project` / `issue`
 from the slug pattern (`<project>-<digits>` for slugs with a trailing
 issue number; first dash-segment otherwise, with a small override map for
-recipes whose slug shape diverges).
+recipes whose slug shape diverges). A Layer 3 preview's slug ends in its
+pull request number, so its `issue` and `pull` come from the recipe's
+`preview.json` instead.
 
 The output is tracked in git so PRs that add a recipe also show the index
 update in the diff. The optional facet fields (`language`, `symptom`,
@@ -117,12 +121,12 @@ A `recipes.json` document conforms to v1 when:
    [`recipes.schema.json`](https://github.com/aletheia-works/vivarium/blob/main/docs/site/public/api/recipes.schema.json).
 2. `index === "v1"` and `contract === "v1"`.
 3. Every entry's `slug` matches `^[a-z0-9]+(-[a-z0-9]+)*$`.
-4. Every Layer 2 / 3 entry includes `verdict_url`; Layer 1 entries omit it.
+4. Every Layer 2 entry includes `verdict_url`; Layer 1 and Layer 3 entries omit it.
 
 Clauses 1–3 are mechanically enforceable via schema validation. Clause 4
 is a derivation-rule constraint not encoded in the schema's `oneOf` (kept
 deliberately permissive: the MCP server treats a missing `verdict_url` on
-a Layer 2 / 3 entry the same as `verdict_url` pointing at a 404 — both
+a Layer 2 entry the same as `verdict_url` pointing at a 404 — both
 are surfaced to the consumer as "no snapshot available").
 
 ## See also

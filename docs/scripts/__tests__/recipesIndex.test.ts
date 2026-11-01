@@ -6,6 +6,7 @@ import path from 'node:path';
 import { Ajv2020 } from 'ajv/dist/2020';
 import addFormats from 'ajv-formats';
 import {
+  buildEntry,
   listRecipeSlugs,
   loadGuestAllowlist,
   RecipeDeclarationError,
@@ -359,18 +360,38 @@ describe('recipe.schema.json guests', () => {
   });
 });
 
-describe('listRecipeSlugs', () => {
+describe('preview recipes', () => {
   let dir: string | undefined;
   afterEach(() => {
     if (dir) rmSync(dir, { recursive: true, force: true });
     dir = undefined;
   });
 
-  test('leaves out preview recipes', async () => {
+  test('are listed with the issue and pull request from preview.json', async () => {
     dir = mkdtempSync(path.join(tmpdir(), 'vivarium-layer-'));
-    await mkdir(path.join(dir, 'demo-1'));
-    await mkdir(path.join(dir, 'motioneye-3506'));
-    await writeFile(path.join(dir, 'motioneye-3506', 'preview.json'), '{}');
-    expect(await listRecipeSlugs(dir)).toEqual(['demo-1']);
+    const recipe = path.join(dir, 'motioneye-3506');
+    await mkdir(recipe);
+    await writeFile(
+      path.join(recipe, 'preview.json'),
+      JSON.stringify({
+        repository: 'motioneye-project/motioneye',
+        pull: 3506,
+        issue: 800,
+        commit: 'b1a4692397339c75a5d1ce93fa017612c0e80214',
+      }),
+    );
+    await writeFile(path.join(recipe, 'README.md'), '# A manual pause lasts\n');
+    expect(await listRecipeSlugs(dir)).toEqual(['motioneye-3506']);
+    const entry = await buildEntry(3, 'motioneye-3506', recipe);
+    expect(entry).toMatchObject({
+      layer: 3,
+      project: 'motioneye',
+      issue: 800,
+      pull: 3506,
+      title: 'A manual pause lasts',
+      page_url:
+        'https://aletheia-works.github.io/vivarium/repro/motioneye/3506/',
+    });
+    expect(entry.verdict_url).toBeUndefined();
   });
 });
