@@ -164,12 +164,11 @@ resource "aws_iam_role_policy" "preview_proxy" {
   role = aws_iam_role.preview_proxy.id
   policy = jsonencode({
     Version = "2012-10-17"
-    Statement = [
-      {
-        Effect   = "Allow"
-        Action   = ["lambda:RunMicrovm", "lambda:GetMicrovm", "lambda:CreateMicrovmAuthToken"]
-        Resource = [for image in awscc_lambda_microvm_image.preview : image.image_arn]
-      },
+    Statement = concat(length(local.previews) > 0 ? [{
+      Effect   = "Allow"
+      Action   = ["lambda:RunMicrovm", "lambda:GetMicrovm", "lambda:CreateMicrovmAuthToken"]
+      Resource = [for image in awscc_lambda_microvm_image.preview : image.image_arn]
+      }] : [], [
       {
         Effect   = "Allow"
         Action   = "lambda:ListMicrovms"
@@ -186,7 +185,7 @@ resource "aws_iam_role_policy" "preview_proxy" {
         Action   = ["logs:CreateLogStream", "logs:PutLogEvents"]
         Resource = "arn:aws:logs:${var.aws_region}:${local.account_id}:log-group:/vivarium/preview/*:*"
       },
-    ]
+    ])
   })
 }
 
