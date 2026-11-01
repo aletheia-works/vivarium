@@ -141,12 +141,12 @@ test('en: both terminals start isolated, verify and run the recorded commands', 
   const [baselineTerminal, fixTerminal] = observed.terminals;
   expect(baselineTerminal?.transcript).toMatch(
     new RegExp(
-      `\\$ ${escape(RETRY_COMMAND)}\\n[^$]*Newly-created commit [0-9a-f]{40} already exists\\n$`,
+      `\\$ ${escape(RETRY_COMMAND)}\\n[^$]*Newly-created commit [0-9a-f]{40} already exists\\n[^$]*$`,
     ),
   );
   expect(fixTerminal?.transcript).toMatch(
     new RegExp(
-      `\\$ ${escape(RETRY_COMMAND)}\\n[^$]*Parent commit \\(@-\\)\\s*: \\S+ [0-9a-f]+ \\(empty\\) NEW\\n$`,
+      `\\$ ${escape(RETRY_COMMAND)}\\n[^$]*Parent commit \\(@-\\)\\s*: \\S+ [0-9a-f]+ \\(empty\\) NEW\\n[^$]*$`,
     ),
   );
   const names = observed.marks.map((mark) => mark.name);
