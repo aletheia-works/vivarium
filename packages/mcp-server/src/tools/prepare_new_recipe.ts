@@ -64,10 +64,11 @@ export type PrepareNewRecipeResult =
 
 const SLUG_REGEX = /^([a-z][a-z0-9]*(?:-[a-z][a-z0-9]*)*?)-(\d+)$/;
 
-const LAYER_DIRNAME: Record<Layer, string> = {
+type ScaffoldedLayer = Exclude<Layer, 3>;
+
+const LAYER_DIRNAME: Record<ScaffoldedLayer, string> = {
   1: 'layer1_wasm',
   2: 'layer2_docker',
-  3: 'layer3_previews',
 };
 
 const DEFAULT_REPO: Record<string, string> = {
@@ -82,14 +83,12 @@ const DEFAULT_REPO: Record<string, string> = {
   regex: 'rust-lang/regex',
 };
 
-function commitScopeFor(layer: Layer): string {
+function commitScopeFor(layer: ScaffoldedLayer): string {
   switch (layer) {
     case 1:
       return 'wasm';
     case 2:
       return 'layer2';
-    case 3:
-      return 'layer3';
   }
 }
 
@@ -113,6 +112,12 @@ export async function prepareNewRecipe(
   if (!title) return { ok: false, error: 'title is required' };
   if (![1, 2, 3].includes(layer))
     return { ok: false, error: `layer must be 1, 2, or 3 (got ${layer})` };
+  if (layer === 3)
+    return {
+      ok: false,
+      error:
+        'Layer 3 recipes are live previews, one per upstream pull request rather than per issue; add src/layer3_previews/<project>-<pull>/ by hand as src/layer3_previews/README.md describes.',
+    };
 
   const slug = `${project}-${issueNum}`;
   if (!SLUG_REGEX.test(slug)) {
@@ -145,14 +150,12 @@ export async function prepareNewRecipe(
       ? `mise run recipes:verify -- ${slug}`
       : `# No verifier for Layer ${layer} yet — see src/layer${layer}_*/README.md for per-layer validation.`;
 
-  const defaultRuntimeFor = (l: Layer): string => {
+  const defaultRuntimeFor = (l: ScaffoldedLayer): string => {
     switch (l) {
       case 1:
         return 'TODO-set-runtime';
       case 2:
         return 'docker-snapshot';
-      case 3:
-        return 'TODO-set-runtime';
     }
   };
 
@@ -229,7 +232,7 @@ export async function prepareNewRecipe(
     commit_subject: commitSubject,
     next_steps: nextSteps,
     references: {
-      layer_readme: `https://github.com/aletheia-works/vivarium/blob/main/src/layer${layer}_${layer === 1 ? 'wasm' : layer === 2 ? 'docker' : 'previews'}/README.md`,
+      layer_readme: `https://github.com/aletheia-works/vivarium/blob/main/src/layer${layer}_${layer === 1 ? 'wasm' : 'docker'}/README.md`,
       selection_policy:
         'caller-defined — issue selection criteria vary by user workflow and are not enforced by the MCP server beyond the slug regex',
     },
@@ -265,7 +268,7 @@ export const PREPARE_NEW_RECIPE_TOOL = {
       base_image: {
         type: 'string' as const,
         description:
-          "Optional Docker base image for Layer 2 recipes (e.g. 'node:26-slim'). Forwarded to `mise run recipes:new -- ... --base <image>`. Layer 1 / 3 ignore this.",
+          "Optional Docker base image for Layer 2 recipes (e.g. 'node:26-slim'). Forwarded to `mise run recipes:new -- ... --base <image>`. Layer 1 ignores this.",
       },
       repo_owner: {
         type: 'string' as const,
@@ -277,7 +280,7 @@ export const PREPARE_NEW_RECIPE_TOOL = {
         enum: [1, 2, 3],
         default: 2,
         description:
-          'Vivarium layer: 1=WASM (in-browser), 2=Docker (default), 3=third way (no recipes yet). The commit scope, scaffold command, and next-steps tailor to the layer.',
+          'Vivarium layer: 1=WASM (in-browser), 2=Docker (default). 3=live preview is rejected: those recipes are one per upstream pull request and are written by hand. The commit scope, scaffold command, and next-steps tailor to the layer.',
       },
     },
     required: ['project', 'issue', 'title'],

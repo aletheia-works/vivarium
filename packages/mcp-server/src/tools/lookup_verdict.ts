@@ -60,6 +60,16 @@ export async function lookupVerdict(
     };
   }
 
+  if (recipe.layer === 3) {
+    return {
+      kind: 'live',
+      slug,
+      page_url: recipe.page_url,
+      note:
+        'Layer 3 recipes are live previews of an upstream pull request with no verdict; the page says how to check the change, and the keyed link to the running preview is shared on the pull request.',
+    };
+  }
+
   if (!recipe.verdict_url) {
     return {
       kind: 'unavailable',
@@ -83,7 +93,7 @@ export async function lookupVerdict(
 export const LOOKUP_VERDICT_TOOL = {
   name: 'lookup_verdict',
   description:
-    "Look up the latest verdict for a recipe by slug. Layer 1 recipes produce live in-browser verdicts and have no static snapshot — this returns kind='live' with the page URL and a note suggesting the agent open the page directly. Layer 2/3 recipes return kind='snapshot' with the deployed verdict.json contents (verdict, exit code, image digest, captured-at timestamp, stdout, stderr tail). Returns kind='unavailable' or kind='not_found' on failure.",
+    "Look up the latest verdict for a recipe by slug. Layer 1 recipes produce live in-browser verdicts and have no static snapshot — this returns kind='live' with the page URL and a note suggesting the agent open the page directly. Layer 3 recipes are live previews of an upstream pull request with no verdict; this returns kind='live' with the page describing how to check the change. Layer 2 recipes return kind='snapshot' with the deployed verdict.json contents (verdict, exit code, image digest, captured-at timestamp, stdout, stderr tail). Returns kind='unavailable' or kind='not_found' on failure.",
   inputSchema: {
     type: 'object' as const,
     properties: {

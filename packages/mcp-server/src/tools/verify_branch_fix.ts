@@ -150,13 +150,20 @@ export async function verifyBranchFix(
     return { ok: false, error: `recipe not found: ${slug}` };
   }
 
+  if (recipe.layer === 3) {
+    return {
+      ok: false,
+      error: `${recipe.slug} is a Layer 3 live preview of upstream pull request #${recipe.pull ?? '?'}, which is itself the fix; open ${recipe.page_url} to check it instead.`,
+    };
+  }
+
   const notes: string[] = [];
 
   if (recipe.layer === 1) {
     if (!recipe.path_a) {
       return {
         ok: false,
-        error: `${recipe.slug} does not mount the Path A "Try a fix" panel, so a fix cannot be run on its page. Fork the recipe and run it locally, or pick a Layer 2/3 recipe for the Path B workflow.`,
+        error: `${recipe.slug} does not mount the Path A "Try a fix" panel, so a fix cannot be run on its page. Fork the recipe and run it locally, or pick a Layer 2 recipe for the Path B workflow.`,
       };
     }
     if (args.fix_url || args.fix_source) {
@@ -190,7 +197,7 @@ export async function verifyBranchFix(
 
   if (args.fix_url || args.fix_source) {
     notes.push(
-      'fix_url and fix_source are ignored for Layer 2/3 recipes — the contributor builds and pushes a Docker image themselves; see ADR-0020 §1 for the image-as-input boundary',
+      'fix_url and fix_source are ignored for Layer 2 recipes — the contributor builds and pushes a Docker image themselves; see ADR-0020 §1 for the image-as-input boundary',
     );
   }
   const compareBase = deriveCompareBaseFromPageUrl(recipe.page_url);
@@ -222,7 +229,7 @@ export async function verifyBranchFix(
 export const VERIFY_BRANCH_FIX_TOOL = {
   name: 'verify_branch_fix',
   description:
-    "Generate a deep-link URL and instructions for verifying a candidate branch-fix against a Vivarium recipe. SCAFFOLDING HELPER, not an execution engine — actual reproduction runs in the visitor's browser (Layer 1) or in GitHub Actions (Layer 2/3). Layer dispatch is automatic from the recipe's catalogue layer. Layer 1 returns Path A: a recipe-page URL with the fix pre-loaded via `?fix_url=` or `?fix=<base64url>`. Layer 2/3 returns Path B: a `/repro/compare` URL plus the `gh workflow run branch-fix-verdict.yml` command the contributor runs to capture a verdict against their pushed Docker image. Use after `match_error` or `list_recipes` has narrowed to a specific slug. Pair with the D-5 walkthrough page (https://aletheia-works.github.io/vivarium/guide/compare-branch-fix) for the full AI-slop verification loop.",
+    "Generate a deep-link URL and instructions for verifying a candidate branch-fix against a Vivarium recipe. SCAFFOLDING HELPER, not an execution engine — actual reproduction runs in the visitor's browser (Layer 1) or in GitHub Actions (Layer 2). Layer dispatch is automatic from the recipe's catalogue layer. Layer 1 returns Path A: a recipe-page URL with the fix pre-loaded via `?fix_url=` or `?fix=<base64url>`. Layer 2 returns Path B: a `/repro/compare` URL plus the `gh workflow run branch-fix-verdict.yml` command the contributor runs to capture a verdict against their pushed Docker image. Layer 3 live previews are rejected: the previewed pull request is the fix. Use after `match_error` or `list_recipes` has narrowed to a specific slug. Pair with the D-5 walkthrough page (https://aletheia-works.github.io/vivarium/guide/compare-branch-fix) for the full AI-slop verification loop.",
   inputSchema: {
     type: 'object' as const,
     properties: {

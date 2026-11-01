@@ -18,7 +18,7 @@ import { ExampleSlug } from '../../_components/LiveExamples';
   <PageHero
     eyebrow="// GUIDE · BRANCH-FIX"
     title="候補の修正を end-to-end でテストする。"
-    sub="Vivarium はレシピ（バグ）と比較サーフェス（あなたの修正）と、修正が壊れた code path を実際に回避したときに反転する verdict を組み合わせている。本ガイドはそのループを Layer 1（ブラウザ内）と Layer 2/3（Docker）の両方で end-to-end に歩く。"
+    sub="Vivarium はレシピ（バグ）と比較サーフェス（あなたの修正）と、修正が壊れた code path を実際に回避したときに反転する verdict を組み合わせている。本ガイドはそのループを Layer 1（ブラウザ内）と Layer 2（Docker）の両方で end-to-end に歩く。Layer 3 のライブプレビューは上流の pull request そのものが修正なので、このループはない。"
   />
 
   <Section
@@ -41,7 +41,7 @@ import { ExampleSlug } from '../../_components/LiveExamples';
           body: <>レシピページに代替版の再現スクリプトをペーストする。レシピの WASM ランタイム（php-wasm、ruby.wasm、Pyodide）が同じタブで再走させ、verdict をキャプチャする。CI 不要、Docker 不要。</>,
         },
         {
-          lead: 'Path B — Layer 2/3（Docker イメージ再ビルド）。',
+          lead: 'Path B — Layer 2（Docker イメージ再ビルド）。',
           body: <>branch-fix Docker イメージを自分でビルドして push する。GitHub Actions ワークフローがそのイメージを pull して走らせ、verdict をキャプチャ、/repro/compare が描画するアーティファクトバンドルを公開する。</>,
         },
       ]}
@@ -89,7 +89,7 @@ import { ExampleSlug } from '../../_components/LiveExamples';
         },
         {
           lead: '両方の verdict をダウンロード。',
-          body: <>パネルは side ごとに 1 つずつダウンロードリンクを描画する。両ファイルは <a href="/vivarium/ja/spec/contract-v1">Contract v1</a> に準拠 — Layer 2/3 のワークフロー実行から /repro/compare が消費するのと同じ形。</>,
+          body: <>パネルは side ごとに 1 つずつダウンロードリンクを描画する。両ファイルは <a href="/vivarium/ja/spec/contract-v1">Contract v1</a> に準拠 — Layer 2 のワークフロー実行から /repro/compare が消費するのと同じ形。</>,
         },
         {
           lead: '/repro/compare にドロップ。',
@@ -108,7 +108,7 @@ import { ExampleSlug } from '../../_components/LiveExamples';
   </Section>
 
   <Section
-    eyebrow="// 3 · PATH B — LAYER 2 / 3"
+    eyebrow="// 3 · PATH B — LAYER 2"
     heading="イメージをビルド、ワークフローを実行、アーティファクトをドロップ。"
   >
     <p>Layer 2（Docker カタログ）はブラウザ タブでは走らせられない — バグは本物の OS、本物のソケット、 本物のファイルシステムを要求する。Path B はビルドをあなた自身の インフラに移し、push したイメージに対する verdict を GitHub Actions ワークフローでキャプチャする。</p>
@@ -149,7 +149,7 @@ import { ExampleSlug } from '../../_components/LiveExamples';
       手順が表示される。
     </Callout>
     <Callout>
-      <strong>エージェント駆動のショートカット。</strong> Layer 2/3 の slug に対する
+      <strong>エージェント駆動のショートカット。</strong> Layer 2 の slug に対する
       <code>verify_branch_fix(slug)</code> は、コピペ可能な
       <code>gh_command</code> を返す。エージェントが実際にそれを走らせるには
       <code>gh</code> 認証とレジストリアクセスが必要 — だがコマンド自体は

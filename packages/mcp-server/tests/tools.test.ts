@@ -80,18 +80,17 @@ const FIXTURE_INDEX = {
       tags: ['command-substitution', 'exit-code'],
     },
     {
-      slug: 'lost-update',
+      slug: 'motioneye-3506',
       layer: 3,
-      project: 'pthread',
-      issue: 0,
-      title: 'pthread lost-update data race',
-      page_url: 'https://example.invalid/repro/lost-update/',
-      verdict_url: 'https://example.invalid/repro/lost-update/verdict.json',
-      source_url: 'https://example.invalid/src/lost-update',
-      language: 'c',
-      symptom: 'lost-update-data-race',
-      severity: 'datarace',
-      tags: ['data-race', 'deterministic'],
+      project: 'motioneye',
+      issue: 800,
+      pull: 3506,
+      title: 'motioneye-project/motioneye#3506',
+      page_url: 'https://example.invalid/repro/motioneye/3506/',
+      source_url: 'https://example.invalid/src/motioneye-3506',
+      language: 'python',
+      severity: 'bug',
+      tags: ['motion-detection', 'schedule'],
     },
   ],
 };
@@ -148,9 +147,9 @@ describe('list_recipes', () => {
   });
 
   it('filters by project (case-insensitive)', async () => {
-    const r = await listRecipes({ project: 'PTHREAD' });
+    const r = await listRecipes({ project: 'MOTIONEYE' });
     assert.equal(r.count, 1);
-    assert.equal(r.recipes[0]!.slug, 'lost-update');
+    assert.equal(r.recipes[0]!.slug, 'motioneye-3506');
   });
 
   it('filters by free-text q across slug/project/title', async () => {
@@ -201,9 +200,13 @@ describe('lookup_verdict', () => {
     }
   });
 
-  it('returns kind=snapshot for Layer 3', async () => {
-    const r = await lookupVerdict({ slug: 'lost-update' });
-    assert.equal(r.kind, 'snapshot');
+  it('returns kind=live with the page for a Layer 3 preview', async () => {
+    const r = await lookupVerdict({ slug: 'motioneye-3506' });
+    assert.equal(r.kind, 'live');
+    if (r.kind === 'live') {
+      assert.equal(r.page_url, 'https://example.invalid/repro/motioneye/3506/');
+      assert.match(r.note, /preview/);
+    }
   });
 
   it('returns kind=not_found for unknown slug', async () => {
@@ -253,7 +256,7 @@ describe('match_error', () => {
 
   it('respects the limit argument', async () => {
     const r = await matchError({
-      text: 'pandas dtype mismatch bash local exit pthread race',
+      text: 'pandas dtype mismatch bash local exit motioneye schedule',
       limit: 1,
     });
     if ('ok' in r && r.ok) {
@@ -434,18 +437,16 @@ describe('verify_branch_fix', () => {
       assert.match(r.gh_command!, /-f slug=bash-local-shadows-exit/);
       assert.match(r.compare_url, /\/repro\/compare\?slug=bash-local-shadows-exit/);
       assert.ok(
-        r.notes.some((n) => /ignored for Layer 2\/3/.test(n)),
+        r.notes.some((n) => /ignored for Layer 2 recipes/.test(n)),
       );
     }
   });
 
-  it('Layer 3 → path B', async () => {
-    const r = await verifyBranchFix({ slug: 'lost-update' });
-    assert.equal(r.ok, true);
-    if (r.ok) {
-      assert.equal(r.path, 'B');
-      assert.equal(r.layer, 3);
-      assert.match(r.gh_command!, /-f slug=lost-update/);
+  it('Layer 3 → rejected: a preview is the pull request itself', async () => {
+    const r = await verifyBranchFix({ slug: 'motioneye-3506' });
+    assert.equal(r.ok, false);
+    if (!r.ok) {
+      assert.match(r.error, /preview/);
     }
   });
 });
@@ -646,19 +647,39 @@ describe('verify_and_report_fix', () => {
     }
   });
 
-  it('Layer 3 + no state → roundtrip_path under layer3_previews', async () => {
+  it('Layer 3 → rejected: previews have no round-trip', async () => {
     const r = await verifyAndReportFix({
-      slug: 'lost-update',
+      slug: 'motioneye-3506',
       auto_execute: false,
     });
-    assert.equal(r.ok, true);
-    if (r.ok) {
-      assert.equal(r.layer, 3);
-      assert.equal(
-        r.roundtrip_path,
-        'src/layer3_previews/lost-update/roundtrip.json',
-      );
+    assert.equal(r.ok, false);
+    if (!r.ok) {
+      assert.match(r.error, /preview/);
     }
+  });
+
+  it('Layer 3 + auto_execute → rejected without starting a workflow', async () => {
+    let ghCalls = 0;
+    _setLayer23GhRunnerForTesting(() => {
+      ghCalls += 1;
+      return { status: 0, stdout: '', stderr: '' };
+    });
+
+    const r = await verifyAndReportFix({
+      slug: 'motioneye-3506',
+      branch_image: 'ghcr.io/test/motioneye:fix',
+      current_state: {
+        verdicts: {
+          unfixed: {
+            verdict: 'reproduced',
+            captured_at: '2026-05-17T00:00:00Z',
+            source: 'layer2-ghcr',
+          },
+        },
+      },
+    });
+    assert.equal(r.ok, false);
+    assert.equal(ghCalls, 0, 'gh must NOT be called for a Layer 3 preview');
   });
 
   it('verified state without vivarium_pr → next_action=open_vivarium_pr + jj git push', async () => {
@@ -878,37 +899,6 @@ describe('verify_and_report_fix auto-execute (Phase 3)', () => {
       assert.equal(r.executed?.ok, false);
       assert.match(r.executed?.error ?? '', /status 1/);
       assert.equal(r.verdicts.unfixed, undefined);
-    }
-  });
-
-  it('Layer 3 + verify_fixed → executed.ok=false (workflow does not yet support Layer 3)', async () => {
-    let ghCalled = false;
-    _setLayer23GhRunnerForTesting(() => {
-      ghCalled = true;
-      return { status: 0, stdout: '', stderr: '' };
-    });
-
-    const r = await verifyAndReportFix({
-      slug: 'lost-update',
-      branch_image: 'ghcr.io/test/lost-update:fix',
-      current_state: {
-        verdicts: {
-          unfixed: {
-            verdict: 'reproduced',
-            captured_at: '2026-05-17T00:00:00Z',
-            source: 'layer3-trace',
-          },
-        },
-      },
-    });
-    assert.equal(r.ok, true);
-    if (r.ok) {
-      assert.equal(r.layer, 3);
-      assert.equal(r.executed?.action, 'verify_fixed');
-      assert.equal(r.executed?.ok, false);
-      assert.match(r.executed?.error ?? '', /not yet supported for Layer 3/);
-      assert.equal(r.verdicts.fixed, undefined);
-      assert.equal(ghCalled, false, 'gh must NOT be called when Layer 3 verify_fixed is rejected');
     }
   });
 
@@ -1454,17 +1444,16 @@ describe('prepare_new_recipe', () => {
     }
   });
 
-  it('layer 3 — uses feat(layer3) scope', async () => {
+  it('layer 3 — rejected: previews are one per upstream pull request', async () => {
     const r = await prepareNewRecipe({
-      project: 'pthread',
-      issue: 999,
-      title: 'race',
+      project: 'motioneye',
+      issue: 3506,
+      title: 'detection schedule',
       layer: 3,
     });
-    assert.equal(r.ok, true);
-    if (r.ok) {
-      assert.equal(r.layer, 3);
-      assert.match(r.commit_subject, /^feat\(layer3\):/);
+    assert.equal(r.ok, false);
+    if (!r.ok) {
+      assert.match(r.error, /src\/layer3_previews\/README\.md/);
     }
   });
 

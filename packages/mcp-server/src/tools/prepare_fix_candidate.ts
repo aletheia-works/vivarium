@@ -134,7 +134,7 @@ export async function prepareFixCandidate(
   if (entry.layer !== 1) {
     return {
       ok: false,
-      error: `fix-candidate verification is currently only wired up for Layer 1 recipes; "${slug}" is layer ${entry.layer}. Layers 2/3 use a different verification path — see verify_branch_fix.`,
+      error: `fix-candidate verification is currently only wired up for Layer 1 recipes; "${slug}" is layer ${entry.layer}. Layer 2 uses a different verification path — see verify_branch_fix. Layer 3 live previews show an upstream pull request, which is itself the fix.`,
     };
   }
 
@@ -227,7 +227,7 @@ export async function prepareFixCandidate(
 export const PREPARE_FIX_CANDIDATE_TOOL = {
   name: 'prepare_fix_candidate',
   description:
-    "Register a fix-candidate spec on an existing Layer 1 (WASM/Pyodide) Vivarium recipe so the recipe page runs the fix branch's wheel side-by-side with the released build. SCAFFOLDING HELPER, not an execution engine — same pattern as prepare_new_recipe and verify_branch_fix. Given a recipe slug + fork repo URL + branch name, returns: the `fix-candidate.json` content the agent should write, the recommended commit subject + PR title, a ready-to-paste PR body (with the AI-authorship and fix-candidate spec details tucked inside a `<details>` block), and the exact `gh` / `git` commands to fork-and-clone aletheia-works/vivarium, branch off main, drop the spec in, commit, push, and open the cross-repo PR. Use this immediately after opening an upstream fix branch (e.g. on a fork of lark-parser/lark) when you want Vivarium to verify the fix live in-browser without waiting for upstream merge + a PyPI release. Validates the slug against the bundled catalogue and rejects non-Layer-1 recipes (Layers 2/3 use a different verification path — see verify_branch_fix).",
+    "Register a fix-candidate spec on an existing Layer 1 (WASM/Pyodide) Vivarium recipe so the recipe page runs the fix branch's wheel side-by-side with the released build. SCAFFOLDING HELPER, not an execution engine — same pattern as prepare_new_recipe and verify_branch_fix. Given a recipe slug + fork repo URL + branch name, returns: the `fix-candidate.json` content the agent should write, the recommended commit subject + PR title, a ready-to-paste PR body (with the AI-authorship and fix-candidate spec details tucked inside a `<details>` block), and the exact `gh` / `git` commands to fork-and-clone aletheia-works/vivarium, branch off main, drop the spec in, commit, push, and open the cross-repo PR. Use this immediately after opening an upstream fix branch (e.g. on a fork of lark-parser/lark) when you want Vivarium to verify the fix live in-browser without waiting for upstream merge + a PyPI release. Validates the slug against the bundled catalogue and rejects non-Layer-1 recipes (Layer 2 uses a different verification path — see verify_branch_fix; Layer 3 live previews show an upstream pull request that is itself the fix).",
   inputSchema: {
     type: 'object' as const,
     properties: {
