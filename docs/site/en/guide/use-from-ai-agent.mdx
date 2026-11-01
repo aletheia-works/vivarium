@@ -24,7 +24,7 @@ import {
     eyebrow="// 0 · WHAT THIS GUIDE COVERS"
     heading="Wiring an AI agent to Vivarium's catalogue via MCP."
   >
-    <p>The Vivarium MCP server (<code>@aletheia-works/vivarium-mcp</code>) speaks{' '} <a href="https://modelcontextprotocol.io">Model Context Protocol</a>{' '} over stdio and exposes a set of tools (catalogue enumeration, recipe lookup, verdict snapshots, error-to-recipe matching, plus scaffolders for new recipes and for branch-fix / fix-candidate verification). An agent can browse the catalogue, fetch metadata for a given recipe, pull deployed Layer 2 / 3 verdict snapshots, and scaffold the AI-slop verification loop end-to-end. The full list and per-tool inputs are in the section below.</p>
+    <p>The Vivarium MCP server (<code>@aletheia-works/vivarium-mcp</code>) speaks{' '} <a href="https://modelcontextprotocol.io">Model Context Protocol</a>{' '} over stdio and exposes a set of tools (catalogue enumeration, recipe lookup, verdict snapshots, error-to-recipe matching, plus scaffolders for new recipes and for branch-fix / fix-candidate verification). An agent can browse the catalogue, fetch metadata for a given recipe, pull deployed Layer 2 verdict snapshots, and scaffold the AI-slop verification loop end-to-end. The full list and per-tool inputs are in the section below.</p>
     <Callout>
       <strong>The first JSR / npm publish is intentionally on hold</strong>.
       Vivarium overall and the MCP server's feature surface are both
@@ -105,15 +105,19 @@ bun run build
       </li>
       <li>
         <strong><code>get_recipe(slug)</code></strong> — full metadata
-        for one recipe (title, project, issue, page URL, verdict
-        snapshot URL, GitHub source URL). Returns{' '}
+        for one recipe (title, project, issue, page URL, GitHub
+        source URL; the verdict snapshot URL for Layer 2 and the
+        upstream pull request number for Layer 3). Returns{' '}
         <code>{`{ found: false, error }`}</code> on unknown slug.
       </li>
       <li>
         <strong><code>lookup_verdict(slug)</code></strong> — Layer 1
         returns <code>{`{ kind: "live", page_url, note }`}</code> (the
-        verdict is computed in-browser at view time). Layer 2 / 3 returns{' '}
+        verdict is computed in-browser at view time). Layer 2 returns{' '}
         <code>{`{ kind: "snapshot", snapshot: { verdict, exit_code, image_digest, stdout, stderr_tail, ... } }`}</code>.
+        A Layer 3 live preview has no verdict, so it also returns{' '}
+        <code>kind: "live"</code>, with the page that says how to check
+        the previewed pull request.
       </li>
       <li>
         <strong><code>match_error(text, limit?)</code></strong> — score
@@ -128,9 +132,10 @@ bun run build
         execution engine). Layer 1 returns Path A: a recipe-page{' '}
         <code>compare_url</code> with the fix pre-loaded via{' '}
         <code>?fix_url=</code> or <code>?fix=&lt;base64url&gt;</code>.
-        Layer 2 / 3 returns Path B: a <code>/repro/compare</code> deep-link
+        Layer 2 returns Path B: a <code>/repro/compare</code> deep-link
         plus the <code>gh workflow run branch-fix-verdict.yml</code>{' '}
-        command the contributor runs. Full walkthrough:{' '}
+        command the contributor runs. A Layer 3 preview is rejected:
+        the previewed pull request is itself the fix. Full walkthrough:{' '}
         <a href="/vivarium/guide/compare-branch-fix">Verify a branch-fix</a>.
       </li>
       <li>
@@ -146,8 +151,9 @@ bun run build
         <code>docs/site/_data/projects.json</code> row (only when the
         recipe debuts a new upstream project), the commit-subject
         template, and a sequenced next-steps checklist.
-        Layer 2 has the canonical scaffolder; Layer 1 / 3 fall back to
-        copying from an existing recipe.
+        Layer 2 has the canonical scaffolder; Layer 1 falls back to
+        copying from an existing recipe. Layer 3 is rejected: a preview
+        is written by hand, one per upstream pull request.
       </li>
       <li>
         <strong><code>prepare_fix_candidate(slug, fork_url, branch, upstream_pr?, package?, purpose?)</code></strong> —
@@ -177,7 +183,7 @@ bun run build
         },
         {
           lead: 'Check whether something still reproduces today.',
-          body: <>"<em>What does <code>lookup_verdict</code> say about <code>pandas-56679</code>?</em>" → Layer 1 returns a <code>kind: "live"</code> URL the agent can offer for a browser visit; Layer 2 / 3 returns the snapshot's verdict / exit code directly.</>,
+          body: <>"<em>What does <code>lookup_verdict</code> say about <code>pandas-56679</code>?</em>" → Layer 1 returns a <code>kind: "live"</code> URL the agent can offer for a browser visit; Layer 2 returns the snapshot's verdict / exit code directly.</>,
         },
         {
           lead: 'Filter by layer or project.',

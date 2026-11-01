@@ -5,6 +5,7 @@ export interface RecipeEntry {
   layer: Layer;
   project: string;
   issue: number;
+  pull?: number;
   title: string;
   page_url: string;
   page_url_ja?: string;

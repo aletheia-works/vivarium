@@ -24,7 +24,7 @@ import {
     eyebrow="// 0 · このガイドが対象にするもの"
     heading="MCP 経由でカタログにアクセスするエージェント設定。"
   >
-    <p>Vivarium MCP サーバ (<code>@aletheia-works/vivarium-mcp</code>) は{' '} <a href="https://modelcontextprotocol.io">Model Context Protocol</a>{' '} の stdio トランスポート経由で一連のツールを提供します (カタログの列挙、レシピ単体のメタデータ取得、verdict スナップショット、 エラー → レシピのマッチング、加えて新規レシピと branch-fix / fix-candidate 検証用のスキャフォルダー)。 エージェント側からカタログを検索し、特定レシピのメタデータを取得し、 Layer 2 / 3 の verdict スナップショットを読み、候補修正の検証フローを 組み立てられます。各ツールの入出力詳細は下のセクションに一覧があります。</p>
+    <p>Vivarium MCP サーバ (<code>@aletheia-works/vivarium-mcp</code>) は{' '} <a href="https://modelcontextprotocol.io">Model Context Protocol</a>{' '} の stdio トランスポート経由で一連のツールを提供します (カタログの列挙、レシピ単体のメタデータ取得、verdict スナップショット、 エラー → レシピのマッチング、加えて新規レシピと branch-fix / fix-candidate 検証用のスキャフォルダー)。 エージェント側からカタログを検索し、特定レシピのメタデータを取得し、 Layer 2 の verdict スナップショットを読み、候補修正の検証フローを 組み立てられます。各ツールの入出力詳細は下のセクションに一覧があります。</p>
     <Callout>
       <strong>JSR / npm への初回公開は現時点で意図的に保留中</strong>です。
       Vivarium 全体およびサーバ機能サーフェスがまだ熟していない段階で公開すると、
@@ -103,13 +103,15 @@ bun run build
       </li>
       <li>
         <strong><code>get_recipe(slug)</code></strong> — 1 つのレシピの全メタデータ
-        （title / project / issue / page URL / verdict snapshot URL / GitHub source URL）。
+        （title / project / issue / page URL / GitHub source URL。Layer 2 は verdict snapshot URL、Layer 3 は上流の pull request 番号も）。
         slug が見つからなければ <code>{`{ found: false, error }`}</code>。
       </li>
       <li>
         <strong><code>lookup_verdict(slug)</code></strong> — Layer 1 は{' '}
         <code>{`{ kind: "live", page_url, note }`}</code>（verdict はブラウザ実行時に出る）、
-        Layer 2 / 3 は <code>{`{ kind: "snapshot", snapshot: { verdict, exit_code, image_digest, stdout, stderr_tail, ... } }`}</code>。
+        Layer 2 は <code>{`{ kind: "snapshot", snapshot: { verdict, exit_code, image_digest, stdout, stderr_tail, ... } }`}</code>。
+        Layer 3 のライブプレビューには verdict がないので、同じく{' '}
+        <code>kind: "live"</code> で、プレビューする pull request の確かめ方を書いたページを返す。
       </li>
       <li>
         <strong><code>match_error(text, limit?)</code></strong> — エラー文字列・スタックトレースから
@@ -120,9 +122,10 @@ bun run build
         <strong><code>verify_branch_fix(slug, fix_url? | fix_source?)</code></strong> —
         候補修正を検証するための足場ヘルパー（実行エンジンではない）。
         Layer 1 は Path A — レシピページに <code>?fix_url=</code> / <code>?fix=</code> を
-        事前読み込みした <code>compare_url</code> を返す。Layer 2 / 3 は Path B —
+        事前読み込みした <code>compare_url</code> を返す。Layer 2 は Path B —
         <code>gh workflow run branch-fix-verdict.yml</code> コマンドと
-        <code>/repro/compare</code> deep-link を返す。フルウォークスルーは{' '}
+        <code>/repro/compare</code> deep-link を返す。Layer 3 のプレビューは、
+        プレビューする pull request そのものが修正なので受け付けない。フルウォークスルーは{' '}
         <a href="/vivarium/ja/guide/compare-branch-fix">「ブランチ修正を検証する」</a>。
       </li>
       <li>
@@ -135,8 +138,9 @@ bun run build
         で検証される）、新規プロジェクト時のみ追加する
         <code>docs/site/_data/projects.json</code> の行、
         コミットメッセージのテンプレート、順序付き next-steps チェックリストを返す。
-        Layer 2 にだけ専用スキャフォルダがあり、Layer 1 / 3 は既存レシピを
-        コピーする運用。
+        Layer 2 にだけ専用スキャフォルダがあり、Layer 1 は既存レシピを
+        コピーする運用。Layer 3 は受け付けない（プレビューは上流の pull request
+        ごとに手で書く）。
       </li>
       <li>
         <strong><code>prepare_fix_candidate(slug, fork_url, branch, upstream_pr?, package?, purpose?)</code></strong> —
@@ -148,7 +152,7 @@ bun run build
         <code>aletheia-works/vivarium</code> を fork-clone → main から branch →
         spec を置く → commit / push → cross-repo PR を開くまでの{' '}
         <code>gh</code> / <code>git</code> コマンド一式を返す。Layer 1 専用
-        （Layer 2 / 3 は <code>verify_branch_fix</code> を使う）。
+        （Layer 2 は <code>verify_branch_fix</code> を使う）。
       </li>
     </ul>
   </Section>
@@ -165,7 +169,7 @@ bun run build
         },
         {
           lead: '今この瞬間に再現するか確認する。',
-          body: <>「<em><code>pandas-56679</code> の現在の verdict を <code>lookup_verdict</code> で見て</em>」→ Layer 1 は <code>kind: "live"</code> なので「ページを開いて確認するURLを返却」、Layer 2 / 3 はスナップショットの数値が直接出る。</>,
+          body: <>「<em><code>pandas-56679</code> の現在の verdict を <code>lookup_verdict</code> で見て</em>」→ Layer 1 は <code>kind: "live"</code> なので「ページを開いて確認するURLを返却」、Layer 2 はスナップショットの数値が直接出る。</>,
         },
         {
           lead: '層・プロジェクトでフィルタして列挙。',

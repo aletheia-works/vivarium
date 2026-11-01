@@ -113,6 +113,12 @@ export async function prepareNewRecipe(
   if (!title) return { ok: false, error: 'title is required' };
   if (![1, 2, 3].includes(layer))
     return { ok: false, error: `layer must be 1, 2, or 3 (got ${layer})` };
+  if (layer === 3)
+    return {
+      ok: false,
+      error:
+        'Layer 3 recipes are live previews, one per upstream pull request rather than per issue; add src/layer3_previews/<project>-<pull>/ by hand as src/layer3_previews/README.md describes.',
+    };
 
   const slug = `${project}-${issueNum}`;
   if (!SLUG_REGEX.test(slug)) {
@@ -265,7 +271,7 @@ export const PREPARE_NEW_RECIPE_TOOL = {
       base_image: {
         type: 'string' as const,
         description:
-          "Optional Docker base image for Layer 2 recipes (e.g. 'node:26-slim'). Forwarded to `mise run recipes:new -- ... --base <image>`. Layer 1 / 3 ignore this.",
+          "Optional Docker base image for Layer 2 recipes (e.g. 'node:26-slim'). Forwarded to `mise run recipes:new -- ... --base <image>`. Layer 1 ignores this.",
       },
       repo_owner: {
         type: 'string' as const,
@@ -277,7 +283,7 @@ export const PREPARE_NEW_RECIPE_TOOL = {
         enum: [1, 2, 3],
         default: 2,
         description:
-          'Vivarium layer: 1=WASM (in-browser), 2=Docker (default), 3=third way (no recipes yet). The commit scope, scaffold command, and next-steps tailor to the layer.',
+          'Vivarium layer: 1=WASM (in-browser), 2=Docker (default). 3=live preview is rejected: those recipes are one per upstream pull request and are written by hand. The commit scope, scaffold command, and next-steps tailor to the layer.',
       },
     },
     required: ['project', 'issue', 'title'],

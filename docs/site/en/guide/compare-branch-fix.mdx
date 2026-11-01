@@ -18,7 +18,7 @@ import { ExampleSlug } from '../../_components/LiveExamples';
   <PageHero
     eyebrow="// GUIDE · BRANCH-FIX"
     title="Test a candidate fix end-to-end."
-    sub="Vivarium pairs a recipe (the bug) with a comparison surface (your fix) and a verdict that flips when the fix actually steers around the broken code path. This guide walks the loop end-to-end — Layer 1 (in-browser) and Layer 2/3 (Docker)."
+    sub="Vivarium pairs a recipe (the bug) with a comparison surface (your fix) and a verdict that flips when the fix actually steers around the broken code path. This guide walks the loop end-to-end — Layer 1 (in-browser) and Layer 2 (Docker). Layer 3 live previews show an upstream pull request, which is itself the fix, so they have no branch-fix loop."
   />
 
   <Section
@@ -41,7 +41,7 @@ import { ExampleSlug } from '../../_components/LiveExamples';
           body: <>You paste an alternative reproduction script onto the recipe page. The recipe's WASM runtime (php-wasm, ruby.wasm, Pyodide) re-runs it in your tab and captures a verdict. No CI required, no Docker required.</>,
         },
         {
-          lead: 'Path B — Layer 2/3 (Docker image rebuild).',
+          lead: 'Path B — Layer 2 (Docker image rebuild).',
           body: <>You build and push a branch-fix Docker image. A GitHub Actions workflow pulls the image, runs it, captures a verdict, and publishes the artefact bundle for /repro/compare to render.</>,
         },
       ]}
@@ -89,7 +89,7 @@ import { ExampleSlug } from '../../_components/LiveExamples';
         },
         {
           lead: 'Download both verdicts.',
-          body: <>The panel renders one download link per side. Both files conform to <a href="/vivarium/spec/contract-v1">Contract v1</a> — same shape <code>/repro/compare</code> consumes from a Layer 2/3 workflow run.</>,
+          body: <>The panel renders one download link per side. Both files conform to <a href="/vivarium/spec/contract-v1">Contract v1</a> — same shape <code>/repro/compare</code> consumes from a Layer 2 workflow run.</>,
         },
         {
           lead: 'Drop them on /repro/compare.',
@@ -150,7 +150,7 @@ import { ExampleSlug } from '../../_components/LiveExamples';
     </Callout>
     <Callout>
       <strong>Agent-driven shortcut.</strong>{' '}
-      <code>verify_branch_fix(slug)</code> on a Layer 2/3 slug returns
+      <code>verify_branch_fix(slug)</code> on a Layer 2 slug returns
       the <code>gh_command</code> ready to copy-paste. The agent still
       needs <code>gh</code> auth and registry access to actually run it
       — but the command itself is constructed for you.

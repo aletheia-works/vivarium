@@ -269,7 +269,7 @@ async function executeLayer1(
 
 async function executeLayer23(
   slug: string,
-  layer: 2 | 3,
+  layer: 2,
   action: 'verify_unfixed' | 'verify_fixed',
   args: VerifyAndReportFixArgs,
 ): Promise<{
@@ -278,19 +278,6 @@ async function executeLayer23(
 }> {
   const sourceLabel = LAYER_SOURCE[layer];
 
-  if (layer === 3 && action === 'verify_fixed') {
-    return {
-      executed: {
-        action,
-        source: sourceLabel,
-        ok: false,
-        duration_ms: 0,
-        error:
-          'verify_fixed is not yet supported for Layer 3 recipes; branch-fix-verdict.yml only handles src/layer2_docker/<slug>. Track workflow extension separately.',
-      },
-    };
-  }
-
   if (action === 'verify_fixed' && !args.branch_image) {
     return {
       executed: {
@@ -298,7 +285,7 @@ async function executeLayer23(
         source: sourceLabel,
         ok: false,
         duration_ms: 0,
-        error: 'branch_image is required for verify_fixed on Layer 2/3 recipes',
+        error: 'branch_image is required for verify_fixed on Layer 2 recipes',
       },
     };
   }
@@ -384,7 +371,7 @@ export async function verifyAndReportFix(
     const captured =
       recipe.layer === 1
         ? await executeLayer1(slug, executable, args, recipe.path_a === true)
-        : await executeLayer23(slug, recipe.layer as 2 | 3, executable, args);
+        : await executeLayer23(slug, recipe.layer as 2, executable, args);
 
     executed = captured.executed;
     if (captured.verdictEntry) {
@@ -441,7 +428,7 @@ export async function verifyAndReportFix(
 export const VERIFY_AND_REPORT_FIX_TOOL = {
   name: 'verify_and_report_fix',
   description:
-    "Layer-abstracted round-trip verification driver. Computes the state-machine next_action from the recipe's current round-trip state and, when `auto_execute` is true (the default), runs the appropriate verdict capture: a Playwright `--grep` targeted run for Layer 1 or a `gh workflow run branch-fix-verdict.yml` dispatch + artefact download for Layer 2/3. Returns the merged state with any captured verdict in `verdicts`, the next state-machine action in `next_action`, and the commands to run for any non-executing action (PR opens, manual intervention, complete) in `commands`. Pass `auto_execute: false` for the earlier Phase 1 / 2 behaviour (return commands without running anything). The `executed` field reports the action that just ran, its source, and any error.",
+    "Layer-abstracted round-trip verification driver. Computes the state-machine next_action from the recipe's current round-trip state and, when `auto_execute` is true (the default), runs the appropriate verdict capture: a Playwright `--grep` targeted run for Layer 1 or a `gh workflow run branch-fix-verdict.yml` dispatch + artefact download for Layer 2. Layer 3 live previews are rejected: they have no verdict and no round-trip. Returns the merged state with any captured verdict in `verdicts`, the next state-machine action in `next_action`, and the commands to run for any non-executing action (PR opens, manual intervention, complete) in `commands`. Pass `auto_execute: false` for the earlier Phase 1 / 2 behaviour (return commands without running anything). The `executed` field reports the action that just ran, its source, and any error.",
   inputSchema: {
     type: 'object' as const,
     properties: {
@@ -464,7 +451,7 @@ export const VERIFY_AND_REPORT_FIX_TOOL = {
       branch_image: {
         type: 'string' as const,
         description:
-          "Layer 2/3 only. GHCR tag of the contributor's branch-fix Docker image. Required for verify_fixed on Layer 2/3 — passed as the `branch_image` input to `branch-fix-verdict.yml`.",
+          "Layer 2 only. GHCR tag of the contributor's branch-fix Docker image. Required for verify_fixed on Layer 2 — passed as the `branch_image` input to `branch-fix-verdict.yml`.",
       },
       current_state: {
         type: 'object' as const,
@@ -487,13 +474,13 @@ export const VERIFY_AND_REPORT_FIX_TOOL = {
         type: 'integer' as const,
         minimum: 1000,
         description:
-          'Layer 2/3 only. Interval between `gh run view` polls when waiting for branch-fix-verdict.yml to complete. Default 15000ms.',
+          'Layer 2 only. Interval between `gh run view` polls when waiting for branch-fix-verdict.yml to complete. Default 15000ms.',
       },
       poll_timeout_ms: {
         type: 'integer' as const,
         minimum: 1000,
         description:
-          'Layer 2/3 only. Hard cap on the total wait for the workflow to complete. Default 600000ms (10 minutes).',
+          'Layer 2 only. Hard cap on the total wait for the workflow to complete. Default 600000ms (10 minutes).',
       },
     },
     required: ['slug'],
