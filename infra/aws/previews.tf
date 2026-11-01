@@ -257,3 +257,23 @@ output "preview_links" {
   value       = { for name, url in aws_lambda_function_url.preview : name => "${url.function_url}?vivarium-key=${random_password.preview_key[name].result}" }
   sensitive   = true
 }
+
+import {
+  to = aws_lambda_function.preview["motioneye-3513"]
+  id = "vivarium-preview-motioneye-3513"
+}
+
+import {
+  to = aws_lambda_function_url.preview["motioneye-3513"]
+  id = "vivarium-preview-motioneye-3513"
+}
+
+import {
+  to = aws_lambda_permission.preview_url["motioneye-3513"]
+  id = "vivarium-preview-motioneye-3513/public-function-url"
+}
+
+import {
+  to = aws_lambda_permission.preview_invoke["motioneye-3513"]
+  id = "vivarium-preview-motioneye-3513/public-function-url-invoke"
+}

@@ -107,10 +107,15 @@ write access; and the state is encrypted with `TF_STATE_PASSPHRASE` and kept
 as the `terraform-state-aws` artifact of the run that
 `LATEST_AWS_APPLY_RUN_ID` names.
 
+The apply reads `LATEST_AWS_APPLY_RUN_ID` through the API when its job
+starts, after any earlier apply has finished. `vars.LATEST_AWS_APPLY_RUN_ID`
+would not do: it is fixed when the run is queued, so an apply queued behind
+another one started from the state before it, undid what the earlier one had
+built, and saved that older state.
+
 Retry a failed apply with a new run (`gh workflow run aws-terraform-apply.yml
---ref main`), not a re-run. A re-run of a failed apply loaded the state the
-failed attempt had read, even after a later apply had saved a newer one. It
-then pointed `LATEST_AWS_APPLY_RUN_ID` back at that older state.
+--ref main`), not a re-run: a re-run applies the commit it was started for,
+which may be older than `main`.
 
 The account runs other stacks, so the roles are narrow. Both read through
 `tofu-read` ([bootstrap/read-policy.json.tftpl](bootstrap/read-policy.json.tftpl)).
