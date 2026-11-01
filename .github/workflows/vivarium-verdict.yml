@@ -35,7 +35,7 @@ jobs:
 
     steps:
       - name: Install jsonschema CLI for verdict schema validation
-        uses: sourcemeta/jsonschema@00097701c5d31c5360808a66473c8584e74dc6e9 # v17.3.1
+        uses: sourcemeta/jsonschema@3a9931115cbd7920ec85e55e61567f78ee933051 # v17.3.2
 
       - name: Fetch contract v1 verdict schema
         run: |
