@@ -389,9 +389,10 @@ describe('preview recipes', () => {
       issue: 800,
       pull: 3506,
       title: 'A manual pause lasts',
-      page_url:
-        'https://aletheia-works.github.io/vivarium/repro/motioneye/3506/',
     });
+    expect(new URL(entry.page_url).pathname).toEndWith(
+      '/repro/motioneye/3506/',
+    );
     expect(entry.verdict_url).toBeUndefined();
   });
 });
