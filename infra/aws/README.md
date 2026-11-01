@@ -94,24 +94,11 @@ AWS の認証情報は、この会話や tfvars に貼り付けません。す�
 
 ```powershell
 $docker = "C:\Program Files\Docker\Docker\resources\bin\docker.exe"
-esourcesbindocker.exe"
 & $docker run --rm -it -v "$HOME\.aws:/root/.aws" amazon/aws-cli:2.37.12 login --remote
 & $docker run --rm -v "$HOME\.aws:/root/.aws" amazon/aws-cli:2.37.12 configure export-credentials --format powershell | Invoke-Expression
 ```
 
-### 1. 手元の state で作ったプレビューを消す（移行のときだけ、マージの前に）
-
-段階 1 では state が手元にありました。CI の最初の Apply は state なしで始まるので、
-同じ名前のリソースが残っていると失敗します。この PR をマージする前に消します。
-
-```powershell
-tofu init
-tofu destroy
-```
-
-消し終わったら、手元の `terraform.tfstate` と `terraform.tfstate.backup` は消して構いません。
-
-### 2. CI の role と permissions boundary を手で作る
+### 1. CI の role と permissions boundary を手で作る
 
 template の `${account_id}` と `${subject_prefix}` を置き換えて、`.build/bootstrap/` に
 書き出してから作ります。tag は provider の `default_tags` と同じにします（違うと plan が
@@ -140,7 +127,7 @@ $tags = 'Key=Project,Value=vivarium', 'Key=ManagedBy,Value=opentofu'
 GitHub の OIDC provider（`token.actions.githubusercontent.com`）は、この account に既に
 あるもの（formicarium と共有）を使います。新しくは作りません。
 
-### 3. GitHub 側
+### 2. GitHub 側
 
 - [vivarium の Actions の変数](https://github.com/aletheia-works/vivarium/settings/variables/actions)
   に、次の 2 つを登録します。ARN には account ID が入るので、repo のコードには書きません。
@@ -151,14 +138,14 @@ GitHub の OIDC provider（`token.actions.githubusercontent.com`）は、この 
 - state の暗号化は、infra/github と同じ organization secret の `TF_STATE_PASSPHRASE` を
   使います。`LATEST_AWS_APPLY_RUN_ID` は最初の Apply が作ります。
 
-### 4. 最初の Apply
+### 3. 最初の Apply
 
 マージすると AWS Terraform Apply が走り、import block で手作りの role と boundary を
 取り込み、残りを作って、state を保存します。infra/github の Apply より先に走って
 `aws-apply` environment がまだ無いと失敗するので、そのときは infra/github の Apply が
 終わってから AWS Terraform Apply を re-run してください。
 
-### 5. レビュアーに渡すリンク
+### 4. レビュアーに渡すリンク
 
 リンクにはキーが入っているので、state から本人の端末で取り出します。`$passphrase` は
 `TF_STATE_PASSPHRASE` の値です。
@@ -183,7 +170,7 @@ tofu output -json preview_links
 
 ### CI の role と boundary を変えるとき
 
-`bootstrap/` の template を変えた PR は、マージの前に、変えた policy を手順 2 と同じ方法で
+`bootstrap/` の template を変えた PR は、マージの前に、変えた policy を手順 1 と同じ方法で
 手で更新します（apply の role はこれらを変えられないので、更新しないと Apply が
 失敗します）。inline policy は `iam put-role-policy`、boundary は
 `iam create-policy-version --set-as-default` です。
