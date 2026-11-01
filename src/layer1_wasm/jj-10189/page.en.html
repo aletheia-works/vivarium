@@ -1,0 +1,10 @@
+<template data-slot="upstream-url">https://github.com/jj-vcs/jj/issues/10189</template>
+<template data-slot="baseline-heading">Baseline · jj-vcs/jj main</template>
+<template data-slot="fix-heading">Fix · Marukome0743/jj</template>
+<template data-slot="runtime-label">formicarium · native jj in WebAssembly</template>
+<template data-slot="drawer-body">
+  <p data-i18n="drawer.body.p1">Commit timestamps have one-second resolution. After <code>jj undo</code>, running the same rewrite again within that second re-creates exactly the commit the undone operation wrote, and the baseline rejects it with <code>Internal error: Newly-created commit … already exists</code>.</p>
+  <p data-i18n="drawer.body.p2">Both terminals run <code>jj git init</code> in an empty directory, pin <code>debug.commit-timestamp</code> in the repository's config so the timing does not matter, then run <code>jj describe -m A</code>, <code>jj new -m B</code>, <code>jj describe @- -m NEW</code> and <code>jj undo</code>. Each must succeed.</p>
+  <p data-i18n="drawer.body.p3">The last command is <code>jj describe @- -m NEW</code> again. When it fails naming the commit the first one created as already existing, the run is reproduced; when it succeeds and re-creates that commit, it is corrected. The verdict reports only the baseline; the fix, <a href="https://github.com/jj-vcs/jj/pull/10190">jj-vcs/jj#10190</a>, is checked separately. After the recorded commands you can type your own.</p>
+  <p data-i18n="drawer.body.p4">formicarium runs the accepted static musl builds of both commits in this tab, after checking each ELF and its build-info against the accepted digests.</p>
+</template>

@@ -144,6 +144,7 @@ async function readVivariumState(page: Page): Promise<VivariumPageState> {
 function timeoutForRuntime(name: ReproCase["expectedRuntimeName"]): number {
   if (name === "browser" || name === "docker-snapshot") return 10_000;
   if (name === "pyodide") return 120_000;
+  if (name === "formicarium") return 300_000;
   return 75_000;
 }
 

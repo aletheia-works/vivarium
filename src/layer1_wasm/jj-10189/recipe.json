@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "language": "shell",
+  "symptom": "duplicate-commit-after-undo",
+  "severity": "bug",
+  "tags": [
+    "jj",
+    "vcs",
+    "undo",
+    "commit-id"
+  ],
+  "expected_verdict": "reproduced",
+  "expected_runtime": "formicarium",
+  "guests": [
+    {
+      "role": "baseline",
+      "tool": "jj",
+      "repository": "https://github.com/jj-vcs/jj",
+      "commit": "b5c61830e73eccb3f7f79661c0915681fdc00dd3",
+      "fixture": "jj-10189",
+      "reference": {
+        "branch": "main"
+      },
+      "accepted": {
+        "commit": "b5c61830e73eccb3f7f79661c0915681fdc00dd3",
+        "versionOrName": "b5c61830e73eccb3f7f79661c0915681fdc00dd3",
+        "buildKey": "a59a45398d836404f8d3bb7f6bf469589a9024ecff94f5bd0e8f83873299515e",
+        "elfSha256": "d7bf88b8fb1829952c8e4a83a1dadee9a93c4f10fefa09622a46c79bac8dc55f",
+        "buildInfoSha256": "4478d4ffe60272a5bd005573d2518d310100733f2a01ee004ac214165e6bf0e1"
+      }
+    },
+    {
+      "role": "fix",
+      "tool": "jj",
+      "repository": "https://github.com/marukome0743/jj",
+      "commit": "226377683a389c15af492d695a9935223b74a8b3",
+      "fixture": "jj-10189",
+      "reference": {
+        "branch": "fix-10189"
+      },
+      "accepted": {
+        "commit": "226377683a389c15af492d695a9935223b74a8b3",
+        "versionOrName": "226377683a389c15af492d695a9935223b74a8b3",
+        "buildKey": "8b8baadf381637c244d3628fcd4ae6ba587ac1268b6c8ca01f8a5bac238f6ca1",
+        "elfSha256": "fb50f1a7afdb57a1ee9ab73ce9bd24293b1fe35199e3e6c2aecea422a1579ba9",
+        "buildInfoSha256": "03436218789f6011ebb4e26cd23da72028166a2f6e22a84050ad991fe71f68ed"
+      }
+    }
+  ]
+}
