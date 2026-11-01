@@ -38,10 +38,13 @@ jobs:
           role-to-assume: ${{ vars.AWS_TOFU_APPLY_ROLE_ARN }}
           aws-region: ap-northeast-1
 
-      - uses: opentofu/setup-opentofu@a1320f892987e89d278cc92dc5adc984fb93aca4 # v2.0.2
+      - name: Setup mise (opentofu)
+        uses: jdx/mise-action@6612f0ef07ed2a736cd1e00a94a065522dd41195 # v5.2.5
         with:
-          tofu_version: latest
-          tofu_wrapper: false
+          install: true
+          cache: true
+          experimental: true
+          install_args: opentofu
 
       - name: Configure state encryption
         env:
