@@ -15,7 +15,7 @@ def area_files(area: str) -> list[str]:
     found = []
     for directory, _, names in os.walk(base):
         for name in names:
-            found.append(os.path.relpath(os.path.join(directory, name), base))
+            found.append(os.path.relpath(os.path.join(directory, name), base).replace(os.sep, "/"))
     return sorted(found)
 
 
@@ -60,6 +60,11 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header(
             "Content-Type", mimetypes.guess_type(target)[0] or "application/octet-stream"
         )
+        self.send_header(
+            "Content-Disposition",
+            f"attachment; filename*=UTF-8''{quote(os.path.basename(target))}",
+        )
+        self.send_header("X-Content-Type-Options", "nosniff")
         self.send_header("Content-Length", str(os.path.getsize(target)))
         self.end_headers()
         with open(target, "rb") as source:
@@ -69,4 +74,5 @@ class Handler(BaseHTTPRequestHandler):
         pass
 
 
-ThreadingHTTPServer(("0.0.0.0", PORT), Handler).serve_forever()
+if __name__ == "__main__":
+    ThreadingHTTPServer(("0.0.0.0", PORT), Handler).serve_forever()
