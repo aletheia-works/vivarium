@@ -199,6 +199,8 @@ run = [
   "tofu fmt -check -recursive",
   "tofu -chdir=github init -backend=false -input=false -lockfile=readonly",
   "tofu -chdir=github validate",
+  "tofu -chdir=aws init -backend=false -input=false -lockfile=readonly",
+  "tofu -chdir=aws validate",
 ]
 
 [tasks."infra:check:fix"]
@@ -217,6 +219,28 @@ description = "Apply OpenTofu changes (PRODUCTION — review the plan first)"
 depends = ["infra:init"]
 dir = "infra/github"
 run = "tofu apply"
+
+[tasks."infra:aws:init"]
+description = "Initialise OpenTofu working directory for infra/aws"
+dir = "infra/aws"
+run = "tofu init"
+
+[tasks."infra:aws:plan"]
+description = "Plan the preview environments in infra/aws"
+depends = ["infra:aws:init"]
+dir = "infra/aws"
+run = "tofu plan"
+
+[tasks."infra:aws:apply"]
+description = "Apply the preview environments in infra/aws (review the plan first)"
+depends = ["infra:aws:init"]
+dir = "infra/aws"
+run = "tofu apply"
+
+[tasks."infra:aws:links"]
+description = "Print each preview's link with its key"
+dir = "infra/aws"
+run = "tofu output -json preview_links"
 
 [tasks."ci:docs"]
 description = "Local docs build sanity (mirrors the build step inside test-docs.yml's E2E lane)"

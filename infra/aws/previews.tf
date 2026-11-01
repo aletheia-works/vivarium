@@ -1,0 +1,243 @@
+locals {
+  previews = {
+    "motioneye-8451b85d" = {
+      repository = "motioneye-project/motioneye"
+      commit     = "8451b85d15189acae93263e710a4605320c6b910"
+    }
+  }
+
+  account_id         = data.aws_caller_identity.current.account_id
+  base_image_arn     = "arn:aws:lambda:${var.aws_region}:aws:microvm-image:al2023-1"
+  base_image_version = "2"
+  connector          = "arn:aws:lambda:${var.aws_region}:aws:network-connector:aws-network-connector"
+  motioneye_files    = ["entrypoint.sh", "fakecam.py", "hooks.py", "seed.py"]
+  preview_tags       = [for key, value in { Project = "vivarium", ManagedBy = "opentofu" } : { key = key, value = value }]
+}
+
+data "archive_file" "preview" {
+  for_each    = local.previews
+  type        = "zip"
+  output_path = "${path.module}/.build/${each.key}.zip"
+  source {
+    filename = "Dockerfile"
+    content  = templatefile("${path.module}/motioneye/Dockerfile.tftpl", each.value)
+  }
+  dynamic "source" {
+    for_each = local.motioneye_files
+    content {
+      filename = "preview/${source.value}"
+      content  = file("${path.module}/motioneye/${source.value}")
+    }
+  }
+}
+
+resource "aws_s3_object" "preview" {
+  for_each = local.previews
+  bucket   = aws_s3_bucket.artifacts.id
+  key      = "previews/${each.key}/${data.archive_file.preview[each.key].output_sha256}.zip"
+  source   = data.archive_file.preview[each.key].output_path
+}
+
+resource "aws_cloudwatch_log_group" "preview_build" {
+  name              = "/vivarium/preview-build"
+  retention_in_days = 30
+}
+
+resource "aws_iam_role" "preview_build" {
+  name        = "vivarium-preview-build"
+  description = "Builds the preview MicroVM images from their zips in S3."
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect    = "Allow"
+      Principal = { Service = "lambda.amazonaws.com" }
+      Action    = ["sts:AssumeRole", "sts:TagSession"]
+    }]
+  })
+}
+
+resource "aws_iam_role_policy" "preview_build" {
+  name = "preview-build"
+  role = aws_iam_role.preview_build.id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = ["s3:GetObject", "s3:GetObjectVersion"]
+        Resource = "${aws_s3_bucket.artifacts.arn}/previews/*"
+      },
+      {
+        Effect   = "Allow"
+        Action   = ["logs:CreateLogStream", "logs:PutLogEvents"]
+        Resource = "${aws_cloudwatch_log_group.preview_build.arn}:*"
+      },
+    ]
+  })
+}
+
+resource "awscc_lambda_microvm_image" "preview" {
+  for_each           = local.previews
+  name               = "vivarium-preview-${each.key}"
+  description        = "${each.value.repository} at ${each.value.commit} with fake cameras"
+  base_image_arn     = local.base_image_arn
+  base_image_version = local.base_image_version
+  build_role_arn     = aws_iam_role.preview_build.arn
+  code_artifact = {
+    uri = "s3://${aws_s3_object.preview[each.key].bucket}/${aws_s3_object.preview[each.key].key}"
+  }
+  cpu_configurations        = [{ architecture = "ARM_64" }]
+  resources                 = [{ minimum_memory_in_mi_b = 1024 }]
+  egress_network_connectors = ["${local.connector}:INTERNET_EGRESS"]
+  # Cloud Control requires a value and ALL is the only one; it applies inside
+  # the MicroVM, which has no execution role.
+  additional_os_capabilities = ["ALL"]
+  hooks = {
+    port = 9000
+    microvm_image_hooks = {
+      ready                       = "ENABLED"
+      ready_timeout_in_seconds    = 600
+      validate                    = "ENABLED"
+      validate_timeout_in_seconds = 300
+    }
+    microvm_hooks = {
+      run       = "DISABLED"
+      resume    = "DISABLED"
+      suspend   = "DISABLED"
+      terminate = "DISABLED"
+    }
+  }
+  logging = {
+    cloudwatch = {
+      log_group = aws_cloudwatch_log_group.preview_build.name
+    }
+  }
+  # Cloud Control requires the key and awscc drops an empty list.
+  environment_variables = [{ key = "PREVIEW_COMMIT", value = each.value.commit }]
+  tags                  = local.preview_tags
+
+  depends_on = [aws_iam_role_policy.preview_build]
+}
+
+data "archive_file" "preview_proxy" {
+  type        = "zip"
+  output_path = "${path.module}/.build/preview-proxy.zip"
+  source {
+    filename = "index.mjs"
+    content  = file("${path.module}/preview-proxy/index.mjs")
+  }
+}
+
+resource "aws_cloudwatch_log_group" "preview_proxy" {
+  for_each          = local.previews
+  name              = "/vivarium/preview/${each.key}"
+  retention_in_days = 30
+}
+
+resource "aws_iam_role" "preview_proxy" {
+  name        = "vivarium-preview-proxy"
+  description = "Starts the preview MicroVMs and forwards to them."
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect    = "Allow"
+      Principal = { Service = "lambda.amazonaws.com" }
+      Action    = "sts:AssumeRole"
+    }]
+  })
+}
+
+resource "aws_iam_role_policy" "preview_proxy" {
+  name = "preview-proxy"
+  role = aws_iam_role.preview_proxy.id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = ["lambda:RunMicrovm", "lambda:GetMicrovm", "lambda:CreateMicrovmAuthToken"]
+        Resource = [for image in awscc_lambda_microvm_image.preview : image.image_arn]
+      },
+      {
+        Effect   = "Allow"
+        Action   = "lambda:ListMicrovms"
+        Resource = "*"
+      },
+      {
+        # Lambda checks this against no resource.
+        Effect   = "Allow"
+        Action   = "lambda:PassNetworkConnector"
+        Resource = "*"
+      },
+      {
+        Effect   = "Allow"
+        Action   = ["logs:CreateLogStream", "logs:PutLogEvents"]
+        Resource = "arn:aws:logs:${var.aws_region}:${local.account_id}:log-group:/vivarium/preview/*:*"
+      },
+    ]
+  })
+}
+
+resource "random_password" "preview_key" {
+  for_each = local.previews
+  length   = 32
+  special  = false
+}
+
+resource "aws_lambda_function" "preview" {
+  for_each         = local.previews
+  function_name    = "vivarium-preview-${each.key}"
+  description      = "Forwards ${each.value.repository} at ${each.value.commit} to its MicroVM."
+  role             = aws_iam_role.preview_proxy.arn
+  runtime          = "nodejs24.x"
+  architectures    = ["arm64"]
+  handler          = "index.handler"
+  filename         = data.archive_file.preview_proxy.output_path
+  source_code_hash = data.archive_file.preview_proxy.output_base64sha256
+  memory_size      = 256
+  timeout          = 60
+  logging_config {
+    log_format = "Text"
+    log_group  = aws_cloudwatch_log_group.preview_proxy[each.key].name
+  }
+  environment {
+    variables = {
+      IMAGE_ARN         = awscc_lambda_microvm_image.preview[each.key].image_arn
+      INGRESS_CONNECTOR = "${local.connector}:ALL_INGRESS"
+      ACCESS_KEY        = random_password.preview_key[each.key].result
+    }
+  }
+
+  depends_on = [aws_iam_role_policy.preview_proxy]
+}
+
+resource "aws_lambda_function_url" "preview" {
+  for_each           = local.previews
+  function_name      = aws_lambda_function.preview[each.key].function_name
+  authorization_type = "NONE"
+  invoke_mode        = "RESPONSE_STREAM"
+}
+
+resource "aws_lambda_permission" "preview_url" {
+  for_each               = local.previews
+  statement_id           = "public-function-url"
+  action                 = "lambda:InvokeFunctionUrl"
+  function_name          = aws_lambda_function.preview[each.key].function_name
+  principal              = "*"
+  function_url_auth_type = "NONE"
+}
+
+resource "aws_lambda_permission" "preview_invoke" {
+  for_each                 = local.previews
+  statement_id             = "public-function-url-invoke"
+  action                   = "lambda:InvokeFunction"
+  function_name            = aws_lambda_function.preview[each.key].function_name
+  principal                = "*"
+  invoked_via_function_url = true
+}
+
+output "preview_links" {
+  description = "Each preview's link with its key, for the reviewer"
+  value       = { for name, url in aws_lambda_function_url.preview : name => "${url.function_url}?vivarium-key=${random_password.preview_key[name].result}" }
+  sensitive   = true
+}
