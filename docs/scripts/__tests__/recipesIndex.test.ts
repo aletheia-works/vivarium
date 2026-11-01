@@ -6,6 +6,7 @@ import path from 'node:path';
 import { Ajv2020 } from 'ajv/dist/2020';
 import addFormats from 'ajv-formats';
 import {
+  listRecipeSlugs,
   loadGuestAllowlist,
   RecipeDeclarationError,
   readFormicariumRecipe,
@@ -44,7 +45,7 @@ describe('recipes.json conforms to recipes.schema.json', () => {
     const layerDir: Record<number, string> = {
       1: 'layer1_wasm',
       2: 'layer2_docker',
-      3: 'layer3_thirdway',
+      3: 'layer3_previews',
     };
     const mismatched = data.recipes
       .filter((r) => {
@@ -355,5 +356,21 @@ describe('recipe.schema.json guests', () => {
         formicariumMeta([guest('baseline'), guest('fix'), guest('fix')]),
       ),
     ).toBe(false);
+  });
+});
+
+describe('listRecipeSlugs', () => {
+  let dir: string | undefined;
+  afterEach(() => {
+    if (dir) rmSync(dir, { recursive: true, force: true });
+    dir = undefined;
+  });
+
+  test('leaves out preview recipes', async () => {
+    dir = mkdtempSync(path.join(tmpdir(), 'vivarium-layer-'));
+    await mkdir(path.join(dir, 'demo-1'));
+    await mkdir(path.join(dir, 'motioneye-3506'));
+    await writeFile(path.join(dir, 'motioneye-3506', 'preview.json'), '{}');
+    expect(await listRecipeSlugs(dir)).toEqual(['demo-1']);
   });
 });

@@ -64,16 +64,16 @@ import {
           accent: 'violet',
           icon: <Container />,
           title: 'Full fidelity, container execution',
-          body: 'The reproduction runs inside Docker or a microVM. Startup is seconds to a minute. Right for bugs that depend on a real filesystem, real processes, or real networking.',
+          body: 'The reproduction runs inside Docker. Startup is seconds to a minute. Right for bugs that depend on a real filesystem, real processes, or real networking.',
           runtimes: 'Docker · Firecracker · gVisor',
         },
         {
           pill: 'L3',
           accent: 'coral',
           icon: <History />,
-          title: 'Third way',
-          body: "Deterministic simulation, WASI Preview 3+, snapshot-based restore — and techniques that don't exist yet. For bugs that L1 and L2 can't reach. No recipes ship here yet.",
-          runtimes: 'Antithesis · CRIU · WASI Preview 3+',
+          title: 'Live previews',
+          body: "A pull request's whole application, backend included, built at its commit into a Lambda MicroVM and opened through a keyed link. For changes a reviewer checks by using them. Startup is seconds once built.",
+          runtimes: 'Lambda MicroVMs · OpenTofu',
         },
       ]}
     />

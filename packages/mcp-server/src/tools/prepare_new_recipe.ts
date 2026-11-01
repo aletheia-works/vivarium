@@ -67,7 +67,7 @@ const SLUG_REGEX = /^([a-z][a-z0-9]*(?:-[a-z][a-z0-9]*)*?)-(\d+)$/;
 const LAYER_DIRNAME: Record<Layer, string> = {
   1: 'layer1_wasm',
   2: 'layer2_docker',
-  3: 'layer3_thirdway',
+  3: 'layer3_previews',
 };
 
 const DEFAULT_REPO: Record<string, string> = {
@@ -229,7 +229,7 @@ export async function prepareNewRecipe(
     commit_subject: commitSubject,
     next_steps: nextSteps,
     references: {
-      layer_readme: `https://github.com/aletheia-works/vivarium/blob/main/src/layer${layer}_${layer === 1 ? 'wasm' : layer === 2 ? 'docker' : 'thirdway'}/README.md`,
+      layer_readme: `https://github.com/aletheia-works/vivarium/blob/main/src/layer${layer}_${layer === 1 ? 'wasm' : layer === 2 ? 'docker' : 'previews'}/README.md`,
       selection_policy:
         'caller-defined — issue selection criteria vary by user workflow and are not enforced by the MCP server beyond the slug regex',
     },

@@ -8,7 +8,7 @@ const STRINGS = {
   en: {
     kicker: '// CONTRACT v1 · OPEN SOURCE · APACHE-2.0',
     headline: ['Reproduce any bug.', 'Any language.', 'Any environment.'],
-    lede: 'Vivarium is a three-layer reproduction substrate. WebAssembly for milliseconds, Docker for fidelity, and a third layer for everything else. Problem first, technology second.',
+    lede: 'Vivarium is a three-layer reproduction substrate. WebAssembly for milliseconds, Docker for fidelity, and live previews for pull requests you check by using them. Problem first, technology second.',
     ctaPrimary: 'Read the overview',
     ctaGhost: 'View on GitHub',
     visionHref: '/vivarium/overview',
@@ -53,7 +53,7 @@ const STRINGS = {
   ja: {
     kicker: '// CONTRACT v1 · オープンソース · APACHE-2.0',
     headline: ['あらゆるバグを再現。', 'あらゆる言語で。', 'あらゆる環境で。'],
-    lede: 'Vivarium は三層の再現基盤。ミリ秒単位の WebAssembly、忠実度の Docker、そしてそれ以外すべてのための第三のレイヤー。問題が先、技術は後。',
+    lede: 'Vivarium は三層の再現基盤。ミリ秒単位の WebAssembly、忠実度の Docker、そして使って確かめるプルリクエストのためのライブプレビュー。問題が先、技術は後。',
     ctaPrimary: '概要を読む',
     ctaGhost: 'GitHub で見る',
     visionHref: '/vivarium/ja/overview',

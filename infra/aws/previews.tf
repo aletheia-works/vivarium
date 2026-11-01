@@ -1,9 +1,8 @@
 locals {
+  recipes_dir = "${path.module}/../../src/layer3_previews"
   previews = {
-    "motioneye-8451b85d" = {
-      repository = "motioneye-project/motioneye"
-      commit     = "8451b85d15189acae93263e710a4605320c6b910"
-    }
+    for recipe in fileset(local.recipes_dir, "*/preview.json") :
+    dirname(recipe) => jsondecode(file("${local.recipes_dir}/${recipe}"))
   }
 
   account_id         = data.aws_caller_identity.current.account_id
@@ -80,7 +79,7 @@ resource "aws_iam_role_policy" "preview_build" {
 resource "awscc_lambda_microvm_image" "preview" {
   for_each           = local.previews
   name               = "vivarium-preview-${each.key}"
-  description        = "${each.value.repository} at ${each.value.commit} with fake cameras"
+  description        = "${each.value.repository}#${each.value.pull} at ${each.value.commit} with fake cameras"
   base_image_arn     = local.base_image_arn
   base_image_version = local.base_image_version
   build_role_arn     = aws_iam_role.preview_build.arn
@@ -118,6 +117,17 @@ resource "awscc_lambda_microvm_image" "preview" {
   tags                  = local.preview_tags
 
   depends_on = [aws_iam_role_policy.preview_build]
+
+  lifecycle {
+    precondition {
+      condition     = each.value.repository == "motioneye-project/motioneye"
+      error_message = "${each.key}: only motioneye-project/motioneye has an image template."
+    }
+    precondition {
+      condition     = can(regex("^[0-9a-f]{40}$", each.value.commit)) && each.key == "motioneye-${each.value.pull}"
+      error_message = "${each.key}: commit must be a full SHA and the directory must be motioneye-<pull>."
+    }
+  }
 }
 
 data "archive_file" "preview_proxy" {
@@ -189,7 +199,7 @@ resource "random_password" "preview_key" {
 resource "aws_lambda_function" "preview" {
   for_each         = local.previews
   function_name    = "vivarium-preview-${each.key}"
-  description      = "Forwards ${each.value.repository} at ${each.value.commit} to its MicroVM."
+  description      = "Forwards ${each.value.repository}#${each.value.pull} at ${each.value.commit} to its MicroVM."
   role             = aws_iam_role.preview_proxy.arn
   runtime          = "nodejs24.x"
   architectures    = ["arm64"]

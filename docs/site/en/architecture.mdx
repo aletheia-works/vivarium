@@ -18,7 +18,7 @@ import { LiveExamples } from '../_components/LiveExamples';
   <PageHero
     eyebrow="// ARCHITECTURE"
     title="Three execution layers — one per bug."
-    sub="Layer 1 browser-native WebAssembly, Layer 2 containers, Layer 3 reserved for what neither reaches. The recipe declares which layer it runs on — you don't pick. The matrix below scans the trade-offs at a glance; the deep-dive sections follow."
+    sub="Layer 1 browser-native WebAssembly, Layer 2 containers, Layer 3 live previews of pull requests. The recipe declares which layer it runs on — you don't pick. The matrix below scans the trade-offs at a glance; the deep-dive sections follow."
   />
 
   <LayerMatrix
@@ -46,7 +46,7 @@ import { LiveExamples } from '../_components/LiveExamples';
       {
         pill: 'L2 / DOCKER',
         accent: 'violet',
-        title: 'Docker / microVM, for fidelity.',
+        title: 'Docker, for fidelity.',
         cells: [
           <>
             <strong>Seconds to minutes</strong>. Catalogue distribution — runs on the visitor's Docker or Codespaces.
@@ -55,7 +55,7 @@ import { LiveExamples } from '../_components/LiveExamples';
             Whole-project repros, syscall-dependent, toolchain-specific, multi-process.
           </>,
           <>
-            Cannot run on the page itself; needs Docker or Codespaces; heisenbug reliability is L3 territory.
+            Cannot run on the page itself; needs Docker or Codespaces; races that a fresh run does not reproduce.
           </>,
           <>
             Pinned <code>Dockerfile</code> + <code>ghcr.io/aletheia-works/vivarium-&lt;slug&gt;</code> + Codespaces badge.
@@ -63,21 +63,21 @@ import { LiveExamples } from '../_components/LiveExamples';
         ],
       },
       {
-        pill: 'L3 / THIRD WAY',
+        pill: 'L3 / PREVIEW',
         accent: 'coral',
-        title: 'Reserved for what L1 and L2 cannot reach.',
+        title: 'A pull request, live.',
         cells: [
           <>
-            <strong>Not yet defined</strong>. No recipe ships here, so there is no runtime to characterise.
+            <strong>Seconds</strong> to resume a suspended preview; minutes to build one from a new commit.
           </>,
           <>
-            Data races, memory ordering, long-replay scenarios, distributed bugs depending on a specific interleave.
+            Changes a reviewer checks by using the running application: backend behaviour behind the UI, UI that needs a live backend.
           </>,
           <>
-            Anything a reader cannot run and check on an ordinary machine — that bar is what keeps this layer empty.
+            Changes whose effect does not show through the application; bugs the reader can reproduce on their own machine.
           </>,
           <>
-            None yet. Deterministic simulation, microVM snapshots and WASI Preview 3+ are the candidates.
+            Lambda MicroVM image per pull request, behind a keyed function URL, managed with OpenTofu.
           </>,
         ],
       },
@@ -117,7 +117,7 @@ import { LiveExamples } from '../_components/LiveExamples';
       <ul>
         <li><strong>Memory.</strong> A browser tab degrades past ~1 GB peak; ~4 GB is the practical ceiling. Production-scale data goes to Layer 2.</li>
         <li><strong>System calls.</strong> No real <code>fork</code>/<code>exec</code> or real sockets. The WASI shim covers common cases, not all.</li>
-        <li><strong>Concurrency bugs.</strong> Single-threaded by default — data races and heisenbugs go to Layer 3.</li>
+        <li><strong>Concurrency bugs.</strong> Single-threaded by default, so data races do not show.</li>
         <li><strong>Compiler builds.</strong> A Rust bug reproduces fine in-browser, but building the Rust compiler itself is Layer 2.</li>
       </ul>
     }
@@ -136,7 +136,7 @@ import { LiveExamples } from '../_components/LiveExamples';
     pill="L2 / DOCKER"
     accent="violet"
     eyebrow="// 02 · LAYER 2"
-    heading="Docker / microVM, on your own machine."
+    heading="Docker, on your own machine."
     intro={
       <p>For bugs that need a real filesystem, real processes, and real networking. Vivarium does not host execution; recipes are <strong>distributed as a catalogue</strong> that runs on your own Docker (or Codespaces).</p>
     }
@@ -161,47 +161,50 @@ import { LiveExamples } from '../_components/LiveExamples';
       <ul>
         <li><strong>No in-page execution.</strong> The repro runs locally or in Codespaces, not on the gallery page.</li>
         <li><strong>Docker (or Codespaces) required.</strong> Without either, you can still browse recipes and verdict snapshots.</li>
-        <li><strong>Concurrency itself.</strong> Layer 2 runs on real threads, but reproducing heisenbugs reliably is Layer 3 territory.</li>
+        <li><strong>Heisenbugs.</strong> Layer 2 runs on real threads, but a fresh run does not reliably reproduce a race.</li>
       </ul>
     }
     runtimes={<LiveExamples layer={2} lang="en" />}
   />
 
   <LayerSection
-    pill="L3 / THIRD WAY"
+    pill="L3 / PREVIEW"
     accent="coral"
     eyebrow="// 03 · LAYER 3"
-    heading="Reserved for what L1 and L2 cannot reach."
+    heading="A pull request's whole application, in your browser."
     intro={
-      <p>For <strong>heisenbugs</strong> — bugs that don't reliably reproduce on a fresh re-run. The layer is declared, but <strong>no recipe ships here today</strong>.</p>
+      <p>For changes a reviewer checks by <strong>using</strong> them. Each preview builds an upstream pull request at one commit, backend included, into a Lambda MicroVM image, and opens it through a link with a key. The first one runs motionEye with four fake cameras.</p>
     }
     cellLabels={{
-      fits: 'Bugs this layer would fit',
-      startup: 'Why it is empty',
-      cantReach: 'What keeps it empty',
-      runtimes: 'Candidates',
+      fits: 'Changes this layer fits',
+      startup: 'How it runs',
+      cantReach: "What this layer can't reach",
+      runtimes: 'Recipes',
     }}
     fits={
       <ul>
-        <li>Data races, memory ordering bugs, use-after-frees that resist a fresh re-run.</li>
-        <li>Long-replay scenarios: rewind hours of captured execution in minutes.</li>
-        <li>Distributed-system bugs that depend on a specific message interleaving.</li>
-        <li>Post-mortem forensic analysis — stepping backwards through a recorded trace.</li>
+        <li>Backend behaviour a reviewer checks through the UI, such as a setting that should outlast a schedule.</li>
+        <li>UI changes that need a live backend behind them.</li>
+        <li>Anything where screenshots and test output describe the change, and trying it would settle the review.</li>
       </ul>
     }
     startup={
-      <p>The first attempt here was <code>rr</code> record-replay. It was withdrawn: <code>rr</code> runs only on Linux/x86_64 and needs an exposed PMU plus CPUID faulting, so a reader on Windows or macOS could not verify the recipe at all — and with so few environments able to run it, nobody could cheaply tell a genuine reproduction from a broken one.</p>
+      <ul>
+        <li>The MicroVM starts on the first request, suspends after five minutes without traffic, and resumes in seconds on the next one.</li>
+        <li>A request without the link's key gets 403. The links go to the upstream pull request, not to the gallery.</li>
+        <li>A reader needs only a browser — the bar <code>rr</code> record-replay failed, since it ran only on Linux/x86_64 with an exposed PMU.</li>
+      </ul>
     }
     cantReach={
       <ul>
-        <li><strong>The admission test.</strong> A recipe has to be reproducible by whoever reads it. A verdict nobody can independently check is not evidence.</li>
-        <li><strong>Kernel-bound techniques.</strong> CRIU and Firecracker snapshots inherit the same Linux dependency and would have to clear the same bar.</li>
+        <li><strong>Effects outside the application.</strong> How files land on a network share, or what a kernel does, does not show in the UI.</li>
+        <li><strong>Changes the diff settles.</strong> Documentation and refactors need no preview.</li>
       </ul>
     }
     runtimes={
       <ul>
-        <li>Deterministic simulation (Antithesis-style) and WASI Preview 3+ are the more promising candidates, precisely because they do not depend on a host kernel feature.</li>
-        <li>Until one lands, the gallery has no L3 entries.</li>
+        <li>One directory per pull request under <code>src/layer3_previews/</code>, with a <code>preview.json</code> naming the repository, pull request and commit. Adding one adds a preview; removing it removes the preview.</li>
+        <li>Previews are not in the gallery yet.</li>
       </ul>
     }
   />

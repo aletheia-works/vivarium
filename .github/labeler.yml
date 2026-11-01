@@ -24,6 +24,7 @@
   - changed-files:
       - any-glob-to-any-file:
           - "infra/**"
+          - "src/layer3_previews/**"
 
 "scope: python":
   - changed-files:
@@ -75,7 +76,6 @@
           - "**/docker-compose*.yaml"
           - "**/.dockerignore"
           - "src/layer2_docker/**"
-          - "src/layer3_thirdway/**"
 
 "type: docs":
   - changed-files:

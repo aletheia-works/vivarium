@@ -27,8 +27,8 @@
 
 - Pure algorithmic bugs that would run in-browser in a fraction of
   the time → Layer 1 (`src/layer1_wasm/`).
-- Concurrency or memory-ordering bugs that need deterministic
-  replay to be even *observable* → Layer 3 (`src/layer3_thirdway/`).
+- A pull request a reviewer checks by using the running application
+  → Layer 3 (`src/layer3_previews/`).
 
 ## Per-page convention
 
