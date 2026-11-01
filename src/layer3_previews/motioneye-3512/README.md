@@ -12,7 +12,9 @@ PKCE, and explains the steps in a dialog before it opens Google.
 2. In camera 1's **File storage**, turn on **Upload Media Files** and choose
    **Google Drive** as the **Upload Service**.
 3. Click **Obtain key**. A dialog, **Obtaining the key from Google**, lists
-   three steps and a note.
+   three steps and a two-paragraph note. The second paragraph warns that
+   testing the upload with the new key replaces the current Google
+   authorization, even before the settings are applied.
 4. Click **Cancel**: nothing opens. Click **Obtain key** again and **OK**:
    Google's sign-in page opens in a new tab. Stop there. Do not sign in or
    allow access: the key would land in this shared preview, which anyone with
