@@ -73,15 +73,6 @@
       "homepage": "https://www.gnu.org/software/bash/",
       "github": "https://git.savannah.gnu.org/cgit/bash.git/"
     },
-    "motioneye": {
-      "display_name": "motionEye",
-      "tagline": "A web frontend for the motion surveillance daemon.",
-      "tagline_ja": "監視デーモン motion の Web フロントエンド。",
-      "description": "Layer 3 live previews of motionEye pull requests: each one runs at its commit with four fake cameras, so a reviewer can try the change in a browser.",
-      "description_ja": "motionEye のプルリクエストの Layer 3 ライブプレビュー。それぞれを 4 台の偽カメラ付きでそのコミットのまま動かし、レビュアーがブラウザで変更を試せる。",
-      "homepage": "https://github.com/motioneye-project/motioneye",
-      "github": "https://github.com/motioneye-project/motioneye"
-    },
     "find": {
       "display_name": "find / xargs",
       "tagline": "Coreutils-style filesystem traversal.",
