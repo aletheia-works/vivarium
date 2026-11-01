@@ -2,12 +2,13 @@
 set -euo pipefail
 
 dest="docs/doc_build/repro"
+ja_dest="docs/doc_build/ja/repro"
 index="docs/site/public/api/recipes.json"
 pages_prefix="https://${GITHUB_REPOSITORY_OWNER}.github.io/${GITHUB_REPOSITORY##*/}/repro/"
 for project in $(jq -r '.recipes[] | select(.layer == 3) | .project' "$index" | sort -u); do
   mkdir -p "$dest/$project"
   for shared in _shared _assets; do
-    if [ -d "src/layer1_wasm/$shared" ]; then
+    if [ -d "src/layer1_wasm/$shared" ] && [ ! -d "$dest/$project/$shared" ]; then
       echo "Staging Layer 1 ${shared}/ for Layer 3 project: ${dest}/${project}/${shared}"
       cp -R "src/layer1_wasm/$shared" "$dest/$project/$shared"
     fi
@@ -25,4 +26,10 @@ jq -r '.recipes[] | select(.layer == 3) | "\(.slug) \(.page_url)"' "$index" |
     echo "Bundling Layer 3 preview page: ${slug} → ${dest}/${rel}/"
     mkdir -p "$dest/$rel"
     cp "$page" "$dest/$rel/index.html"
+    ja_page="src/layer3_previews/${slug}/index.ja.html"
+    if [ -f "$ja_page" ]; then
+      echo "Bundling JA preview page: ${slug} → ${ja_dest}/${rel}/"
+      mkdir -p "$ja_dest/$rel"
+      cp "$ja_page" "$ja_dest/$rel/index.html"
+    fi
   done

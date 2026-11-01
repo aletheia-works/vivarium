@@ -286,7 +286,8 @@
         "motion-detection",
         "working-schedule"
       ],
-      "severity": "bug"
+      "severity": "bug",
+      "page_url_ja": "https://aletheia-works.github.io/vivarium/ja/repro/motioneye/3506/"
     }
   ]
 }

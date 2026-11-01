@@ -46,6 +46,7 @@ src/layer3_previews/
     ├── preview.json   # repository, pull, issue, commit
     ├── recipe.json    # language, severity, tags, as in the other layers
     ├── page.en.html   # the gallery page's text: title, lede, check steps
+    ├── i18n.ja.json   # the page's Japanese strings, as in the other layers
     └── README.md      # what the pull request changes and how to check it
 ```
 
@@ -71,6 +72,7 @@ merging it applies the plan. Only motionEye has an image template today
 `issue` is the upstream issue the pull request fixes, or 0. The recipes
 index lists each preview as a Layer 3 entry with that `issue` and the
 `pull`, and the gallery links to a page built from `page.en.html` and
-[`_layer3-shared/page.template.html`](_layer3-shared/page.template.html).
+[`_layer3-shared/page.template.html`](_layer3-shared/page.template.html),
+with a Japanese page built from `i18n.ja.json`.
 The page leaves the preview's own link out: it carries the key, so it is
 shared on the pull request.
