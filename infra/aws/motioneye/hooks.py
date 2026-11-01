@@ -15,7 +15,7 @@ def serving_pictures() -> bool:
     )
     login = urllib.request.Request(
         f"{MOTIONEYE}/login",
-        data=json.dumps({"username": "admin", "password": ""}).encode(),
+        data=json.dumps({"username": "admin", "password": "password"}).encode(),
         headers={"Content-Type": "application/json"},
     )
     try:
