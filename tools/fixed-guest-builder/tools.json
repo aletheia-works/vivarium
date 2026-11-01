@@ -20,7 +20,7 @@
       "package": "aube",
       "binary": "aube",
       "target": "x86_64-unknown-linux-musl",
-      "rustToolchain": "1.98.1",
+      "rustToolchain": "1.99.1",
       "environment": {
         "CARGO_INCREMENTAL": "0"
       },
