@@ -17,12 +17,18 @@ commit in `preview.json`; a newer push to `dev` needs a new commit here.
    `127.0.0.1`, port `21`, user `preview` and password `password`. Turn on
    the new **Use TLS (FTPS)** and turn off **Verify certificate**. Uploaded
    files show up at `/uploads/` of the preview link.
-4. Use the new buttons on a camera to start and end a motion event and to
+4. Switch the **Upload Service** to **S3 (AWS/MinIO/…)** with the **Endpoint
+   URL** `https://127.0.0.1:9100`, the **Access Key** `preview`, the **Secret
+   Access Key** `password` and the **Bucket** `motioneye`. **Test service**
+   fails with **Verify certificate** on and passes with it off; uploaded
+   objects show up at `/uploads/` too.
+5. Use the new buttons on a camera to start and end a motion event and to
    toggle motion detection.
-5. Open a camera's pictures and movies, play a movie, close it and play it
+6. Open a camera's pictures and movies, play a movie, close it and play it
    again. Every camera has two days of recordings.
-6. Change the layout and the camera order. They are now kept per browser, and
+7. Change the layout and the camera order. They are now kept per browser, and
    the number of columns follows the window width by default.
 
-Steps 2 and 3 need the mail catcher and the upload targets described in
+Steps 2 to 4 need the mail catcher, the upload targets and the opt-in S3
+target (`"services": ["s3"]` in `preview.json`) described in
 [`../README.md`](../README.md).
