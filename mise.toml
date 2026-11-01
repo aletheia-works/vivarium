@@ -270,7 +270,7 @@ run = "bun run typecheck && bun run test"
 
 [tasks."ci:previews"]
 description = "Local equivalent of test-previews.yml"
-run = "node --test infra/aws/preview-proxy/index.test.mjs"
+run = "node --test infra/aws/preview-proxy/index.test.mjs infra/aws/preview-proxy/end-microvms.test.mjs"
 
 [tasks."ci:all"]
 description = "Run all local CI tasks (docs + lint + mcp + repro + docs-unit + docs-e2e)"

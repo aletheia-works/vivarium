@@ -45,7 +45,7 @@ jobs:
           install: true
           cache: true
           experimental: true
-          install_args: opentofu
+          install_args: opentofu node jq
 
       - name: Configure state encryption
         env:
@@ -82,7 +82,15 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - run: tofu init -input=false -lockfile=readonly
-      - run: tofu apply -input=false -auto-approve -no-color
+      - run: tofu plan -input=false -no-color -out=tfplan
+
+      - name: End the MicroVMs of the images the plan deletes
+        run: |
+          set -euo pipefail
+          mapfile -t images < <(tofu show -json tfplan | jq -r '.resource_changes[] | select(.type == "awscc_lambda_microvm_image" and (.change.actions | index("delete"))) | .change.before.image_arn')
+          node preview-proxy/end-microvms.mjs "${images[@]}"
+
+      - run: tofu apply -input=false -no-color tfplan
 
       - name: Upload state artifact
         id: upload

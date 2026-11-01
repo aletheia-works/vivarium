@@ -52,6 +52,11 @@ function URL with `RESPONSE_STREAM`.
   request, and ends after an hour suspended or 8 hours in all.
 - **Forwarding**: the proxy streams motionEye's answers back to the browser.
 
+Before applying, the apply workflow ends the MicroVMs of every image the plan
+deletes or replaces ([preview-proxy/end-microvms.mjs](preview-proxy/end-microvms.mjs)):
+deleting an image failed while a MicroVM a reviewer had used was still
+suspended.
+
 `mise run ci:previews` runs its tests without AWS, and CI runs them on a PR
 that changes the proxy. `mise run infra:aws:check` lints it with the docs
 site's Biome settings.
