@@ -36,6 +36,30 @@ always had: a reader on an ordinary machine can reproduce and check the
 result. That bar is why `rr` record-replay, which needs Linux on x86_64
 with an exposed PMU, was removed from this layer.
 
+## What a motionEye preview contains
+
+The image template is [`infra/aws/motioneye/`](../../infra/aws/motioneye/).
+
+| Part | What it is |
+|---|---|
+| motionEye | Installed with pip from the pull request's commit and started by `meyectl startserver`, on port 8765. |
+| Cameras | Four network cameras, seeded at build time, reading `http://127.0.0.1:9900/cam1.jpg` to `cam4.jpg`. |
+| Fake camera server | `fakecam.py` on `127.0.0.1:9900`. Each frame is a coloured 640×480 JPEG with a moving square and the time, so motion detection has something to see. |
+| Sign-in | `admin` and the normal user both have the password `password`, seeded at build time. |
+| Lifecycle hooks | `hooks.py` on port 9000. Lambda calls `ready` and `validate` while it builds the image; both sign in and expect a JPEG from every camera. |
+
+## Network
+
+| Direction | What is open |
+|---|---|
+| In | Only port 8765, through the preview's function URL and its key. The proxy asks Lambda for a token limited to that port, so the hooks port and the fake cameras are not reachable from outside. |
+| Out | Anything. The MicroVM has the `INTERNET_EGRESS` connector, so motionEye can reach any host. |
+
+Because outbound traffic is open and the sign-in is shared, anyone with a
+preview's link can make it send from AWS's addresses. That includes a
+test e-mail through an SMTP server and recipient they choose, a webhook,
+or an upload. Share the link only on the pull request it previews.
+
 ## Recipes
 
 One directory per pull request, named `<project>-<pull>`:
