@@ -53,7 +53,7 @@ The image template is [`infra/aws/motioneye/`](../../infra/aws/motioneye/).
 | Direction | What is open |
 |---|---|
 | In | Only port 8765, through the preview's function URL and its key. The proxy asks Lambda for a token limited to that port, so the hooks port and the fake cameras are not reachable from outside. |
-| Out | Anything. The MicroVM has the `INTERNET_EGRESS` connector, so motionEye can reach any host. |
+| Out | Anything, as far as the Lambda documentation says. The image is built with the `INTERNET_EGRESS` connector so it can fetch the pull request and its packages. The proxy runs the MicroVM without an egress connector, and Lambda documents that a MicroVM has public internet access by default. |
 
 Because outbound traffic is open and the sign-in is shared, anyone with a
 preview's link can make it send from AWS's addresses. That includes a
