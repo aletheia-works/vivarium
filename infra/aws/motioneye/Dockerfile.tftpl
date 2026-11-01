@@ -21,7 +21,7 @@ RUN set -e; \
 
 COPY preview /usr/local/lib/preview
 
-RUN python3 /usr/local/lib/preview/seed.py
+RUN python3 /usr/local/lib/preview/seed.py && python3 /usr/local/lib/preview/media.py
 
 EXPOSE 8765 8025 9000
 
