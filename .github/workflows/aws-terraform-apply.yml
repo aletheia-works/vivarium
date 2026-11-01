@@ -87,8 +87,9 @@ jobs:
       - name: End the MicroVMs of the images the plan deletes
         run: |
           set -euo pipefail
-          mapfile -t images < <(tofu show -json tfplan | jq -r '.resource_changes[] | select(.type == "awscc_lambda_microvm_image" and (.change.actions | index("delete"))) | .change.before.image_arn')
-          node preview-proxy/end-microvms.mjs "${images[@]}"
+          plan=$(tofu show -json tfplan)
+          jq -r '.resource_changes[] | select(.type == "awscc_lambda_microvm_image" and (.change.actions | index("delete"))) | .change.before.image_arn // error("\(.address) has no image_arn")' <<<"$plan" |
+            xargs node preview-proxy/end-microvms.mjs
 
       - run: tofu apply -input=false -no-color tfplan
 
