@@ -92,7 +92,7 @@ URL: <https://aletheia-works.github.io/vivarium/api/recipes.json>
 | 2026-10-04 | `recipe.schema.json` にオプションの `fix_candidate` も追加。レシピの fix 候補ペインがソースからビルドするブランチと、固定したコミットで、同じワークフローが読む。これも index には出力しない。 |
 | 2026-10-06 | `recipe.schema.json` にオプションの `upstream_pr` を追加。レシピの bug を直す upstream の pull request で、毎日の retire-merged ワークフローが読み、その pull request がマージされるとレシピを削除する。index には出力しない。 |
 | 2026-11-01 | Layer 3 を上流のプルリクエストのライブプレビュー（`src/layer3_previews/`）とした。それまで Layer 3 のエントリは 1 件も無かった。オプションの `pull` を追加。Layer 3 のエントリの `issue` はそのプルリクエストが直す Issue で、`verdict_url` は持たないため、コンフォーマンス条項 4 は Layer 2 だけを対象にした。v1 のコンシューマーが見得たエントリについては後方互換。 |
-| 2026-11-03 | `page_url` を必須から外した。Layer 3 のエントリは Vivarium のページを持たなくなり、動いているプレビューを指す `preview_url` と、オプションの `pull_url`・`commit` を持つ。コンフォーマンス条項 5 を追加。すべてのエントリで `page_url` を読んでいたコンシューマーは壊れるが、Vivarium にはまだ外部のコンシューマーがいないため v1 のままにした。 |
+| 2026-11-03 | `page_url` を必須から外した。Layer 3 のエントリは Vivarium のページを持たなくなり、動いているプレビューを指す `preview_url` と、オプションの `pull_url`・`commit` を持つ。コンフォーマンス条項 5 を追加。すべてのエントリで `page_url` を読んでいたコンシューマーは壊れる。Vivarium MCP 0.9.0 以前もその一つで、Layer 3 のレシピに対して `lookup_verdict` と `verify_branch_fix` が空のページ URL を返す。Vivarium にはまだ既知の利用者がいないため v1 のままにした（AGENTS.md §4.9）。 |
 
 ## 生成方法
 

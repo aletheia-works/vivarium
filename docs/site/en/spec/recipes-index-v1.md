@@ -94,7 +94,7 @@ There is no current v2.
 | 2026-10-04 | `recipe.schema.json` also gains optional `fix_candidate`, the branch and pinned commit a recipe's fix-candidate pane builds from source, read by the same workflow. Not exported to the index either. |
 | 2026-10-06 | `recipe.schema.json` gains optional `upstream_pr`, the upstream pull request that fixes the recipe's bug, read by the daily retire-merged workflow, which removes the recipe once that pull request is merged. Not exported to the index. |
 | 2026-11-01 | Layer 3 now means a live preview of an upstream pull request (`src/layer3_previews/`); no entry used Layer 3 before. Added optional `pull`. A Layer 3 entry's `issue` is the issue its pull request fixes, and it carries no `verdict_url`, so conformance clause 4 now covers Layer 2 only. Backwards-compatible for every entry a v1 consumer could have seen. |
-| 2026-11-03 | `page_url` is no longer required: a Layer 3 entry drops its Vivarium page and carries `preview_url`, the running preview, with optional `pull_url` and `commit`. Added conformance clause 5. This breaks a consumer that read `page_url` on every entry; it stays v1 because Vivarium has no outside consumers yet. |
+| 2026-11-03 | `page_url` is no longer required: a Layer 3 entry drops its Vivarium page and carries `preview_url`, the running preview, with optional `pull_url` and `commit`. Added conformance clause 5. This breaks a consumer that read `page_url` on every entry, Vivarium MCP 0.9.0 and earlier among them: their `lookup_verdict` and `verify_branch_fix` give an empty page URL for Layer 3 recipes. It stays v1 because Vivarium has no known users yet (AGENTS.md §4.9). |
 
 ## Generation
 
