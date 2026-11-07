@@ -1,6 +1,6 @@
 import { appendFileSync } from 'node:fs';
-import npm from '../package.json';
 import jsr from '../jsr.json';
+import npm from '../package.json';
 
 export function validateVersion(
   packageMetadata: { name: string; version: string },

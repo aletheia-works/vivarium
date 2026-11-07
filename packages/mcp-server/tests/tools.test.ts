@@ -72,7 +72,8 @@ const FIXTURE_INDEX = {
       issue: 0,
       title: 'bash local-shadows-exit',
       page_url: 'https://example.invalid/repro/bash-local-shadows-exit/',
-      verdict_url: 'https://example.invalid/repro/bash-local-shadows-exit/verdict.json',
+      verdict_url:
+        'https://example.invalid/repro/bash-local-shadows-exit/verdict.json',
       source_url: 'https://example.invalid/src/bash-local-shadows-exit',
       language: 'shell',
       symptom: 'local-shadows-exit-status',
@@ -102,7 +103,8 @@ const FIXTURE_INDEX = {
       commit_url:
         'https://github.com/JamBalaya56562/motioneye/commit/5ee7869c3710ce4135cf803e87338c1cd4ca8d85',
       title: 'motionEye with a SameSite=Lax session cookie',
-      preview_url: 'https://sign-in.example.invalid/motioneye-pwa-samesite-lax/',
+      preview_url:
+        'https://sign-in.example.invalid/motioneye-pwa-samesite-lax/',
       source_url: 'https://example.invalid/src/motioneye-pwa-samesite-lax',
       language: 'python',
       tags: ['login'],
@@ -421,7 +423,10 @@ describe('verify_branch_fix', () => {
     if (r.ok) {
       assert.equal(r.path, 'A');
       assert.equal(r.layer, 1);
-      assert.equal(r.compare_url, 'https://example.invalid/repro/pandas/56679/');
+      assert.equal(
+        r.compare_url,
+        'https://example.invalid/repro/pandas/56679/',
+      );
       assert.equal(r.gh_command, undefined);
       assert.match(r.instructions, /paste the candidate fix/);
       assert.ok(
@@ -471,10 +476,11 @@ describe('verify_branch_fix', () => {
       assert.equal(r.layer, 2);
       assert.match(r.gh_command!, /gh workflow run branch-fix-verdict\.yml/);
       assert.match(r.gh_command!, /-f slug=bash-local-shadows-exit/);
-      assert.match(r.compare_url, /\/repro\/compare\?slug=bash-local-shadows-exit/);
-      assert.ok(
-        r.notes.some((n) => /ignored for Layer 2 recipes/.test(n)),
+      assert.match(
+        r.compare_url,
+        /\/repro\/compare\?slug=bash-local-shadows-exit/,
       );
+      assert.ok(r.notes.some((n) => /ignored for Layer 2 recipes/.test(n)));
     }
   });
 
@@ -752,7 +758,9 @@ describe('verify_and_report_fix', () => {
       assert.equal(r.next_action, 'open_vivarium_pr');
       assert.ok(
         r.commands.some(
-          (c) => c === 'jj git push --bookmark roundtrip/pandas-56679 --remote origin',
+          (c) =>
+            c ===
+            'jj git push --bookmark roundtrip/pandas-56679 --remote origin',
         ),
       );
       assert.ok(
@@ -794,7 +802,10 @@ describe('verify_and_report_fix', () => {
     if (r.ok) {
       assert.equal(r.next_action, 'open_fork_pr');
       const ghCmd = r.commands.find((c) => c.startsWith('gh pr create'));
-      assert.ok(ghCmd, 'open_fork_pr commands should contain a gh pr create line');
+      assert.ok(
+        ghCmd,
+        'open_fork_pr commands should contain a gh pr create line',
+      );
       assert.match(ghCmd!, /--repo pandas-dev\/pandas/);
       assert.match(ghCmd!, /--head JamBalaya56562:fix-issue-56679/);
       assert.ok(
@@ -1032,7 +1043,7 @@ describe('run_layer1_verdict', () => {
       assert.equal(r.fix_url, 'https://example.invalid/fix.py');
     }
     assert.equal(
-      capturedEnv['PLAYWRIGHT_FIX_URL'],
+      capturedEnv.PLAYWRIGHT_FIX_URL,
       'https://example.invalid/fix.py',
     );
   });
@@ -1154,8 +1165,7 @@ describe('run_layer23_verdict', () => {
   });
 
   it('mode=fixed → dispatches workflow, polls, downloads artefact', async () => {
-    _setSleeperForTesting(async () => {
-    });
+    _setSleeperForTesting(async () => {});
 
     let viewCount = 0;
     _setLayer23GhRunnerForTesting((args) => {
@@ -1244,8 +1254,7 @@ describe('run_layer23_verdict', () => {
   });
 
   it('mode=fixed → picks the post-dispatch run when older runs precede it', async () => {
-    _setSleeperForTesting(async () => {
-    });
+    _setSleeperForTesting(async () => {});
 
     _setLayer23GhRunnerForTesting((args) => {
       const cmd = args[0];
@@ -1314,8 +1323,7 @@ describe('run_layer23_verdict', () => {
   });
 
   it('mode=fixed → ok:false when every returned run pre-dates the dispatch', async () => {
-    _setSleeperForTesting(async () => {
-    });
+    _setSleeperForTesting(async () => {});
 
     _setLayer23GhRunnerForTesting((args) => {
       const cmd = args[0];
@@ -1360,8 +1368,7 @@ describe('run_layer23_verdict', () => {
   });
 
   it('mode=fixed → reports workflow timeout when polling deadline elapses', async () => {
-    _setSleeperForTesting(async () => {
-    });
+    _setSleeperForTesting(async () => {});
 
     _setLayer23GhRunnerForTesting((args) => {
       const cmd = args[0];
@@ -1595,8 +1602,14 @@ describe('prepare_fix_candidate', () => {
         r.fix_candidate_json.upstream_pr,
         'https://github.com/example-fork/pandas/pull/1',
       );
-      assert.match(r.commit_subject, /^feat\(wasm\): register fix-candidate for pandas-56679$/);
-      assert.match(r.pr_title, /^feat\(wasm\): register fix-candidate for pandas-56679$/);
+      assert.match(
+        r.commit_subject,
+        /^feat\(wasm\): register fix-candidate for pandas-56679$/,
+      );
+      assert.match(
+        r.pr_title,
+        /^feat\(wasm\): register fix-candidate for pandas-56679$/,
+      );
       assert.equal(r.branch_name, 'register-fix-candidate-pandas-56679');
       assert.match(r.pr_body, /<details>/);
       assert.match(r.pr_body, /Generated with \[Claude Code\]/);
@@ -1780,7 +1793,11 @@ describe('search_upstream_issues', () => {
     if (r.ok) {
       assert.equal(r.count, 0);
       assert.equal(r.matches.length, 0);
-      assert.equal(capturedArgs.length, 0, 'gh must NOT be called for excluded repos');
+      assert.equal(
+        capturedArgs.length,
+        0,
+        'gh must NOT be called for excluded repos',
+      );
       assert.ok(r.notes.some((n) => /exclude_repos/.test(n)));
     }
   });

@@ -9,8 +9,10 @@ import {
   INDEX_URL,
 } from '../src/catalogue.ts';
 
-type FetchMock = (input: string | URL | Request, init?: RequestInit) =>
-  Promise<Response>;
+type FetchMock = (
+  input: string | URL | Request,
+  init?: RequestInit,
+) => Promise<Response>;
 
 const realFetch = globalThis.fetch;
 
@@ -71,10 +73,7 @@ describe('catalogue', () => {
   });
 
   it('falls back to the bundled snapshot on non-200', async () => {
-    mockFetch(
-      async () =>
-        new Response('not found', { status: 404 }),
-    );
+    mockFetch(async () => new Response('not found', { status: 404 }));
     const idx = await getCatalogue();
     assert.equal(idx.index, getBundledIndex().index);
   });

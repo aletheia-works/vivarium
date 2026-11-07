@@ -9,9 +9,7 @@ export type GetRecipeResult =
   | { found: true; recipe: RecipeEntry }
   | { found: false; error: string };
 
-export async function getRecipe(
-  args: GetRecipeArgs,
-): Promise<GetRecipeResult> {
+export async function getRecipe(args: GetRecipeArgs): Promise<GetRecipeResult> {
   const slug = args.slug?.trim();
   if (!slug) {
     return { found: false, error: 'missing required argument: slug' };

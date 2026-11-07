@@ -1,8 +1,8 @@
 import { describe, expect, test } from 'bun:test';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js';
-import npm from '../package.json';
 import jsr from '../jsr.json';
+import npm from '../package.json';
 import { isPublished, validateVersion } from '../scripts/release';
 import { createServer } from '../src/server';
 
@@ -10,9 +10,7 @@ const metadata = { name: '@aletheia-works/vivarium-mcp', version: '0.2.2' };
 
 describe('release validation', () => {
   test('accepts matching metadata and tag', () => {
-    expect(validateVersion(metadata, metadata, 'v0.2.2')).toBe(
-      '0.2.2',
-    );
+    expect(validateVersion(metadata, metadata, 'v0.2.2')).toBe('0.2.2');
   });
   test('rejects mismatched names, versions and tags', () => {
     expect(() =>

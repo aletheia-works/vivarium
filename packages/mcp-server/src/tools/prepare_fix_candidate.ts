@@ -78,7 +78,7 @@ function buildPrBody(args: {
   lines.push('<summary>How fix-candidate verification works</summary>');
   lines.push('');
   lines.push(
-    "`fix-candidate.json` is a tracked one-screen JSON spec at the recipe root; it keeps wheel binaries out of the repo while still letting the recipe page run the fix branch live. On every push to `main`, the deploy-docs workflow:",
+    '`fix-candidate.json` is a tracked one-screen JSON spec at the recipe root; it keeps wheel binaries out of the repo while still letting the recipe page run the fix branch live. On every push to `main`, the deploy-docs workflow:',
   );
   lines.push('');
   lines.push('1. Reads each `src/layer1_wasm/<slug>/fix-candidate.json`.');

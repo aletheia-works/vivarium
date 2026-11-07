@@ -58,9 +58,7 @@ interface PrepareNewRecipeError {
   error: string;
 }
 
-export type PrepareNewRecipeResult =
-  | PrepareNewRecipeOk
-  | PrepareNewRecipeError;
+export type PrepareNewRecipeResult = PrepareNewRecipeOk | PrepareNewRecipeError;
 
 const SLUG_REGEX = /^([a-z][a-z0-9]*(?:-[a-z][a-z0-9]*)*?)-(\d+)$/;
 
@@ -108,7 +106,10 @@ export async function prepareNewRecipe(
   if (issueNum === undefined || issueNum === null)
     return { ok: false, error: 'issue is required' };
   if (!Number.isInteger(issueNum) || issueNum <= 0)
-    return { ok: false, error: `issue must be a positive integer (got ${issueNum})` };
+    return {
+      ok: false,
+      error: `issue must be a positive integer (got ${issueNum})`,
+    };
   if (!title) return { ok: false, error: 'title is required' };
   if (![1, 2, 3].includes(layer))
     return { ok: false, error: `layer must be 1, 2, or 3 (got ${layer})` };
@@ -125,18 +126,16 @@ export async function prepareNewRecipe(
       ok: false,
       error:
         `generated slug "${slug}" is not parseable by ` +
-        `docs/scripts/generate-recipes-index.ts. project must be ` +
-        `kebab-case ([a-z][a-z0-9]*(-[a-z][a-z0-9]*)*) and contain no ` +
-        `trailing digits.`,
+        'docs/scripts/generate-recipes-index.ts. project must be ' +
+        'kebab-case ([a-z][a-z0-9]*(-[a-z][a-z0-9]*)*) and contain no ' +
+        'trailing digits.',
     };
   }
 
   const ownerRepo = (args.repo_owner ?? defaultRepoFor(project)).trim();
   const upstreamIssueUrl = `https://github.com/${ownerRepo}/issues/${issueNum}`;
 
-  const baseFlag = args.base_image
-    ? ` --base "${args.base_image}"`
-    : '';
+  const baseFlag = args.base_image ? ` --base "${args.base_image}"` : '';
   const repoFlag =
     args.repo_owner && args.repo_owner !== defaultRepoFor(project)
       ? ` --repo ${args.repo_owner}`
@@ -198,16 +197,16 @@ export async function prepareNewRecipe(
           `If "${project}" is a new project, add the projects_row to docs/site/_data/projects.json.`,
           `Run: ${verifyCommand}  (this regenerates indices, runs lint, runs the docker build/run, and the rspress build).`,
           `Commit with subject: ${commitSubject}`,
-          `Submit the PR.`,
+          'Submit the PR.',
         ]
       : [
           `Copy from an existing recipe under src/layer${layer}_*/ — the canonical authoring reference.`,
           `Write ${recipeJson.path} with the recipe_json.contents from this response, replacing each TODO placeholder (pick expected_runtime for the layer's WASM target).`,
           `If "${project}" is a new project, add the projects_row to docs/site/_data/projects.json.`,
-          `Run: cd docs && mise exec -- bun run generate`,
+          'Run: cd docs && mise exec -- bun run generate',
           `Validate locally per the layer's README.`,
           `Commit with subject: ${commitSubject}`,
-          `Submit the PR.`,
+          'Submit the PR.',
         ];
 
   const roundtripInit: RoundtripState = {
@@ -244,7 +243,7 @@ export async function prepareNewRecipe(
 export const PREPARE_NEW_RECIPE_TOOL = {
   name: 'prepare_new_recipe',
   description:
-    "Prepare everything an AI agent needs to author a new Vivarium recipe for a given upstream project + issue. SCAFFOLDING HELPER, not an execution engine — returns the exact `mise run recipes:new` and `mise run recipes:verify` commands the agent should run, plus a placeholder `recipe.json` (validates against docs/site/public/spec/recipe.schema.json) to drop into the recipe directory, an optional `projects.json` row (only when the recipe debuts a new upstream project), a commit-subject template, and a sequenced next-steps checklist. Validates the slug at call time against the same regex `docs/scripts/generate-recipes-index.ts` uses, so unparseable slugs are rejected before any work begins. Use this immediately after picking an issue from `gh search`; pair with `match_error` / `list_recipes` if you need to confirm no existing recipe already covers the bug.",
+    'Prepare everything an AI agent needs to author a new Vivarium recipe for a given upstream project + issue. SCAFFOLDING HELPER, not an execution engine — returns the exact `mise run recipes:new` and `mise run recipes:verify` commands the agent should run, plus a placeholder `recipe.json` (validates against docs/site/public/spec/recipe.schema.json) to drop into the recipe directory, an optional `projects.json` row (only when the recipe debuts a new upstream project), a commit-subject template, and a sequenced next-steps checklist. Validates the slug at call time against the same regex `docs/scripts/generate-recipes-index.ts` uses, so unparseable slugs are rejected before any work begins. Use this immediately after picking an issue from `gh search`; pair with `match_error` / `list_recipes` if you need to confirm no existing recipe already covers the bug.',
   inputSchema: {
     type: 'object' as const,
     properties: {

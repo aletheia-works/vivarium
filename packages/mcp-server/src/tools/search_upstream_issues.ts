@@ -294,7 +294,7 @@ export const SEARCH_UPSTREAM_ISSUES_TOOL = {
         type: 'array' as const,
         items: { type: 'string' as const },
         description:
-          "Optional list of `owner/repo` strings to exclude in strict mode. The tool itself ships no defaults — pass your own if your workflow has reasons to skip specific projects (e.g. they already operate equivalent tooling internally). Permissive mode ignores this list.",
+          'Optional list of `owner/repo` strings to exclude in strict mode. The tool itself ships no defaults — pass your own if your workflow has reasons to skip specific projects (e.g. they already operate equivalent tooling internally). Permissive mode ignores this list.',
       },
     },
   },

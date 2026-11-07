@@ -7,12 +7,12 @@ import type {
   VerdictSource,
 } from '../types.js';
 import {
-  runLayer1Verdict,
   type RunLayer1VerdictResult,
+  runLayer1Verdict,
 } from './run_layer1_verdict.js';
 import {
-  runLayer23Verdict,
   type RunLayer23VerdictResult,
+  runLayer23Verdict,
 } from './run_layer23_verdict.js';
 import { verifyBranchFix } from './verify_branch_fix.js';
 
@@ -136,7 +136,7 @@ function buildCommands(args: BuildCommandsArgs): string[] {
     case 'verify_unfixed':
       if (pathAB === 'A') {
         return [
-          `# Capture the unfixed verdict against the upstream-as-shipped runtime.`,
+          '# Capture the unfixed verdict against the upstream-as-shipped runtime.',
           `bunx playwright test --grep ${slug}`,
           `# Or inspect the verdict visually at ${compareUrl}.`,
         ];
@@ -148,42 +148,42 @@ function buildCommands(args: BuildCommandsArgs): string[] {
     case 'verify_fixed':
       if (pathAB === 'A') {
         return [
-          `# Capture the fixed verdict against the candidate fix source.`,
+          '# Capture the fixed verdict against the candidate fix source.',
           `PLAYWRIGHT_FIX_URL='<fix-url>' bunx playwright test --grep ${slug}`,
           `# Or open ${compareUrl} in a browser if the recipe sets path_a; the fix is pre-loaded via ?fix_url= / ?fix=<base64>.`,
         ];
       }
       return [
-        `# Build and push the branch-fix Docker image, then dispatch the verdict workflow.`,
+        '# Build and push the branch-fix Docker image, then dispatch the verdict workflow.',
         branchImage
           ? `# Using branch_image=${branchImage}`
-          : `# Substitute <your-image-ref> with the GHCR tag of your branch-fix image.`,
+          : '# Substitute <your-image-ref> with the GHCR tag of your branch-fix image.',
         ghCommand ??
           `gh workflow run branch-fix-verdict.yml --repo aletheia-works/vivarium -f slug=${slug} -f branch_image=<your-image-ref>`,
       ];
     case 'open_fork_pr': {
       if (!fork) {
         return [
-          `# Populate roundtrip.json#/fork (owner / repo / branch) before opening the upstream PR.`,
+          '# Populate roundtrip.json#/fork (owner / repo / branch) before opening the upstream PR.',
         ];
       }
       const upstream = parseUpstreamIssue(upstreamIssue);
       if (!upstream) {
         return [
           `# Cannot derive upstream repo from roundtrip.json#/upstream_issue ('${upstreamIssue ?? 'missing'}').`,
-          `# Expected form: https://github.com/<owner>/<repo>/issues/<n>.`,
+          '# Expected form: https://github.com/<owner>/<repo>/issues/<n>.',
         ];
       }
       return [
-        `# Open the upstream PR in draft mode (AI agents must keep it --draft so a person decides when it is ready).`,
+        '# Open the upstream PR in draft mode (AI agents must keep it --draft so a person decides when it is ready).',
         `# Base repo = upstream (${upstream.owner}/${upstream.repo}); head = contributor fork (${fork.owner}:${fork.branch}).`,
         `gh pr create --repo ${upstream.owner}/${upstream.repo} --head ${fork.owner}:${fork.branch} --draft --title '<title>' --body '<body>'`,
       ];
     }
     case 'open_vivarium_pr':
       return [
-        `# Open the Vivarium-side PR carrying the recipe and roundtrip.json update.`,
-        `jj git fetch --all-remotes`,
+        '# Open the Vivarium-side PR carrying the recipe and roundtrip.json update.',
+        'jj git fetch --all-remotes',
         `jj rebase -d 'trunk()'`,
         `jj describe -m 'feat(layer${layer}): ${slug} — round-trip verdicts captured'`,
         `jj bookmark create roundtrip/${slug} -r '@'`,
@@ -192,8 +192,8 @@ function buildCommands(args: BuildCommandsArgs): string[] {
       ];
     case 'manual_intervention':
       return [
-        `# status=blocked: round-trip paused for manual review.`,
-        `# Inspect roundtrip.json#/notes for the reason and resolve before resuming automation.`,
+        '# status=blocked: round-trip paused for manual review.',
+        '# Inspect roundtrip.json#/notes for the reason and resolve before resuming automation.',
       ];
     case 'complete':
       return [];

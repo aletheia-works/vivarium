@@ -60,7 +60,8 @@ interface PathBUrlInputs {
 function pathACompareUrl(inputs: PathAUrlInputs): string {
   const u = new URL(inputs.pageUrl);
   if (inputs.fix_url) u.searchParams.set('fix_url', inputs.fix_url);
-  else if (inputs.fix_source) u.searchParams.set('fix', base64UrlEncode(inputs.fix_source));
+  else if (inputs.fix_source)
+    u.searchParams.set('fix', base64UrlEncode(inputs.fix_source));
   return u.toString();
 }
 
@@ -98,7 +99,7 @@ function buildInstructions(inputs: InstructionInputs): string {
       headline,
       '',
       'After the run completes:',
-      `1. Download \`branch-fix-verdict.json\` and \`original-verdict.json\` from the panel.`,
+      '1. Download `branch-fix-verdict.json` and `original-verdict.json` from the panel.',
       `2. Drop both onto ${deriveCompareBaseFromPageUrl(inputs.recipe.page_url)} for side-by-side review.`,
       '',
       `**Verdict semantics.** \`reproduced\` = bug still triggers (fix is slop). \`unreproduced\` = bug avoided (fix steers around the broken code path). See [the walkthrough](${D5_DOC_URL_EN}) ([日本語版](${D5_DOC_URL_JA})) for the full loop.`,
@@ -108,13 +109,13 @@ function buildInstructions(inputs: InstructionInputs): string {
   return [
     `**${inputs.recipe.title}** — Layer ${inputs.recipe.layer} (Path B: Docker image-based).`,
     '',
-    `Build and push your branch-fix Docker image to a public registry the GitHub Actions runner can pull. Then run:`,
+    'Build and push your branch-fix Docker image to a public registry the GitHub Actions runner can pull. Then run:',
     '',
     '```bash',
     inputs.ghCommand ?? '(gh command unavailable)',
     '```',
     '',
-    `Once the workflow finishes:`,
+    'Once the workflow finishes:',
     `1. Download the \`branch-fix-verdict-${inputs.recipe.slug}-<run_id>\` artefact from the workflow run.`,
     `2. Drop the zip onto ${inputs.compareUrl} for side-by-side review (or pass \`?branch_url=\` with a publicly fetchable URL of the verdict JSON).`,
     '',
@@ -244,13 +245,13 @@ export const VERIFY_BRANCH_FIX_TOOL = {
       fix_url: {
         type: 'string' as const,
         description:
-          "Public URL of the candidate fix source (raw.githubusercontent.com / gist.githubusercontent.com). Layer 1 only — embedded in the returned compare_url as `?fix_url=`. Mutually exclusive with fix_source.",
+          'Public URL of the candidate fix source (raw.githubusercontent.com / gist.githubusercontent.com). Layer 1 only — embedded in the returned compare_url as `?fix_url=`. Mutually exclusive with fix_source.',
       },
       fix_source: {
         type: 'string' as const,
         maxLength: FIX_INLINE_LIMIT_BYTES,
         description:
-          "Inline candidate fix source (max 4096 bytes). Layer 1 only — embedded in the returned compare_url as `?fix=<base64url>`. Mutually exclusive with fix_url. Long fixes should use fix_url instead.",
+          'Inline candidate fix source (max 4096 bytes). Layer 1 only — embedded in the returned compare_url as `?fix=<base64url>`. Mutually exclusive with fix_url. Long fixes should use fix_url instead.',
       },
     },
     required: ['slug'],

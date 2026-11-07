@@ -106,7 +106,11 @@ export async function runLayer23Verdict(
 ): Promise<RunLayer23VerdictResult> {
   const slug = args.slug?.trim();
   if (!slug) {
-    return { ok: false, error: 'missing required argument: slug', duration_ms: 0 };
+    return {
+      ok: false,
+      error: 'missing required argument: slug',
+      duration_ms: 0,
+    };
   }
   if (args.mode !== 'unfixed' && args.mode !== 'fixed') {
     return {
@@ -362,7 +366,6 @@ export async function runLayer23Verdict(
   } finally {
     try {
       rmSync(downloadDir, { recursive: true, force: true });
-    } catch {
-    }
+    } catch {}
   }
 }

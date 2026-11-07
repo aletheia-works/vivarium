@@ -27,9 +27,7 @@ export interface RunLayer1VerdictError {
   duration_ms: number;
 }
 
-export type RunLayer1VerdictResult =
-  | RunLayer1VerdictOk
-  | RunLayer1VerdictError;
+export type RunLayer1VerdictResult = RunLayer1VerdictOk | RunLayer1VerdictError;
 
 export interface SpawnRunResult {
   status: number | null;
@@ -94,7 +92,11 @@ export async function runLayer1Verdict(
 ): Promise<RunLayer1VerdictResult> {
   const slug = args.slug?.trim();
   if (!slug) {
-    return { ok: false, error: 'missing required argument: slug', duration_ms: 0 };
+    return {
+      ok: false,
+      error: 'missing required argument: slug',
+      duration_ms: 0,
+    };
   }
 
   const workspacePath = args.workspace_path ?? DEFAULT_WORKSPACE_PATH;
@@ -107,7 +109,7 @@ export async function runLayer1Verdict(
     ...process.env,
     VERDICT_CAPTURE_OUTPUT: outputPath,
   };
-  if (args.fix_url) env['PLAYWRIGHT_FIX_URL'] = args.fix_url;
+  if (args.fix_url) env.PLAYWRIGHT_FIX_URL = args.fix_url;
 
   const startedAt = Date.now();
   const spawn = spawnRunner({
@@ -121,8 +123,7 @@ export async function runLayer1Verdict(
   if (spawn.status !== 0) {
     try {
       unlinkSync(outputPath);
-    } catch {
-    }
+    } catch {}
     return {
       ok: false,
       error: `playwright exited with status ${spawn.status}`,
@@ -172,8 +173,7 @@ export async function runLayer1Verdict(
   if (verdictReader === defaultVerdictReader) {
     try {
       unlinkSync(outputPath);
-    } catch {
-    }
+    } catch {}
   }
 
   return {

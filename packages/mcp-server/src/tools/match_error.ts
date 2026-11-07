@@ -31,20 +31,84 @@ const DEFAULT_LIMIT = 10;
 const MAX_LIMIT = 50;
 
 const STOPWORDS: ReadonlySet<string> = new Set([
-  'the', 'and', 'for', 'with', 'from', 'that', 'this', 'have',
-  'has', 'are', 'was', 'were', 'will', 'not', 'but', 'all',
-  'error', 'errors', 'exception', 'failed', 'failure', 'trace',
-  'traceback', 'stack', 'line', 'file', 'most', 'recent', 'call',
-  'です', 'ます', 'した', 'する', 'これ', 'それ', 'その', 'この',
-  'エラー', '例外', '失敗', 'スタック',
-  'der', 'die', 'das', 'und', 'mit', 'von', 'für', 'fehler',
-  'ausnahme', 'aufgetreten',
-  'que', 'por', 'una', 'los', 'las', 'del', 'con',
-  'excepción', 'fallo',
-  'pour', 'avec', 'sur', 'dans', 'erreur',
+  'the',
+  'and',
+  'for',
+  'with',
+  'from',
+  'that',
+  'this',
+  'have',
+  'has',
+  'are',
+  'was',
+  'were',
+  'will',
+  'not',
+  'but',
+  'all',
+  'error',
+  'errors',
+  'exception',
+  'failed',
+  'failure',
+  'trace',
+  'traceback',
+  'stack',
+  'line',
+  'file',
+  'most',
+  'recent',
+  'call',
+  'です',
+  'ます',
+  'した',
+  'する',
+  'これ',
+  'それ',
+  'その',
+  'この',
+  'エラー',
+  '例外',
+  '失敗',
+  'スタック',
+  'der',
+  'die',
+  'das',
+  'und',
+  'mit',
+  'von',
+  'für',
+  'fehler',
+  'ausnahme',
+  'aufgetreten',
+  'que',
+  'por',
+  'una',
+  'los',
+  'las',
+  'del',
+  'con',
+  'excepción',
+  'fallo',
+  'pour',
+  'avec',
+  'sur',
+  'dans',
+  'erreur',
   'échec',
-  '错误', '异常', '失败', '堆栈', '錯誤', '異常', '失敗', '堆疊',
-  '오류', '예외', '실패', '스택',
+  '错误',
+  '异常',
+  '失败',
+  '堆栈',
+  '錯誤',
+  '異常',
+  '失敗',
+  '堆疊',
+  '오류',
+  '예외',
+  '실패',
+  '스택',
 ]);
 
 const SYNONYM_GROUPS: ReadonlyArray<readonly string[]> = [
@@ -64,7 +128,10 @@ const SYNONYM_MAP: ReadonlyMap<string, ReadonlyArray<string>> = (() => {
   const m = new Map<string, ReadonlyArray<string>>();
   for (const group of SYNONYM_GROUPS) {
     for (const member of group) {
-      m.set(member, group.filter((g) => g !== member));
+      m.set(
+        member,
+        group.filter((g) => g !== member),
+      );
     }
   }
   return m;
@@ -181,10 +248,7 @@ function matchSegment(seg: string, tokens: TokenSet): SegmentMatch {
   return { matched: false };
 }
 
-function scoreRecipe(
-  recipe: RecipeEntry,
-  tokens: TokenSet,
-): ScoredRecipe {
+function scoreRecipe(recipe: RecipeEntry, tokens: TokenSet): ScoredRecipe {
   const matched: MatchedToken[] = [];
   let score = 0;
 
@@ -221,10 +285,7 @@ export async function matchError(
   if (!text) {
     return { ok: false, error: 'missing required argument: text' };
   }
-  const limit = Math.min(
-    Math.max(1, args.limit ?? DEFAULT_LIMIT),
-    MAX_LIMIT,
-  );
+  const limit = Math.min(Math.max(1, args.limit ?? DEFAULT_LIMIT), MAX_LIMIT);
 
   const tokens = tokenise(text);
 

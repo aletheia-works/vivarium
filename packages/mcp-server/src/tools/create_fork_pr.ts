@@ -116,12 +116,7 @@ export async function createForkPr(
   }
 
   const fork = state.fork;
-  if (
-    !fork ||
-    !fork.owner?.trim() ||
-    !fork.repo?.trim() ||
-    !fork.branch?.trim()
-  ) {
+  if (!fork?.owner?.trim() || !fork.repo?.trim() || !fork.branch?.trim()) {
     return {
       ok: false,
       error:
@@ -260,7 +255,7 @@ export const CREATE_FORK_PR_TOOL = {
       pr_body: {
         type: 'string' as const,
         description:
-          "PR body (Markdown). Defaults to empty. Include a link back to the Vivarium recipe and the upstream issue, and disclose AI authorship (the tool appends a footer and applies no label).",
+          'PR body (Markdown). Defaults to empty. Include a link back to the Vivarium recipe and the upstream issue, and disclose AI authorship (the tool appends a footer and applies no label).',
       },
       dry_run: {
         type: 'boolean' as const,

@@ -1,5 +1,5 @@
-import type { RecipesIndex, VerdictSnapshot } from './types.js';
 import bundledIndex from './bundled/recipes.json' with { type: 'json' };
+import type { RecipesIndex, VerdictSnapshot } from './types.js';
 
 export const INDEX_URL =
   'https://aletheia-works.github.io/vivarium/api/recipes.json';
@@ -29,7 +29,7 @@ export async function getCatalogue(): Promise<RecipesIndex> {
 
   try {
     const res = await fetch(INDEX_URL, {
-      headers: { 'accept': 'application/json' },
+      headers: { accept: 'application/json' },
     });
     if (res.ok) {
       const data = (await res.json()) as RecipesIndex;
@@ -38,8 +38,7 @@ export async function getCatalogue(): Promise<RecipesIndex> {
         return data;
       }
     }
-  } catch {
-  }
+  } catch {}
 
   return getBundledIndex();
 }
@@ -49,7 +48,7 @@ export async function fetchVerdictSnapshot(
 ): Promise<VerdictSnapshot | null> {
   try {
     const res = await fetch(verdictUrl, {
-      headers: { 'accept': 'application/json' },
+      headers: { accept: 'application/json' },
     });
     if (!res.ok) return null;
     const data = (await res.json()) as VerdictSnapshot;

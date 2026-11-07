@@ -25,7 +25,7 @@ export async function listRecipes(
     if (layer !== undefined && r.layer !== layer) return false;
     if (project && r.project.toLowerCase() !== project) return false;
     if (q) {
-      const hay = (r.slug + ' ' + r.project + ' ' + r.title).toLowerCase();
+      const hay = `${r.slug} ${r.project} ${r.title}`.toLowerCase();
       if (!hay.includes(q)) return false;
     }
     return true;

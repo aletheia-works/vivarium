@@ -63,8 +63,7 @@ export async function lookupVerdict(
       kind: 'live',
       slug,
       page_url: recipe.page_url,
-      note:
-        'Layer 1 reproductions produce verdicts live in the browser; the agent can open the page or delegate to a browser MCP to obtain an actual verdict.',
+      note: 'Layer 1 reproductions produce verdicts live in the browser; the agent can open the page or delegate to a browser MCP to obtain an actual verdict.',
     };
   }
 
@@ -75,8 +74,7 @@ export async function lookupVerdict(
       preview_url: recipe.preview_url,
       ...(recipe.pull_url ? { pull_url: recipe.pull_url } : {}),
       ...(recipe.commit_url ? { commit_url: recipe.commit_url } : {}),
-      note:
-        "Layer 3 recipes are live previews of an upstream pull request, or of a commit before it becomes one, with no verdict. preview_url opens the running preview after a GitHub sign-in that lets in the maintainers Vivarium lists, anyone the recipe adds and the pull request's author; the pull request says how to check the change.",
+      note: "Layer 3 recipes are live previews of an upstream pull request, or of a commit before it becomes one, with no verdict. preview_url opens the running preview after a GitHub sign-in that lets in the maintainers Vivarium lists, anyone the recipe adds and the pull request's author; the pull request says how to check the change.",
     };
   }
 
