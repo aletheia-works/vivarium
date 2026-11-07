@@ -45,7 +45,9 @@ README claims.
 
 v1 has no error verdict, so a run that fails before reaching the bug
 also reports `unreproduced`. Read the output to tell it from an absent
-bug.
+bug. On Layer 2, only exit code 0 (`reproduced`) and 1 (`unreproduced`)
+are verdicts. Any other exit code is an error: no `verdict.json` is
+written, and the capture fails.
 
 `pending` is the default state until the reproduction code (Layer 1)
 or the verdict-snapshot fetch (Layer 2) settles.
@@ -314,6 +316,7 @@ pages stay conformant unchanged.
 | 4 | 2026-10-19 | The `runtime.name` table lists `"formicarium"`. `runtime.name` stays free-form, so the surface and the version literal are unchanged. |
 | 5 | 2026-11-07 | States that no page emits the evidence surface today, and which `runtime.name` values recipes use. No format change. |
 | 6 | 2026-11-07 | States that a failed run also reports `unreproduced`, because v1 has no error verdict. No format change. |
+| 7 | 2026-11-07 | **Breaking, kept in v1.** A Layer 2 exit code other than 0 or 1 is now an error instead of `unreproduced`: `vivarium-verdict.yml` and `verdict:capture-layer2` fail without writing `verdict.json`. A consumer job with `expected_verdict: unreproduced` that passed because its image crashed now fails. The `verdict.json` format is unchanged, and no published Vivarium MCP release depends on it. |
 
 ## References
 

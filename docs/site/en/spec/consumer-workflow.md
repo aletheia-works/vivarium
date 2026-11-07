@@ -47,9 +47,10 @@ the reproduction is doing its job. `unreproduced` means the bug
 [Contract v1: Verdict semantics](./contract-v1.md#verdict-semantics)
 for the full reasoning.
 
-The workflow reports `unreproduced` for any non-zero exit code, so a job
-with `expected_verdict: unreproduced` also passes when the image crashes.
-Check the captured output to tell the two apart.
+Exit code 0 is `reproduced` and 1 is `unreproduced`. Any other exit
+code, such as Docker failing to start the image or the container being
+killed, fails the job without a verdict. A script that fails and exits 1
+still reads as `unreproduced`, so check the captured output as well.
 
 Consumers that want a "this bug is fixed" alert can therefore
 write:

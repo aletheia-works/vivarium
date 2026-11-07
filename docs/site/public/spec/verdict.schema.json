@@ -26,7 +26,7 @@
     },
     "exit_code": {
       "type": "integer",
-      "description": "Exit code of the in-container reproducer at the time of the snapshot. The contract does not constrain which exit-code value corresponds to which verdict — that is per-recipe and is interpreted alongside the 'verdict' field above."
+      "description": "Exit code of the in-container reproducer at the time of the snapshot. 0 is 'reproduced' and 1 is 'unreproduced'; a run that exits with any other code is an error and produces no snapshot."
     },
     "image_tag": {
       "type": "string",

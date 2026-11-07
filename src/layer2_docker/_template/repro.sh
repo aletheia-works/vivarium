@@ -7,6 +7,8 @@
 #   exit 0 -> reproduced — the bug is observed.
 #   exit 1 -> unreproduced — the bug is not observed (fix has
 #                            landed, or the environment differs).
+#   exit 2 -> error — the reproduction could not run, so no verdict
+#                     is recorded.
 
 set -uo pipefail
 

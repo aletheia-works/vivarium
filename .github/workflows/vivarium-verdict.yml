@@ -103,11 +103,18 @@ jobs:
           exit_code=$?
           set -e
 
-          if [ "$exit_code" -eq 0 ]; then
-            verdict="reproduced"
-          else
-            verdict="unreproduced"
-          fi
+          case "$exit_code" in
+            0) verdict="reproduced" ;;
+            1) verdict="unreproduced" ;;
+            *)
+              echo "::error::${IMAGE} exited ${exit_code}; only 0 (reproduced) and 1 (unreproduced) are verdicts, so none was recorded."
+              echo "--- stdout"
+              cat "$stdout_file"
+              echo "--- stderr (last 4096 bytes)"
+              tail -c 4096 "$stderr_file"
+              exit 1
+              ;;
+          esac
 
           digest="$(docker image inspect \
             --format='{{if .RepoDigests}}{{index .RepoDigests 0}}{{else}}{{.Id}}{{end}}' \

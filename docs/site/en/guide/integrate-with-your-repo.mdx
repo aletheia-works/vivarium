@@ -57,7 +57,7 @@ jobs:
     eyebrow="// 3 · CHECK YOUR OWN BUILD"
     heading="Run the reproduction against an image you built."
   >
-    <p>To check that your fix removes the bug, point the job at your image and expect <code>unreproduced</code>. The runner pulls the image without credentials, so it must be public. Any non-zero exit code counts as <code>unreproduced</code>, so also check the output of the run.</p>
+    <p>To check that your fix removes the bug, point the job at your image and expect <code>unreproduced</code>. The runner pulls the image without credentials, so it must be public. Exit code 1 counts as <code>unreproduced</code> even when the script itself failed, so also check the output of the run. Any other non-zero exit code fails the job.</p>
     <pre><code>{`jobs:
   check-my-fix:
     uses: aletheia-works/vivarium/.github/workflows/vivarium-verdict.yml@main

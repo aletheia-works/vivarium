@@ -45,9 +45,9 @@ jobs:
 完全な説明は
 [Contract v1: Verdict セマンティクス](./contract-v1.md#verdict-セマンティクス)を参照。
 
-このワークフローは 0 以外の終了コードをすべて `unreproduced` と報告する。そのため
-`expected_verdict: unreproduced` のジョブは、イメージがクラッシュした場合も成功する。
-両者はキャプチャした出力で見分ける。
+終了コード 0 は `reproduced`、1 は `unreproduced` になる。Docker がイメージを起動できない、
+コンテナが強制終了されたなど、それ以外の終了コードでは verdict を出さずにジョブが失敗する。
+失敗して 1 で終わるスクリプトは `unreproduced` のままなので、キャプチャした出力も確認すること。
 
 「このバグは修正された」アラートを望むコンシューマーは:
 

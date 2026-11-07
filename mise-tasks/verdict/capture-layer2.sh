@@ -28,11 +28,18 @@ docker run --rm "$image_ref" >"$stdout_file" 2>"$stderr_file"
 exit_code=$?
 set -e
 
-if [ "$exit_code" -eq 0 ]; then
-  verdict="reproduced"
-else
-  verdict="unreproduced"
-fi
+case "$exit_code" in
+  0) verdict="reproduced" ;;
+  1) verdict="unreproduced" ;;
+  *)
+    echo "::error::${image_ref} exited ${exit_code}; only 0 (reproduced) and 1 (unreproduced) are verdicts, so none was recorded." >&2
+    echo "--- stdout" >&2
+    cat "$stdout_file" >&2
+    echo "--- stderr (last 4096 bytes)" >&2
+    tail -c 4096 "$stderr_file" >&2
+    exit 1
+    ;;
+esac
 
 captured_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 
