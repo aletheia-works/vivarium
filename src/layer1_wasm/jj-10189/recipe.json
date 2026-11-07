@@ -34,7 +34,7 @@
       "role": "fix",
       "tool": "jj",
       "repository": "https://github.com/marukome0743/jj",
-      "commit": "226377683a389c15af492d695a9935223b74a8b3",
+      "commit": "e794db56c7d18b442a96305c8e0e719d6fe75cdc",
       "fixture": "jj-10189",
       "reference": {
         "branch": "fix-10189"
