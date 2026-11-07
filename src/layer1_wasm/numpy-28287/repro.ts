@@ -1,9 +1,18 @@
-import type { PathACapturedRun } from '../_shared/path_a.js';
 import {
   type PyodideWorker,
-  type RunResult,
   startPyodideWorker,
 } from '../_shared/pyodide-worker-client.js';
+import {
+  reportRuntimeFailure,
+  requiredElement,
+  showReproSource,
+} from '../_shared/recipe_page.js';
+import {
+  capturePyodideRun,
+  type Evaluation,
+  type RecipeCapture,
+  timingSince,
+} from '../_shared/recipe_result.js';
 import { enableRunner } from '../_shared/runner.js';
 import {
   setResult,
@@ -62,30 +71,13 @@ interface ReproOutput {
   transitivity_violated: boolean;
 }
 
-const outputEl = document.getElementById('output');
-const metaEl = document.getElementById('meta');
-const reproCodeEl = document.getElementById('repro-code');
+const outputEl = requiredElement('numpy-28287', 'output');
+const metaEl = requiredElement('numpy-28287', 'meta');
+const reproCodeEl = requiredElement('numpy-28287', 'repro-code');
 
-if (!outputEl || !metaEl || !reproCodeEl) {
-  throw new Error(
-    'numpy-28287: missing required DOM elements (#output, #meta, #repro-code).',
-  );
-}
+showReproSource(reproCodeEl, REPRO_CODE);
 
-if (!reproCodeEl.firstChild) {
-  reproCodeEl.textContent = REPRO_CODE;
-  fetch('./repro.highlighted.html')
-    .then((r) => (r.ok ? r.text() : null))
-    .then((html) => {
-      if (html) reproCodeEl.innerHTML = html;
-    })
-    .catch(() => {});
-}
-
-function evaluate(result: ReproOutput | null): {
-  verdict: 'reproduced' | 'unreproduced';
-  message: string;
-} {
+function evaluate(result: ReproOutput | null): Evaluation {
   if (!result) {
     return {
       verdict: 'unreproduced',
@@ -106,45 +98,11 @@ function evaluate(result: ReproOutput | null): {
   };
 }
 
-interface CaptureResult {
-  run: PathACapturedRun;
-  parsed: ReproOutput | null;
-}
-
-function toCapture(run: RunResult): CaptureResult {
-  if (run.error !== null) {
-    return {
-      run: {
-        exitCode: 1,
-        verdict: 'unreproduced',
-        message: `runtime error: ${run.error}`,
-        stdout: run.stdout,
-      },
-      parsed: null,
-    };
-  }
-  const value = run.value;
-  const parsed =
-    typeof value === 'object' && value !== null && !Array.isArray(value)
-      ? (value as ReproOutput)
-      : null;
-  const ev = evaluate(parsed);
-  return {
-    run: {
-      exitCode: parsed ? 0 : 1,
-      verdict: ev.verdict,
-      message: ev.message,
-      stdout: run.stdout,
-    },
-    parsed,
-  };
-}
-
 async function captureIn(
   worker: PyodideWorker,
   source: string,
-): Promise<CaptureResult> {
-  return toCapture(await worker.run(source));
+): Promise<RecipeCapture<ReproOutput>> {
+  return capturePyodideRun(await worker.run(source), evaluate);
 }
 
 const startedAt = new Date();
@@ -172,7 +130,6 @@ try {
     `numpy ${baselineResult.numpy_version} on Python ${baselineResult.python_version} ` +
     `via Pyodide v${worker.pyodideVersion} (Web Worker).`;
 
-  const finishedAt = new Date();
   const envelope: VivariumResultV1 = {
     contract: 'v1',
     bug: {
@@ -194,11 +151,7 @@ try {
       x_lt_z: baselineResult.x_lt_z,
       transitivity_violated: baselineResult.transitivity_violated,
     },
-    timing: {
-      started_at: startedAt.toISOString(),
-      finished_at: finishedAt.toISOString(),
-      duration_ms: finishedAt.getTime() - startedAt.getTime(),
-    },
+    timing: timingSince(startedAt),
   };
   setResult(envelope);
 
@@ -208,14 +161,5 @@ try {
     runFix: async (source) => (await captureIn(worker, source)).run,
   });
 } catch (err: unknown) {
-  console.error(err);
-  const errAny = err as { stack?: string; message?: string } | null;
-  outputEl.textContent =
-    (errAny && (errAny.stack ?? errAny.message)) ?? String(err);
-  if (globalThis.__VIVARIUM_VERDICT__ !== 'unreproduced') {
-    setVerdict(
-      'unreproduced',
-      `bug not reproduced — runtime error: ${errAny?.message ?? String(err)}`,
-    );
-  }
+  reportRuntimeFailure(outputEl, err);
 }

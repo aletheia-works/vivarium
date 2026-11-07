@@ -1,5 +1,13 @@
 import { DEFAULT_PYODIDE_VERSION as PYODIDE_VERSION } from '../_shared/loader.js';
 import {
+  reportRuntimeFailure,
+  requiredElement,
+  showReproSource,
+} from '../_shared/recipe_page.js';
+import {
+  timingSince,
+} from '../_shared/recipe_result.js';
+import {
   setResult,
   setVerdict,
   type VivariumResultV1,
@@ -79,23 +87,17 @@ interface VariantOutcome {
   stdout: string;
 }
 
-const outputBaselineEl = document.getElementById('output');
-const outputFixEl = document.getElementById('output-fix');
-const metaEl = document.getElementById('meta');
-const reproCodeEl = document.getElementById('repro-code');
-
-if (!outputBaselineEl || !outputFixEl || !metaEl || !reproCodeEl) {
-  throw new Error(
-    'lark-1585: missing required DOM elements (#output, #output-fix, #meta, #repro-code).',
-  );
-}
+const outputBaselineEl = requiredElement('lark-1585', 'output');
+const outputFixEl = requiredElement('lark-1585', 'output-fix');
+const metaEl = requiredElement('lark-1585', 'meta');
+const reproCodeEl = requiredElement('lark-1585', 'repro-code');
 
 function setFixPane(
   text: string,
   status: 'pending' | 'ok' | 'error',
 ): void {
-  outputFixEl!.textContent = text;
-  outputFixEl!.dataset['fixStatus'] = status;
+  outputFixEl.textContent = text;
+  outputFixEl.dataset['fixStatus'] = status;
 }
 
 const BUDGET_LABEL = `${(TIMEOUT_MS / 1000).toFixed(1)} s`;
@@ -125,15 +127,7 @@ function pane(r: PaneReport): string {
   ].join('\n');
 }
 
-if (!reproCodeEl.firstChild) {
-  reproCodeEl.textContent = REPRO_CODE;
-  fetch('./repro.highlighted.html')
-    .then((r) => (r.ok ? r.text() : null))
-    .then((html) => {
-      if (html) reproCodeEl.innerHTML = html;
-    })
-    .catch(() => {});
-}
+showReproSource(reproCodeEl, REPRO_CODE);
 
 const startedAt = new Date();
 
@@ -316,7 +310,6 @@ async function runVariant(
 
 function publishEnvelope(): void {
   if (!baseline) return;
-  const finishedAt = new Date();
   const envelope: VivariumResultV1 = {
     contract: 'v1',
     bug: {
@@ -367,11 +360,7 @@ function publishEnvelope(): void {
             }
           : null,
     },
-    timing: {
-      started_at: startedAt.toISOString(),
-      finished_at: finishedAt.toISOString(),
-      duration_ms: finishedAt.getTime() - startedAt.getTime(),
-    },
+    timing: timingSince(startedAt),
   };
   setResult(envelope);
 }
@@ -434,16 +423,7 @@ try {
 
   publishEnvelope();
 } catch (err: unknown) {
-  console.error(err);
-  const errAny = err as { stack?: string; message?: string } | null;
-  outputBaselineEl.textContent =
-    (errAny && (errAny.stack ?? errAny.message)) ?? String(err);
-  if (globalThis.__VIVARIUM_VERDICT__ !== 'unreproduced') {
-    setVerdict(
-      'unreproduced',
-      `bug not reproduced — runtime error: ${errAny?.message ?? String(err)}`,
-    );
-  }
+  reportRuntimeFailure(outputBaselineEl, err);
   if (!baseline) {
     publishEnvelope();
   }

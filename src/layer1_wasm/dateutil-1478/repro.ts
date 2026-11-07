@@ -6,9 +6,19 @@ import {
 import type { PathACapturedRun } from '../_shared/path_a.js';
 import {
   type PyodideWorker,
-  type RunResult,
   startPyodideWorker,
 } from '../_shared/pyodide-worker-client.js';
+import {
+  reportRuntimeFailure,
+  requiredElement,
+  showReproSource,
+} from '../_shared/recipe_page.js';
+import {
+  capturePyodideRun,
+  type Evaluation,
+  type RecipeCapture,
+  timingSince,
+} from '../_shared/recipe_result.js';
 import { enableRunner } from '../_shared/runner.js';
 import {
   setResult,
@@ -79,36 +89,17 @@ interface ReproOutput {
   reproduced: boolean;
 }
 
-interface CaptureResult {
-  run: PathACapturedRun;
-  parsed: ReproOutput | null;
-}
-
-const outputBaselineEl = document.getElementById('output');
-const outputFixEl = document.getElementById('output-fix');
-const metaEl = document.getElementById('meta');
-const reproCodeEl = document.getElementById('repro-code');
-
-if (!outputBaselineEl || !outputFixEl || !metaEl || !reproCodeEl) {
-  throw new Error(
-    'dateutil-1478: missing required DOM elements (#output, #output-fix, #meta, #repro-code).',
-  );
-}
+const outputBaselineEl = requiredElement('dateutil-1478', 'output');
+const outputFixEl = requiredElement('dateutil-1478', 'output-fix');
+const metaEl = requiredElement('dateutil-1478', 'meta');
+const reproCodeEl = requiredElement('dateutil-1478', 'repro-code');
 
 function setFixPane(text: string, status: 'pending' | 'ok' | 'error'): void {
-  outputFixEl!.textContent = text;
-  outputFixEl!.dataset['fixStatus'] = status;
+  outputFixEl.textContent = text;
+  outputFixEl.dataset['fixStatus'] = status;
 }
 
-if (!reproCodeEl.firstChild) {
-  reproCodeEl.textContent = REPRO_CODE;
-  fetch('./repro.highlighted.html')
-    .then((r) => (r.ok ? r.text() : null))
-    .then((html) => {
-      if (html) reproCodeEl.innerHTML = html;
-    })
-    .catch(() => {});
-}
+showReproSource(reproCodeEl, REPRO_CODE);
 
 function summarise(cases: CaseObservation[]): ReproOutput {
   const inverted = cases.filter((c) => c.inverted).length;
@@ -120,10 +111,7 @@ function summarise(cases: CaseObservation[]): ReproOutput {
   };
 }
 
-function evaluate(result: ReproOutput | null): {
-  verdict: 'reproduced' | 'unreproduced';
-  message: string;
-} {
+function evaluate(result: ReproOutput | null): Evaluation {
   if (!result) {
     return {
       verdict: 'unreproduced',
@@ -144,37 +132,15 @@ function evaluate(result: ReproOutput | null): {
   };
 }
 
-function toCapture(run: RunResult): CaptureResult {
-  if (run.error !== null) {
-    return {
-      run: {
-        exitCode: 1,
-        verdict: 'unreproduced',
-        message: `runtime error: ${run.error}`,
-        stdout: run.stdout,
-      },
-      parsed: null,
-    };
-  }
-  const rows = Array.isArray(run.value) ? (run.value as CaseObservation[]) : null;
-  const parsed = rows ? summarise(rows) : null;
-  const ev = evaluate(parsed);
-  return {
-    run: {
-      exitCode: parsed ? 0 : 1,
-      verdict: ev.verdict,
-      message: ev.message,
-      stdout: run.stdout,
-    },
-    parsed,
-  };
+function parseCases(value: unknown): ReproOutput | null {
+  return Array.isArray(value) ? summarise(value as CaseObservation[]) : null;
 }
 
 async function captureIn(
   worker: PyodideWorker,
   source: string,
-): Promise<CaptureResult> {
-  return toCapture(await worker.run(source));
+): Promise<RecipeCapture<ReproOutput>> {
+  return capturePyodideRun(await worker.run(source), evaluate, parseCases);
 }
 
 async function readVersions(
@@ -219,7 +185,6 @@ try {
 
   const buildEnvelope = (): VivariumResultV1 | null => {
     if (!baselineParsed || !baselineCapture || !baselineVersions) return null;
-    const finishedAt = new Date();
     return {
       contract: 'v1',
       bug: {
@@ -266,11 +231,7 @@ try {
               }
             : null,
       },
-      timing: {
-        started_at: startedAt.toISOString(),
-        finished_at: finishedAt.toISOString(),
-        duration_ms: finishedAt.getTime() - startedAt.getTime(),
-      },
+      timing: timingSince(startedAt),
     };
   };
 
@@ -327,14 +288,5 @@ try {
     runFix: async (source) => (await captureIn(worker, source)).run,
   });
 } catch (err: unknown) {
-  console.error(err);
-  const errAny = err as { stack?: string; message?: string } | null;
-  outputBaselineEl.textContent =
-    (errAny && (errAny.stack ?? errAny.message)) ?? String(err);
-  if (globalThis.__VIVARIUM_VERDICT__ !== 'unreproduced') {
-    setVerdict(
-      'unreproduced',
-      `bug not reproduced — runtime error: ${errAny?.message ?? String(err)}`,
-    );
-  }
+  reportRuntimeFailure(outputBaselineEl, err);
 }

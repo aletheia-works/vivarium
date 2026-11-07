@@ -39,6 +39,8 @@ and runner — `bun install`, `bun run build`, `bun run typecheck`.
 | `xterm_loader.ts` | `xterm_loader.js` | `loadXterm()` — imports xterm.js and its fit addon from jsdelivr at `DEFAULT_XTERM_VERSION` / `DEFAULT_XTERM_FIT_VERSION` (moved by the weekly runtime bump) and adds its stylesheet once. |
 | `fix-candidate.ts` | `fix-candidate.js` | `fetchWheelManifest()` / `resolveFixCandidateSpec()` + `WheelManifest` interface — resolves the CI-built wheel a recipe renders beside its baseline; installing it is the recipe's own job. `dateutil-1478` is the only consumer — `lark-1585` fetches and resolves its manifest inline instead. |
 | `runner.ts` | `runner.js` | `enableRunner()` — Edit/Run/Reset buttons that hand the (possibly edited) source back to the recipe's `captureRun`. |
+| `recipe_page.ts` | `recipe_page.js` | `requiredElement()` / `showReproSource()` / `reportRuntimeFailure()` — the page wiring every non-terminal recipe repeats. |
+| `recipe_result.ts` | `recipe_result.js` | `capturePyodideRun()` / `timingSince()` + `Evaluation`, `RecipeCapture` — DOM-free result helpers. |
 | `path_a.ts` | `path_a.js` | `PathACapturedRun` type + the Path A "fix URL?" UI panel. |
 | `page.template.html` | — | Layer 1 page shell the generator fills; see `docs/scripts/generate-repro-pages.ts`. |
 | `page.terminal.template.html` | — | Layer 1 page shell for CLI recipes run in formicarium: two terminals side by side, no script column. `scripts/page-templates.ts` picks it by runtime. |

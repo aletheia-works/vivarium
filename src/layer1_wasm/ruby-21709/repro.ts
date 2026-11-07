@@ -1,9 +1,18 @@
-import type { PathACapturedRun } from '../_shared/path_a.js';
 import {
   loadVivariumRuby,
   type RubyRunner,
   type RunResult,
 } from '../_shared/ruby_loader.js';
+import {
+  reportRuntimeFailure,
+  requiredElement,
+  showReproSource,
+} from '../_shared/recipe_page.js';
+import {
+  type Evaluation,
+  type RecipeCapture,
+  timingSince,
+} from '../_shared/recipe_result.js';
 import { enableRunner } from '../_shared/runner.js';
 import {
   setResult,
@@ -71,30 +80,13 @@ interface ReproOutput {
   string_raised: string | null;
 }
 
-const outputEl = document.getElementById('output');
-const metaEl = document.getElementById('meta');
-const reproCodeEl = document.getElementById('repro-code');
+const outputEl = requiredElement('ruby-21709', 'output');
+const metaEl = requiredElement('ruby-21709', 'meta');
+const reproCodeEl = requiredElement('ruby-21709', 'repro-code');
 
-if (!outputEl || !metaEl || !reproCodeEl) {
-  throw new Error(
-    'ruby-21709: missing required DOM elements (#output, #meta, #repro-code).',
-  );
-}
+showReproSource(reproCodeEl, REPRO_CODE);
 
-if (!reproCodeEl.firstChild) {
-  reproCodeEl.textContent = REPRO_CODE;
-  fetch('./repro.highlighted.html')
-    .then((r) => (r.ok ? r.text() : null))
-    .then((html) => {
-      if (html) reproCodeEl.innerHTML = html;
-    })
-    .catch(() => {});
-}
-
-function evaluate(result: ReproOutput | null): {
-  verdict: 'reproduced' | 'unreproduced';
-  message: string;
-} {
+function evaluate(result: ReproOutput | null): Evaluation {
   if (!result) {
     return {
       verdict: 'unreproduced',
@@ -131,12 +123,7 @@ function readResult(ruby: RubyRunner): ReproOutput | null {
   }
 }
 
-interface CaptureResult {
-  run: PathACapturedRun;
-  parsed: ReproOutput | null;
-}
-
-function toCapture(run: RunResult, parsed: ReproOutput | null): CaptureResult {
+function toCapture(run: RunResult, parsed: ReproOutput | null): RecipeCapture<ReproOutput> {
   if (run.error !== null) {
     return {
       run: {
@@ -160,7 +147,7 @@ function toCapture(run: RunResult, parsed: ReproOutput | null): CaptureResult {
   };
 }
 
-function captureRun(ruby: RubyRunner, source: string): CaptureResult {
+function captureRun(ruby: RubyRunner, source: string): RecipeCapture<ReproOutput> {
   ruby.eval(RESET_RESULT);
   const run = ruby.eval(source);
   return toCapture(run, run.error === null ? readResult(ruby) : null);
@@ -186,7 +173,6 @@ try {
 
   metaEl.textContent = `Ruby ${baselineResult.ruby_version} via @ruby/${rubyVersion}-wasm-wasi v${rubyWasmVersion}.`;
 
-  const finishedAt = new Date();
   const envelope: VivariumResultV1 = {
     contract: 'v1',
     bug: {
@@ -210,11 +196,7 @@ try {
       string_raised: baselineResult.string_raised,
       reproduced: baseline.run.verdict === 'reproduced',
     },
-    timing: {
-      started_at: startedAt.toISOString(),
-      finished_at: finishedAt.toISOString(),
-      duration_ms: finishedAt.getTime() - startedAt.getTime(),
-    },
+    timing: timingSince(startedAt),
   };
   setResult(envelope);
 
@@ -224,14 +206,5 @@ try {
     runFix: (source) => Promise.resolve(captureRun(ruby, source).run),
   });
 } catch (err: unknown) {
-  console.error(err);
-  const errAny = err as { stack?: string; message?: string } | null;
-  outputEl.textContent =
-    (errAny && (errAny.stack ?? errAny.message)) ?? String(err);
-  if (globalThis.__VIVARIUM_VERDICT__ !== 'unreproduced') {
-    setVerdict(
-      'unreproduced',
-      `bug not reproduced — runtime error: ${errAny?.message ?? String(err)}`,
-    );
-  }
+  reportRuntimeFailure(outputEl, err);
 }
