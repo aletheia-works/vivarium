@@ -43,7 +43,7 @@ case "$exit_code" in
   *) no_verdict "exited ${exit_code}; only 0 (reproduced) and 1 (unreproduced) are verdicts" ;;
 esac
 
-stated="$(grep -E '^verdict=(reproduced|unreproduced)([^a-z]|$)' "$stderr_file" | tail -n 1 | sed -E 's/^verdict=(reproduced|unreproduced).*/\1/' || true)"
+stated="$(grep -E '^verdict=(reproduced|unreproduced)([[:space:]]|$)' "$stderr_file" | tail -n 1 | sed -E 's/^verdict=(reproduced|unreproduced).*/\1/' || true)"
 if [ -z "$stated" ]; then
   no_verdict "exited ${exit_code} but printed no verdict= line on stderr"
 elif [ "$stated" != "$verdict" ]; then

@@ -94,7 +94,12 @@ describe('verdict:capture-layer2', () => {
     'exit code %d without a verdict line is an error',
     (exitCode) => {
       expectNoVerdict(
-        capture(exitCode, ['set -e stopped here', 'verdict=reproducedish']),
+        capture(exitCode, [
+          'set -e stopped here',
+          'verdict=reproducedish',
+          'verdict=reproduced1',
+          'verdict=unreproduced_x',
+        ]),
         `exited ${exitCode} but printed no verdict= line on stderr`,
       );
     },

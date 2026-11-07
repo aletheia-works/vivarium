@@ -43,8 +43,8 @@ a different way before producing a verdict at all. Either reading is
 worth investigating — the page is no longer demonstrating what its
 README claims.
 
-v1 has no error verdict, so a run that fails before reaching the bug
-also reports `unreproduced`. Read the output to tell it from an absent
+v1 has no error verdict, so on Layer 1 a run that fails before reaching
+the bug also reports `unreproduced`. Read the output to tell it from an absent
 bug. On Layer 2, only exit code 0 (`reproduced`) and 1 (`unreproduced`)
 are verdicts, and the run must also print a matching `verdict=reproduced`
 or `verdict=unreproduced` line on stderr; the last such line counts. Any

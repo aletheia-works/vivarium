@@ -32,7 +32,7 @@ DOM/グローバルサーフェスは両レイヤーで同じだ。ファイル�
 または verdict を出力する前にランタイムが別の方法でリグレッションしたかのいずれかだ。
 どちらの読み方も調査する価値がある——ページはもはや README が主張することを実証していない。
 
-v1 にはエラーの verdict がないため、バグを確かめる前に失敗した実行も `unreproduced` を
+v1 にはエラーの verdict がないため、Layer 1 では、バグを確かめる前に失敗した実行も `unreproduced` を
 報告する。バグがない場合とは出力で見分ける。Layer 2 では、終了コード 0（`reproduced`）と
 1（`unreproduced`）だけが verdict になり、さらに同じ内容の `verdict=reproduced` または
 `verdict=unreproduced` の行を標準エラーに出す必要がある。該当する行が複数あれば最後の行を使う。
