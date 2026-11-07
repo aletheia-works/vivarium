@@ -19,7 +19,10 @@ export function showReproSource(codeEl: HTMLElement, source: string): void {
     .catch(() => {});
 }
 
-export function reportRuntimeFailure(outputEl: HTMLElement, err: unknown): void {
+export function reportRuntimeFailure(
+  outputEl: HTMLElement,
+  err: unknown,
+): void {
   console.error(err);
   const errAny = err as { stack?: string; message?: string } | null;
   outputEl.textContent =

@@ -123,7 +123,10 @@ function readResult(ruby: RubyRunner): ReproOutput | null {
   }
 }
 
-function toCapture(run: RunResult, parsed: ReproOutput | null): RecipeCapture<ReproOutput> {
+function toCapture(
+  run: RunResult,
+  parsed: ReproOutput | null,
+): RecipeCapture<ReproOutput> {
   if (run.error !== null) {
     return {
       run: {
@@ -147,7 +150,10 @@ function toCapture(run: RunResult, parsed: ReproOutput | null): RecipeCapture<Re
   };
 }
 
-function captureRun(ruby: RubyRunner, source: string): RecipeCapture<ReproOutput> {
+function captureRun(
+  ruby: RubyRunner,
+  source: string,
+): RecipeCapture<ReproOutput> {
   ruby.eval(RESET_RESULT);
   const run = ruby.eval(source);
   return toCapture(run, run.error === null ? readResult(ruby) : null);

@@ -4,9 +4,7 @@ import {
   requiredElement,
   showReproSource,
 } from '../_shared/recipe_page.js';
-import {
-  timingSince,
-} from '../_shared/recipe_result.js';
+import { timingSince } from '../_shared/recipe_result.js';
 import {
   setResult,
   setVerdict,
