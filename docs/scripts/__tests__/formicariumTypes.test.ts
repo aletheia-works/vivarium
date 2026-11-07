@@ -9,8 +9,8 @@ import {
 } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
+import { readNpmTarball } from '../formicarium-staging/archive';
 import { REPO_ROOT } from '../site-paths';
-import { readNpmTarball } from '../stage-formicarium-assets';
 
 const TARBALL = process.env.FORMICARIUM_LOCAL_TARBALL;
 const TSC = path.join(

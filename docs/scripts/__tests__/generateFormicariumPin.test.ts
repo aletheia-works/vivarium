@@ -3,6 +3,17 @@ import { createHash } from 'node:crypto';
 import { gzipSync } from 'node:zlib';
 import type { Fetcher } from '../../../tools/fixed-guest-builder/src/http.ts';
 import {
+  type FormicariumPin,
+  parsePin,
+  tarballUrl,
+} from '../formicarium-staging/pin';
+import {
+  BUNDLE_ENTRIES,
+  FORMICARIUM_PACKAGE,
+  NPM_REGISTRY,
+  StageError,
+} from '../formicarium-staging/shared';
+import {
   changeSummary,
   generatePin,
   type LsRemote,
@@ -10,15 +21,6 @@ import {
   SOURCE_REPOSITORY,
   tagCommit,
 } from '../generate-formicarium-pin';
-import {
-  BUNDLE_ENTRIES,
-  FORMICARIUM_PACKAGE,
-  type FormicariumPin,
-  NPM_REGISTRY,
-  parsePin,
-  StageError,
-  tarballUrl,
-} from '../stage-formicarium-assets';
 
 const encoder = new TextEncoder();
 const VERSION = '0.5.0';

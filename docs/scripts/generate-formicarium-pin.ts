@@ -9,18 +9,17 @@ import {
   type Fetcher,
   fetchLimited,
 } from '../../tools/fixed-guest-builder/src/http.ts';
-import { FORMICARIUM_PIN_PATH } from './generate-recipes-index';
+import { readNpmTarball } from './formicarium-staging/archive';
+import { type FormicariumPin, tarballUrl } from './formicarium-staging/pin';
 import {
   FORMICARIUM_PACKAGE,
-  type FormicariumPin,
   NPM_REGISTRY,
-  readNpmTarball,
   StageError,
   type StageErrorCode,
   sha256Hex,
   TRANSFER_LIMITS,
-  tarballUrl,
-} from './stage-formicarium-assets';
+} from './formicarium-staging/shared';
+import { FORMICARIUM_PIN_PATH } from './generate-recipes-index';
 
 export const SOURCE_REPOSITORY =
   'https://github.com/aletheia-works/formicarium';

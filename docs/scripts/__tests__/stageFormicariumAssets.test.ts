@@ -19,20 +19,22 @@ import {
 } from '../coi-serviceworker-pin';
 import {
   type ArchiveLimits,
-  checkSite,
+  readNpmTarball,
+  verifyArchiveAgainstPin,
+} from '../formicarium-staging/archive';
+import {
   type FormicariumPin,
   parsePin,
-  readNpmTarball,
-  readUploadSettings,
+  tarballUrl,
+} from '../formicarium-staging/pin';
+import {
   SITE_DIR,
   STAGE_DEADLINE_MS,
   StageError,
-  type StageOptions,
-  stageAssets,
   TRANSFER_LIMITS,
-  tarballUrl,
-  verifyArchiveAgainstPin,
-} from '../stage-formicarium-assets';
+} from '../formicarium-staging/shared';
+import { checkSite, readUploadSettings } from '../formicarium-staging/site';
+import { type StageOptions, stageAssets } from '../formicarium-staging/stage';
 
 const encoder = new TextEncoder();
 const COI_COPY = readFileSync(COI_SERVICEWORKER_SOURCE);
