@@ -296,7 +296,7 @@ locals {
       due_date    = "2026-05-08"
     }
     "Phase 8 — Recipe-page desktop layout & self-dogfooding" = {
-      description = "Take the usability lens one layer deeper than Phase 7: the reproduction page itself (V″, recipe-page desktop layout — sidebar / multi-pane / horizontal real-estate) plus first real-world validation (W, self-dogfooding by filing upstream PRs / issue comments linking Vivarium reproductions). A-tail watches Phase 7 carry-forward (A3 ajv-standalone trigger, V′ component graduation YAGNI, A4 Pagefind, B1 outreach, B2 catalogue expansion). Closes when V″ + W ship; A-tail items are optional. Upstream PR submission is human-only per AGENTS.md §2. ADR-0032's filing exhausts the AGENTS.md §4.11 pre-adoption carve-out — future v1-internal breaking changes route through v2."
+      description = "Take the usability lens one layer deeper than Phase 7: the reproduction page itself (V″, recipe-page desktop layout — sidebar / multi-pane / horizontal real-estate) plus first real-world validation (W, self-dogfooding by filing upstream PRs / issue comments linking Vivarium reproductions). A-tail watches Phase 7 carry-forward (A3 ajv-standalone trigger, V′ component graduation YAGNI, A4 Pagefind, B1 outreach, B2 catalogue expansion). Closes when V″ + W ship; A-tail items are optional. Upstream PR submission is human-only per AGENTS.md §2."
       state       = "open"
     }
   }

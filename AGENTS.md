@@ -17,8 +17,9 @@
   durable decisions over quick wins.
 - **AI-delegated development.** Humans set direction and merge; AI agents
   implement, review, and iterate.
-- **Current phase: Phase 8.** Phases 0–7 are closed (see the GitHub issue
-  tracker for the active phase's plan).
+- **Current phase: Phase 8.** Phases 0–7 are closed. The plan for each
+  phase is its GitHub milestone description, managed in
+  [`infra/github/main.tf`](infra/github/main.tf).
 
 ## 2. Non-negotiable guardrails
 
@@ -412,7 +413,7 @@ model.
 
 ## 6. When in doubt
 
-1. Check the active phase's plan on the GitHub issue tracker for
-   the concrete near-term work.
+1. Check the open phase milestone's description for the concrete
+   near-term work.
 2. If still unclear, stop and ask the human. Deferring is cheaper
    than unwinding a wrong decision on a lifelong project.
