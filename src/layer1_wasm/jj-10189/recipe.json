@@ -40,11 +40,11 @@
         "branch": "fix-10189"
       },
       "accepted": {
-        "commit": "226377683a389c15af492d695a9935223b74a8b3",
-        "versionOrName": "226377683a389c15af492d695a9935223b74a8b3",
-        "buildKey": "8b8baadf381637c244d3628fcd4ae6ba587ac1268b6c8ca01f8a5bac238f6ca1",
-        "elfSha256": "fb50f1a7afdb57a1ee9ab73ce9bd24293b1fe35199e3e6c2aecea422a1579ba9",
-        "buildInfoSha256": "03436218789f6011ebb4e26cd23da72028166a2f6e22a84050ad991fe71f68ed"
+        "commit": "e794db56c7d18b442a96305c8e0e719d6fe75cdc",
+        "versionOrName": "e794db56c7d18b442a96305c8e0e719d6fe75cdc",
+        "buildKey": "144ce264f96f142a8eb7a86bd6be9bac5b474e2f9693f1472faa3b45e9c90801",
+        "elfSha256": "ba8aa8e17905abdb8de8f4d947c22d13cb208e116aba801688a812958c10d0aa",
+        "buildInfoSha256": "feaeac7d077d19ecda52d4a824156ddb7b9fc4ade27bda2d737e0be27ef13258"
       }
     }
   ]
