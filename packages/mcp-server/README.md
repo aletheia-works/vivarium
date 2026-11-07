@@ -7,7 +7,7 @@ error to a reproduction, and read verdicts without scraping the website.
 
 ## Install
 
-You need Node.js. The server is also published on
+You need Node.js 26 or later. The server is also published on
 [JSR](https://jsr.io/@aletheia-works/vivarium-mcp).
 
 For Claude Code:
