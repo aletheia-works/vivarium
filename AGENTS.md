@@ -288,7 +288,7 @@ or release tags.
 **Run the quick checks locally; leave the long lanes to CI.** Before
 pushing, run the unit tests, typecheck and lint for what you changed
 (`lint:all`, `ci:docs-unit`, `ci:mcp`, `ci:fixed-guest-builder`,
-`ci:previews`, `repro:typecheck`, a recipe's own `bun test`), and the
+`ci:previews`, `ci:repro-unit`, `repro:typecheck`), and the
 docs build (`ci:docs`) when the docs site changed. Do not run the
 Playwright lanes (`ci:repro`, `ci:docs-e2e`, `ci:all`) or a guest
 build through `fixed-guest-build.yml` locally unless the human asks:
@@ -317,6 +317,7 @@ job-for-job:
 | `ci:docs-unit`      | `test-docs.yml` (unit lane) |
 | `ci:docs-e2e`       | `test-docs.yml` (E2E lane)  |
 | `ci:repro`          | `repro-regression.yml`    |
+| `ci:repro-unit`     | `repro-regression.yml` (unit lane) |
 | `lint:all`          | `test-lint-check.yml`     |
 | `ci:mcp`            | `test-mcp.yml`            |
 | `ci:fixed-guest-builder` | `test-fixed-guest-builder.yml` |

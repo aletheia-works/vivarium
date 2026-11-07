@@ -245,6 +245,11 @@ run = [
   "bun run test",
 ]
 
+[tasks."ci:repro-unit"]
+description = "Local equivalent of repro-regression.yml unit lane (DOM-free Layer 1 tests)"
+dir = "src/layer1_wasm"
+run = "bun run test:unit"
+
 [tasks."ci:mcp"]
 description = "Local equivalent of test-mcp.yml"
 dir = "packages/mcp-server"
@@ -276,8 +281,8 @@ run = [
 ]
 
 [tasks."ci:all"]
-description = "Run all local CI tasks (docs + lint + mcp + repro + docs-unit + docs-e2e)"
-depends = ["ci:docs", "lint:all", "ci:mcp", "ci:repro", "ci:docs-unit", "ci:docs-e2e", "ci:fixed-guest-builder", "ci:previews"]
+description = "Run all local CI tasks (docs + lint + mcp + repro + repro-unit + docs-unit + docs-e2e)"
+depends = ["ci:docs", "lint:all", "ci:mcp", "ci:repro", "ci:repro-unit", "ci:docs-unit", "ci:docs-e2e", "ci:fixed-guest-builder", "ci:previews"]
 
 [tasks."php:check"]
 description = "Mago — PHP format check + lint (read-only)"

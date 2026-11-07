@@ -59,7 +59,7 @@ Run the quick checks for what you changed:
 |---|---|
 | Anything | `mise run lint:all` |
 | Website | `mise run ci:docs-unit` and `mise run ci:docs` |
-| A Layer 1 recipe | `mise run repro:typecheck` and the recipe's `bun test` |
+| A Layer 1 recipe | `mise run repro:typecheck` and `mise run ci:repro-unit` |
 | MCP server | `mise run ci:mcp` |
 | Fixed-guest builder | `mise run ci:fixed-guest-builder` |
 | Layer 3 previews | `mise run ci:previews` |

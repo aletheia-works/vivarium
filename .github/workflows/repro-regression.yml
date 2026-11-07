@@ -75,6 +75,32 @@ jobs:
           branch: chore/bump-layer1-runtimes
           title: ${{ steps.bump.outputs.title }}
           body-path: ${{ runner.temp }}/body.md
+  unit:
+    name: Layer 1 unit tests
+    if: github.event_name != 'schedule' || github.repository_owner == 'aletheia-works'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    defaults:
+      run:
+        working-directory: src/layer1_wasm
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup mise (bun)
+        uses: jdx/mise-action@f5be966e4a917d54244728e6a5fdcd1d93a35e6c # v5.2.6
+        with:
+          install: true
+          cache: true
+          experimental: true
+          install_args: bun
+
+      - name: Install + unit test
+        run: |
+          bun install --frozen-lockfile
+          bun run test:unit
+
   regression:
     name: regression (${{ matrix.browser }})
     if: github.event_name != 'schedule' || github.repository_owner == 'aletheia-works'

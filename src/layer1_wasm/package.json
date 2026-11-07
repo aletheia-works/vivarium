@@ -11,7 +11,8 @@
     "watch": "tsc -p tsconfig.json --watch",
     "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p tests/tsconfig.json",
     "sync-layer2-assets": "bun run scripts/sync-layer2-assets.ts",
-    "test": "bun run sync-layer2-assets && bun node_modules/@playwright/test/cli.js test"
+    "test": "bun run sync-layer2-assets && bun node_modules/@playwright/test/cli.js test",
+    "test:unit": "bun test .test.ts"
   },
   "devDependencies": {
     "@aletheia-works/coi-serviceworker": "^0.2.0",
