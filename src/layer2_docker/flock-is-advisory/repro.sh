@@ -10,12 +10,14 @@
 # Many developers assume the lock is mandatory. It is not. This
 # page lets you confirm that, end-to-end, in seconds.
 #
-# Verdict semantics (catalogue model from ADR-0010):
-#   exit 0 -> pass — surprise reproduces (lock held by flock,
-#                    yet `cat` reads the file regardless)
-#   exit 1 -> fail — kernel suddenly enforces flock as mandatory
-#                    (it won't, but the verdict captures that
-#                    branch honestly)
+# Verdict semantics:
+#   exit 0 -> reproduced — surprise reproduces (lock held by flock,
+#                          yet `cat` reads the file regardless)
+#   exit 1 -> unreproduced — kernel suddenly enforces flock as
+#                            mandatory (it won't, but the verdict
+#                            captures that branch honestly)
+# Each prints a matching verdict= line on stderr just before it exits.
+# An error that stops the script before that line records no verdict.
 
 set -uo pipefail
 

@@ -8,11 +8,13 @@
 # substitution. `set -e` only sees `local`'s 0, so a failing
 # command on the RHS goes silent.
 #
-# Verdict semantics (catalogue model from ADR-0010):
-#   exit 0 -> pass — the surprise reproduces (set -e bypassed when
-#                    using `local`)
-#   exit 1 -> fail — bash now propagates the RHS exit code through
-#                    `local`, or runtime errored
+# Verdict semantics:
+#   exit 0 -> reproduced — the surprise reproduces (set -e bypassed
+#                          when using `local`)
+#   exit 1 -> unreproduced — bash now propagates the RHS exit code
+#                            through `local`
+# Each prints a matching verdict= line on stderr just before it exits.
+# An error that stops the script before that line records no verdict.
 #
 # Two parallel demos are run inside subshells so a non-zero exit
 # from the demo doesn't kill our wrapper before we can compare.

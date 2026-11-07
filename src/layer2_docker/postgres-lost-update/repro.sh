@@ -10,9 +10,13 @@
 # the first. Final value is 1, expected is 2 — one increment is
 # lost.
 #
-# Verdict semantics (per ADR-0008 / catalogue model):
-#   exit 0 -> pass (lost update reproduces)
-#   exit 1 -> fail (both increments preserved, or runtime error)
+# Verdict semantics:
+#   exit 0 -> reproduced (lost update reproduces)
+#   exit 1 -> unreproduced (both increments preserved)
+#   exit 2 -> error (postgres never became ready; no verdict is
+#             recorded)
+# Each prints a matching verdict= line on stderr just before it exits.
+# An error that stops the script before that line records no verdict.
 #
 # The wrapper starts postgres in the background using its own
 # entrypoint, waits for `pg_isready`, runs the test, then

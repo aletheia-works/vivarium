@@ -3,7 +3,7 @@
 #
 # Upstream: {{ISSUE_URL}}
 #
-# Verdict semantics (catalogue model from ADR-0010):
+# Verdict semantics:
 #   exit 0 -> reproduced — the bug is observed.
 #   exit 1 -> unreproduced — the bug is not observed (fix has
 #                            landed, or the environment differs).
