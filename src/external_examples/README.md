@@ -12,6 +12,9 @@
 > manifests point at vivarium's own publicly-deployed pages and
 > GHCR images so they are runnable as written rather than just
 > shape-valid.
+>
+> **Status:** nothing in Vivarium reads these manifests yet. CI only validates
+> them against the schema.
 
 ---
 
