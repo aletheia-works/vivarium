@@ -23,11 +23,11 @@
         "release": "latest"
       },
       "accepted": {
-        "commit": "b5c61830e73eccb3f7f79661c0915681fdc00dd3",
-        "versionOrName": "b5c61830e73eccb3f7f79661c0915681fdc00dd3",
-        "buildKey": "a59a45398d836404f8d3bb7f6bf469589a9024ecff94f5bd0e8f83873299515e",
-        "elfSha256": "d7bf88b8fb1829952c8e4a83a1dadee9a93c4f10fefa09622a46c79bac8dc55f",
-        "buildInfoSha256": "4478d4ffe60272a5bd005573d2518d310100733f2a01ee004ac214165e6bf0e1"
+        "commit": "d16ee1fc88a72c54142241b079a34bbf3b033bc0",
+        "versionOrName": "d16ee1fc88a72c54142241b079a34bbf3b033bc0",
+        "buildKey": "49270b232c527570badc342b3d8facafe57be05018a54c2b27528383b6e5afa5",
+        "elfSha256": "9a572b6e009a6cf80550caaf49a86948702904b597e1ca6f8a24846cc02a7a37",
+        "buildInfoSha256": "0549ac5b17f362d9927416f96ac5b331136662a8567a084c881448f9015a016a"
       }
     },
     {
