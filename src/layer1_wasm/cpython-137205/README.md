@@ -35,10 +35,8 @@ on.execute("PRAGMA foreign_keys").fetchone()[0]   # => 1
 - Reported against Python 3.13. Related upstream PRs are doc-only;
   Pyodide v314.0.6 ships Python 3.14.2 with SQLite 3.39.0 in the
   stdlib, which still exhibits the behaviour.
-- Demonstrates that Vivarium handles standard-library bugs (not just
-  numerical-library bugs), and adds the **sqlite** vertical that
-  [`docs/site/en/roadmap.mdx`](../../docs/site/en/roadmap.mdx) lists as a
-  Phase 1 deliverable.
+- Demonstrates that Vivarium handles standard-library bugs, not just
+  numerical-library bugs.
 
 ## A note on "SQLite-WASM"
 

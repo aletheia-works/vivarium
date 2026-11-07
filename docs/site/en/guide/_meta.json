@@ -1,18 +1,21 @@
 [
   {
-    "type": "file",
-    "name": "index",
-    "label": "Guide map"
+    "type": "section-header",
+    "label": "Basics"
   },
   {
     "type": "file",
     "name": "getting-started",
-    "label": "First five minutes"
+    "label": "Get started"
   },
   {
     "type": "file",
-    "name": "integrate-with-your-repo",
-    "label": "Integrate with your own repo"
+    "name": "glossary",
+    "label": "Glossary"
+  },
+  {
+    "type": "section-header",
+    "label": "Use Vivarium"
   },
   {
     "type": "file",
@@ -22,21 +25,25 @@
   {
     "type": "file",
     "name": "compare-branch-fix",
-    "label": "Verify a branch-fix"
+    "label": "Verify a branch fix"
+  },
+  {
+    "type": "file",
+    "name": "integrate-with-your-repo",
+    "label": "Use in your CI"
+  },
+  {
+    "type": "section-header",
+    "label": "Contribute"
+  },
+  {
+    "type": "file",
+    "name": "write-your-first-reproduction",
+    "label": "Add a reproduction"
   },
   {
     "type": "file",
     "name": "fork-your-own",
     "label": "Run on your own fork"
-  },
-  {
-    "type": "file",
-    "name": "write-your-first-reproduction",
-    "label": "Write your first reproduction"
-  },
-  {
-    "type": "file",
-    "name": "glossary",
-    "label": "Glossary"
   }
 ]

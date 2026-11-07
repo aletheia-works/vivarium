@@ -17,16 +17,11 @@
   {
     "type": "file",
     "name": "architecture",
-    "label": "Architecture"
+    "label": "How it works"
   },
   {
     "type": "dir",
     "name": "spec",
-    "label": "Spec"
-  },
-  {
-    "type": "file",
-    "name": "roadmap",
-    "label": "Roadmap"
+    "label": "Reference"
   }
 ]

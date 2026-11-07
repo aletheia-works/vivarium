@@ -6,12 +6,12 @@ type Lang = 'en' | 'ja';
 
 const STRINGS = {
   en: {
-    kicker: '// CONTRACT v1 · OPEN SOURCE · APACHE-2.0',
-    headline: ['Reproduce any bug.', 'Any language.', 'Any environment.'],
-    lede: 'Vivarium is a three-layer reproduction substrate. WebAssembly for milliseconds, Docker for fidelity, and live previews for pull requests you check by using them. Problem first, technology second.',
-    ctaPrimary: 'Read the overview',
+    kicker: '// OPEN SOURCE · APACHE-2.0',
+    headline: ['Run real bugs.', 'Read the verdict.', 'Check the fix.'],
+    lede: 'Vivarium is a catalogue of real bugs from open-source projects. Run one in your browser or in Docker, read the verdict and see the output behind it.',
+    ctaPrimary: 'Browse reproductions',
     ctaGhost: 'View on GitHub',
-    visionHref: '/vivarium/overview',
+    visionHref: '/vivarium/repro/',
     sectionAria: 'Vivarium hero',
     tabsAria: 'Reproduction examples',
     bringFrontAria: (label: string) =>
@@ -25,8 +25,7 @@ const STRINGS = {
       eyebrow: 'VIVARIUM · LAYER 1 · PYODIDE · SQLITE3',
       title: 'Reproducing python/cpython#137205',
       lede: 'PRAGMA foreign_keys silently dropped under autocommit=False.',
-      verdictText: 'fk_off ≠ fk_on',
-      verdictPrefix: '✕ UNREPRODUCED',
+      verdictText: '✓ REPRODUCED — fk_off ≠ fk_on',
       tabError: '1 error',
     },
     postgres: {
@@ -51,12 +50,12 @@ const STRINGS = {
     },
   },
   ja: {
-    kicker: '// CONTRACT v1 · オープンソース · APACHE-2.0',
-    headline: ['あらゆるバグを再現。', 'あらゆる言語で。', 'あらゆる環境で。'],
-    lede: 'Vivarium は三層の再現基盤。ミリ秒単位の WebAssembly、忠実度の Docker、そして使って確かめるプルリクエストのためのライブプレビュー。問題が先、技術は後。',
-    ctaPrimary: '概要を読む',
+    kicker: '// オープンソース · APACHE-2.0',
+    headline: ['実際のバグを動かす。', '判定を読む。', '修正を確かめる。'],
+    lede: 'Vivarium は、オープンソースプロジェクトの実際のバグのカタログです。ブラウザや Docker で動かして、判定とその根拠になった出力を確かめられます。',
+    ctaPrimary: '再現一覧を見る',
     ctaGhost: 'GitHub で見る',
-    visionHref: '/vivarium/ja/overview',
+    visionHref: '/vivarium/ja/repro/',
     sectionAria: 'Vivarium ヒーロー',
     tabsAria: '再現サンプル',
     bringFrontAria: (label: string) => `${label} 再現を前面に表示`,
@@ -69,8 +68,7 @@ const STRINGS = {
       eyebrow: 'VIVARIUM · LAYER 1 · PYODIDE · SQLITE3',
       title: 'python/cpython#137205 を再現',
       lede: 'PRAGMA foreign_keys が autocommit=False 下でサイレントに無視される。',
-      verdictText: 'fk_off ≠ fk_on',
-      verdictPrefix: '✕ UNREPRODUCED',
+      verdictText: '✓ REPRODUCED — fk_off ≠ fk_on',
       tabError: 'エラー 1 件',
     },
     postgres: {
@@ -143,14 +141,12 @@ const Chrome = ({ url, badge }: { url: string; badge: BadgeKind }) => (
 
 const CpythonInner = ({ s }: { s: typeof STRINGS.en }) => (
   <>
-    <Chrome url="vivarium.dev/layer1-wasm/cpython-137205" badge="wasm" />
+    <Chrome url="vivarium/repro/cpython/137205" badge="wasm" />
     <div className="v-window__body">
       <span className="v-window__eyebrow">{s.cpython.eyebrow}</span>
       <h2 className="v-window__title">{s.cpython.title}</h2>
       <p className="v-window__lede">{s.cpython.lede}</p>
-      <span className="v-verdict v-verdict--unreproduced">
-        {s.cpython.verdictPrefix}
-        <span className="v-verdict--unreproduced__sep">|</span>
+      <span className="v-verdict v-verdict--reproduced">
         {s.cpython.verdictText}
       </span>
 
@@ -208,10 +204,7 @@ const CpythonInner = ({ s }: { s: typeof STRINGS.en }) => (
 
 const PostgresInner = ({ s }: { s: typeof STRINGS.en }) => (
   <>
-    <Chrome
-      url="vivarium.dev/layer2-docker/postgres-lost-update"
-      badge="docker"
-    />
+    <Chrome url="vivarium/repro/postgres/lost-update" badge="docker" />
     <div className="v-window__body">
       <span className="v-window__eyebrow v-window__eyebrow--violet">
         {s.postgres.eyebrow}
@@ -279,7 +272,7 @@ const PostgresInner = ({ s }: { s: typeof STRINGS.en }) => (
 
 const RubyInner = ({ s }: { s: typeof STRINGS.en }) => (
   <>
-    <Chrome url="vivarium.dev/layer1-wasm/ruby-21709" badge="wasm" />
+    <Chrome url="vivarium/repro/ruby/21709" badge="wasm" />
     <div className="v-window__body">
       <span className="v-window__eyebrow">{s.ruby.eyebrow}</span>
       <h2 className="v-window__title">{s.ruby.title}</h2>

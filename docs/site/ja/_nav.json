@@ -15,18 +15,13 @@
     "activeMatch": "/repro/"
   },
   {
-    "text": "アーキテクチャ",
+    "text": "仕組み",
     "link": "/architecture",
     "activeMatch": "/architecture"
   },
   {
-    "text": "仕様",
+    "text": "リファレンス",
     "link": "/spec/",
     "activeMatch": "/spec/"
-  },
-  {
-    "text": "ロードマップ",
-    "link": "/roadmap",
-    "activeMatch": "/roadmap"
   }
 ]

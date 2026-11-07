@@ -1,6 +1,6 @@
 ---
 pageType: doc
-title: はじめての 5 分
+title: はじめる
 ---
 
 import {
@@ -12,136 +12,89 @@ import {
   NextCta,
   BottomNote,
 } from '../../_components/PageChrome';
-import { ExampleSlug } from '../../_components/LiveExamples';
 
 <Page>
   <PageHero
-    eyebrow="// GUIDE · はじめての 5 分"
-    title="サイトを開いて、レシピを動かして、verdict を読む。"
-    sub="このページは Vivarium をはじめて触る人のための最短ルート。インストール不要、アカウント登録不要、ターミナル不要。ブラウザのタブ 1 枚で完結する。"
+    eyebrow="// GUIDE · はじめる"
+    title="レシピを動かして判定を読む。"
+    sub="必要なのはブラウザだけです。インストールもアカウント作成も要りません。"
   />
 
   <Section
-    eyebrow="// 0 · 5 分でやること"
-    heading="3 ステップ。"
+    eyebrow="// 1 · レシピを動かす"
+    heading="3つの手順です。"
   >
     <NumberedList
       items={[
         {
           lead: 'ギャラリーを開く。',
-          body: 'トップナビの「再現一覧」をクリックする。あるいは直接 /repro/ へ。Layer 1（ブラウザ内 WebAssembly）のレシピが並んでいる。',
+          body: <><a href="/vivarium/ja/repro/">再現一覧</a>を開きます。レイヤー、言語、深刻度で絞り込んだり、文字列で検索したりできます。</>,
         },
         {
-          lead: 'レシピを 1 つ選んで「Open」を押す。',
-          body: '本物のアップストリームバグが、別タブの専用ページで開く。pandas、numpy、CPython、Ruby、PHP、Rust regex のどれでもよい。',
+          lead: 'レシピを開く。',
+          body: <><a href="/vivarium/ja/repro/pandas/56679/">pandas #56679</a> のように Layer 1 と表示されたものを選びます。専用のページが開いて実行が始まります。</>,
         },
         {
-          lead: 'verdict を読む。',
-          body: '画面上部のバッジが pending → reproduced か unreproduced のどちらかに落ち着く。「reproduced ＝ バグが今でも再現する」。これだけ覚えれば最低限読める。',
-        },
-      ]}
-    />
-    <Callout>
-      verdict の値リテラルが直感に反する向きを持っている点は、用語集の{' '}
-      <a href="/vivarium/ja/guide/glossary#verdict">verdict</a> に詳しく書いた。
-      「reproduced は赤、unreproduced は緑」のメンタルモデルでよい。
-    </Callout>
-  </Section>
-
-  <Section
-    eyebrow="// 1 · ギャラリーを開く"
-    heading="どのレシピも同じ Contract v1 を満たす。"
-  >
-    <p><a href="/vivarium/ja/repro/">再現一覧</a>{' '} にレシピが一覧表示されている。各カードは 1 つのアップストリームバグに対応し、 対応プロジェクト、Issue 番号、Layer、現時点の verdict、いつキャプチャされた verdict かを示す。</p>
-    <p>ファセットでフィルタできる: 言語（python / ruby / php / rust）、症状、深刻度、タグ。 具体的なエラーメッセージから候補を絞りたい場合は{' '} <a href="/vivarium/ja/repro/match">エラーからレシピを探す</a>{' '} が使える（語句マッチでスコアリングして候補を返す）。</p>
-  </Section>
-
-  <Section
-    eyebrow="// 2 · レシピを動かす"
-    heading="クリック 1 回。後はブラウザがやる。"
-  >
-    <p>初回は何が起きているのか分かりやすいように、<code><ExampleSlug layer={1} language="python" linked /></code> を例に進める。 カードの「Open」ボタンを押すと別タブで該当レシピのページが開く。</p>
-    <p>ページが読み込まれると、まず Pyodide（CPython の WebAssembly ビルド）と対象ライブラリを jsDelivr CDN からダウンロードする。verdict バッジは <code>pending</code> 状態で 「ランタイムを読み込み中」と表示される。</p>
-    <p>ロード完了後、ページに埋め込まれた再現スクリプトが実行され、verdict が確定する。 初回ロードは数秒〜十数秒（接続速度とブラウザのキャッシュ状態による）、 2 回目以降は CDN キャッシュが効いてミリ秒〜秒で開く。</p>
-    <Callout>
-      Layer 1 はブラウザ完結。ローカルに Python も対象ライブラリも入れる必要はない。
-      Vivarium が宣言する 3 層アーキテクチャは{' '}
-      <a href="/vivarium/ja/architecture">アーキテクチャ</a> 参照。
-    </Callout>
-  </Section>
-
-  <Section
-    eyebrow="// 3 · verdict を読む"
-    heading="reproduced / unreproduced / pending の 3 値だけ。"
-  >
-    <p><code>reproduced</code> はアップストリームバグが現在も再現することを示す。 <code>unreproduced</code> は再現しなかったこと——つまりランタイムの新しいビルドが 問題を解消した、あるいは再現条件が変わった——を示す。<code>pending</code> は まだ実行中、もしくは初期化中の中間状態。</p>
-    <p>レシピを開いて少し待つと、現状（Pyodide が出荷しているライブラリ版で再現するかどうか） に応じて値が <code>reproduced</code> か <code>unreproduced</code> に落ち着く。 verdict バッジの下に、その判定の根拠となった出力——レシピ固有の比較値——も表示される。</p>
-    <Callout>
-      「pass / fail」ではなく「reproduced / unreproduced」を使う理由: テスト用語の{' '}
-      pass / fail はチームによって意味が逆転する。Vivarium の動詞は
-      「<em>バグが再現したか</em>」一本に固定したい。詳細は{' '}
-      <a href="/vivarium/ja/spec/contract-v1#verdict-セマンティクス">contract v1 verdict セマンティクス</a>。
-    </Callout>
-  </Section>
-
-  <Section
-    eyebrow="// 4 · evidence を読む"
-    heading="バッジだけではなく、その根拠も同じページに。"
-  >
-    <p>verdict バッジの下に「Evidence」セクションがあり、再現スクリプトの実行結果が まとまっている: stdout、stderr、終了コード、所要時間（ms）。Contract v1 リビジョン 2 により、verdict が出る根拠がページから直接読める。</p>
-    <p>典型的な Python レシピでは、両者が一致するかどうかの真偽値、不一致を引き起こす実際の値、ライブラリ／インタプリタのバージョンが JSON で出力される。これがそのまま<strong>evidence</strong> として記録される。</p>
-  </Section>
-
-  <Section
-    eyebrow="// 5 · 次に何をするか"
-    heading="目的別の入口。"
-  >
-    <NumberedList
-      items={[
-        {
-          lead: '言葉を整理したい。',
-          body: '用語集 (/guide/glossary) に Vivarium が固定的な意味で使う単語をまとめてある。レシピ、verdict、evidence、Layer 1/2/3、manifest、contract など。',
-        },
-        {
-          lead: 'ブランチ修正が本当に効いているか確かめたい。',
-          body: '比較ページ (/repro/compare) に修正前後の verdict バンドルをドロップすると、reproduced → unreproduced に反転したかが横並びで見える。AI エージェントが書いたパッチの検証用に作られた surface。',
-        },
-        {
-          lead: '自分のリポジトリに Vivarium 再現を宣言したい。',
-          body: 'ガイドの「自分のリポジトリに統合する」(/guide/integrate-with-your-repo) が手順を一通り通す。仕様の正典は Manifest v1 (/spec/manifest-v1)。',
-        },
-        {
-          lead: 'AI エージェントから呼びたい。',
-          body: 'ガイドの「AI エージェントから使う」(/guide/use-from-ai-agent) に Claude Code / Cursor / Cline / Continue 向けの設定例と各 MCP ツールのサンプルプロンプトがある。',
-        },
-        {
-          lead: 'なぜこのプロジェクトが存在するか知りたい。',
-          body: '概要 (/overview)、アーキテクチャ (/architecture)、ロードマップ (/roadmap) を順に読むと骨格がつかめる。',
+          lead: '判定を読む。',
+          body: '上部の判定は pending から始まり、実行が終わると確定します。初回はランタイムのダウンロードに数十秒かかることがあります。2回目以降はより速く開きます。',
         },
       ]}
     />
   </Section>
 
-  <Callout>
-    このページの手順がうまく動かないところがあれば、それは getting-started の
-    バグであり、スタイルの好みではない。Issue を立ててほしい。
-  </Callout>
+  <Section
+    eyebrow="// 2 · 結果を読む"
+    heading="判定の意味。"
+  >
+    <ul>
+      <li><code>reproduced</code>: バグが起きます。</li>
+      <li><code>unreproduced</code>: バグが起きません。プロジェクトの新しいバージョンで直っている場合があります。</li>
+      <li><code>pending</code>: 実行がまだ終わっていません。</li>
+    </ul>
+    <p>判定の根拠になった出力も同じページにあるので、結果を自分で確認できます。</p>
+    <Callout>
+      ページに <strong>Not judged</strong> と表示された場合は、実行そのものが失敗しています。バグの有無を示すものではありません。ページを再読み込みして、もう一度試してください。
+    </Callout>
+  </Section>
+
+  <Section
+    eyebrow="// 3 · DOCKER で動かす"
+    heading="Layer 2 のレシピは手元で動かします。"
+  >
+    <p>Layer 2 と表示されたレシピは実際のシステムが必要なので、イメージで提供しています。Docker をインストールした環境で、次のコマンドを実行します。</p>
+    <pre><code>{`docker run --rm ghcr.io/aletheia-works/vivarium-bash-local-shadows-exit:latest
+`}</code></pre>
+    <p>出力の最後の行に判定が表示されます。</p>
+  </Section>
+
+  <Section
+    eyebrow="// 4 · 次のステップ"
+    heading="次にできること。"
+  >
+    <ul>
+      <li><a href="/vivarium/ja/repro/match">エラーメッセージからレシピを探す。</a></li>
+      <li><a href="/vivarium/ja/repro/compare">2つの判定を比べて</a>、修正が効いたかを確かめる。</li>
+      <li><a href="/vivarium/ja/guide/use-from-ai-agent">AI エージェントをつなぐ。</a></li>
+      <li><a href="/vivarium/ja/guide/write-your-first-reproduction">再現を追加する。</a></li>
+    </ul>
+    <p>うまくいかない手順がありましたか？ <a href="https://github.com/aletheia-works/vivarium/issues/new/choose">Issue を開いて</a>お知らせください。</p>
+  </Section>
 </Page>
 
 <NextCta
   eyebrow="// NEXT"
   heading={
     <>
-      用語集を読む{' '}
+      用語を確認する{' '}
       <span className="v-next-cta__heading-arrow">→</span>
     </>
   }
-  sub="動くものを見たあとは、Vivarium が固定的な意味で使う言葉を 5 分で押さえると、以後のドキュメントが速く読める。"
+  sub="レイヤー、判定、レシピなどの用語を1ページで説明しています。"
   primary={{ label: '用語集 →', href: '/vivarium/ja/guide/glossary' }}
-  ghost={{ label: 'ギャラリーへ戻る', href: '/vivarium/ja/repro/' }}
+  ghost={{ label: '再現一覧', href: '/vivarium/ja/repro/' }}
 />
 
 <BottomNote
-  text="VIVARIUM は ALETHEIA-WORKS の一部 · GitHub でソースを見る →"
+  text="VIVARIUM は ALETHEIA-WORKS の一部です · GITHUB でソースを見る →"
   href="https://github.com/aletheia-works/vivarium"
 />

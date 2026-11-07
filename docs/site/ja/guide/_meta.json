@@ -1,18 +1,21 @@
 [
   {
-    "type": "file",
-    "name": "index",
-    "label": "ガイド地図"
+    "type": "section-header",
+    "label": "基本"
   },
   {
     "type": "file",
     "name": "getting-started",
-    "label": "はじめての 5 分"
+    "label": "はじめる"
   },
   {
     "type": "file",
-    "name": "integrate-with-your-repo",
-    "label": "自分のリポジトリに統合する"
+    "name": "glossary",
+    "label": "用語集"
+  },
+  {
+    "type": "section-header",
+    "label": "Vivarium を使う"
   },
   {
     "type": "file",
@@ -26,17 +29,21 @@
   },
   {
     "type": "file",
-    "name": "fork-your-own",
-    "label": "自分のフォークで動かす"
+    "name": "integrate-with-your-repo",
+    "label": "CI で使う"
+  },
+  {
+    "type": "section-header",
+    "label": "貢献する"
   },
   {
     "type": "file",
     "name": "write-your-first-reproduction",
-    "label": "はじめての再現を書く"
+    "label": "再現を追加する"
   },
   {
     "type": "file",
-    "name": "glossary",
-    "label": "用語集"
+    "name": "fork-your-own",
+    "label": "自分のフォークで動かす"
   }
 ]

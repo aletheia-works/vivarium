@@ -10,7 +10,13 @@ import {
 } from './site-paths';
 
 const RECIPES_INDEX = join(SITE_API_DIR, 'recipes.json');
-const MCP_TOOLS_DIR = join(REPO_ROOT, 'packages', 'mcp-server', 'src', 'tools');
+const MCP_SERVER = join(
+  REPO_ROOT,
+  'packages',
+  'mcp-server',
+  'src',
+  'server.ts',
+);
 
 const KNOWN_LOCALES = new Set(['en', 'ja']);
 
@@ -26,10 +32,8 @@ interface SiteStats {
 }
 
 async function countMcpTools(): Promise<number> {
-  const entries = await readdir(MCP_TOOLS_DIR);
-  return entries.filter(
-    (name) => name.endsWith('.ts') && !name.endsWith('.test.ts'),
-  ).length;
+  const server = await readFile(MCP_SERVER, 'utf-8');
+  return new Set(server.match(/case '[a-z_]+'/g)).size;
 }
 
 async function countLocales(): Promise<number> {

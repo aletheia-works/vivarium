@@ -7,17 +7,15 @@ export const NAV_ITEMS = {
     { text: "Overview", link: "/vivarium/overview" },
     { text: "Guide", link: "/vivarium/guide/getting-started" },
     { text: "Reproductions", link: "/vivarium/repro/" },
-    { text: "Architecture", link: "/vivarium/architecture" },
-    { text: "Spec", link: "/vivarium/spec/" },
-    { text: "Roadmap", link: "/vivarium/roadmap" },
+    { text: "How it works", link: "/vivarium/architecture" },
+    { text: "Reference", link: "/vivarium/spec/" },
   ],
   ja: [
     { text: "概要", link: "/vivarium/ja/overview" },
     { text: "ガイド", link: "/vivarium/ja/guide/getting-started" },
     { text: "再現一覧", link: "/vivarium/ja/repro/" },
-    { text: "アーキテクチャ", link: "/vivarium/ja/architecture" },
-    { text: "仕様", link: "/vivarium/ja/spec/" },
-    { text: "ロードマップ", link: "/vivarium/ja/roadmap" },
+    { text: "仕組み", link: "/vivarium/ja/architecture" },
+    { text: "リファレンス", link: "/vivarium/ja/spec/" },
   ],
 };
 

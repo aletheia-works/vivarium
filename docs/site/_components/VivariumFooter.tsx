@@ -4,20 +4,18 @@ type Lang = 'en' | 'ja';
 
 const STRINGS = {
   en: {
-    legal:
-      '© 2026 aletheia-works · Open Source under Apache 2.0 · Built for the modern web.',
+    legal: '© 2026 aletheia-works · Open source under Apache 2.0',
     github: 'GitHub',
     changelog: 'Changelog',
     security: 'Security',
-    changelogHref: '/vivarium/roadmap',
+    changelogHref: 'https://github.com/aletheia-works/vivarium/releases',
   },
   ja: {
-    legal:
-      '© 2026 aletheia-works · Apache 2.0 のもとでオープンソース · モダンウェブのために。',
+    legal: '© 2026 aletheia-works · Apache 2.0 のオープンソース',
     github: 'GitHub',
     changelog: '変更履歴',
     security: 'セキュリティ',
-    changelogHref: '/vivarium/ja/roadmap',
+    changelogHref: 'https://github.com/aletheia-works/vivarium/releases',
   },
 } as const;
 

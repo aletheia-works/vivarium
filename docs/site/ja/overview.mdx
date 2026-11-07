@@ -9,7 +9,6 @@ import {
   Section,
   LayerCards,
   RouteCards,
-  InlineCta,
   Callout,
   NextCta,
   BottomNote,
@@ -18,36 +17,35 @@ import {
   Bot,
   Code2,
   Container,
-  GitBranch,
   Globe,
   History,
+  Search,
   Zap,
 } from 'lucide-react';
 
 <Page>
   <PageHero
-    eyebrow="// OVERVIEW"
+    eyebrow="// 概要"
     title="Vivarium とは。"
-    sub="あらゆる言語・あらゆる環境のバグを、ブラウザのタブ 1 枚から再現する基盤。"
+    sub="オープンソースプロジェクトの実際のバグを、自分で動かして確かめられるカタログです。"
   />
 
   <Section
-    eyebrow="// 01 · 何を提供するか"
-    heading="バグ再現のためのプラットフォーム。"
+    eyebrow="// 01 · できること"
+    heading="バグの説明を読む代わりに、動かして確かめる。"
   >
-    <p>Vivarium は <strong>バグ再現のためのプラットフォーム</strong>です。以前報告されたバグが「いまでも再現するのか」「修正候補で本当に直っているのか」を、ブラウザを開いてクリックするだけで確認できます。</p>
-    <p>アップストリームの実バグごとに 1 つの<strong>レシピ</strong>が用意されており、各ページは <code>verdict.json v1</code> という共通仕様に従って <code>reproduced</code>（バグ再現）または <code>unreproduced</code>（再現せず）の判定を返します。実行結果はページに inline で表示され、コピー可能な machine-readable 形式でも公開されます。</p>
+    <p>カタログの各項目は<strong>レシピ</strong>と呼ばれ、1つのバグを再現します。実行すると<strong>判定</strong>が出ます。バグが起きれば <code>reproduced</code>、起きなければ <code>unreproduced</code> です。判定の根拠になった出力も並べて表示されるので、結果を自分で確認できます。</p>
+    <p>報告されたバグが本当か、今も起きるか、修正で直るかを確かめるのに使えます。</p>
     <Callout>
-      Vivarium は<strong>記事ではなく実行可能なアーティファクト</strong>としてバグを配布します。誰かが文章で「これがバグです」と書く代わりに、ブラウザに開けば自分の目で動作を確認できる。
+      どのレシピも同じ形式で判定を報告します。プロジェクトごとの知識がなくても、人もツールも同じように結果を読めます。
     </Callout>
-    <p>きっかけは AI 生成のバグレポートと修正 PR の急増でした。アップストリームには「もっともらしいが誰も検証していない主張」が機械の速度で届くようになり、コントリビューター側にも「自分の修正案が本当に直っているか」を確かめる手段がない——その共通の根本原因に対処するのが Vivarium です。</p>
   </Section>
 
   <Section
-    eyebrow="// 02 · 三層の実行サーフェス"
-    heading="バグの種類に合った実行環境を、レシピが選ぶ。"
+    eyebrow="// 02 · レシピの動かし方"
+    heading="レシピはバグに合った環境で動きます。"
   >
-    <p>バグは性質によって、必要となる環境が大きく異なります。Vivarium は再現技法を三つのレイヤーに整理しており、ユーザーがレイヤーを意識する必要はありません——レシピが自分に合った層を宣言します。</p>
+    <p>環境を選ぶ必要はありません。各レシピは、3つのレイヤーのどれかにあらかじめ属しています。</p>
 
     <LayerCards
       layers={[
@@ -55,73 +53,62 @@ import {
           pill: 'L1',
           accent: 'teal',
           icon: <Globe />,
-          title: '瞬時起動、ブラウザネイティブ',
-          body: 'WebAssembly でブラウザ内に再現が直接実行されます。起動はミリ秒〜数秒。アルゴリズム、パーサ、データ処理、in-memory なデータベース操作など、完全な OS を必要としないバグに向きます。',
-          runtimes: 'Pyodide · sqlite-wasm · wasm32-wasi · Ruby.wasm · PHP.wasm',
+          title: 'ブラウザで動かす',
+          body: 'WebAssembly でページ内で動き、インストールは不要です。初回はランタイムのダウンロードに数十秒かかることがあります。',
+          runtimes: 'Pyodide · Ruby.wasm · formicarium',
         },
         {
           pill: 'L2',
           accent: 'violet',
           icon: <Container />,
-          title: '完全忠実度、コンテナ実行',
-          body: 'Docker の中で再現が実行されます。起動は数秒〜分単位。実ファイルシステム、実プロセス、実ネットワークが必要なバグのための層です。',
-          runtimes: 'Docker · Firecracker · gVisor',
+          title: 'Docker で動かす',
+          body: '公開済みのイメージを使い、docker run の1回で手元で動きます。実際のプロセス、ファイル、サービスが必要なバグ向けです。',
+          runtimes: 'Docker',
         },
         {
           pill: 'L3',
           accent: 'coral',
           icon: <History />,
-          title: 'ライブプレビュー',
-          body: 'プルリクエストのアプリケーション全体を、バックエンドも含めてそのコミットで Lambda MicroVM にビルドし、GitHub へのサインインを求めるリンクで開きます。レビュアーが使ってみて確かめる変更のために。ビルド後の起動は数秒です。',
-          runtimes: 'Lambda MicroVMs · OpenTofu',
+          title: 'ライブプレビューで確かめる',
+          body: 'プルリクエストのアプリケーション全体をブラウザで開き、レビュアーが実際に使って変更を確認します。GitHub へのサインインが必要で、招待された人だけが開けます。',
+          runtimes: '招待が必要',
         },
       ]}
-    />
-
-    <InlineCta
-      text={
-        <>
-          <strong>レイヤーがそれぞれ動くところを見る。</strong>{' '}
-          ギャラリーには L1 と L2 のレシピがファセット付きで並んでいて、レイヤーをタブ切替で 1 クリック比較できます。
-        </>
-      }
-      link={{ label: '再現一覧', href: '/vivarium/ja/repro/' }}
     />
   </Section>
 
   <Section
-    eyebrow="// 03 · どの入口を選ぶか"
-    heading="あなたの目的にあわせて、最初の 1 ページを。"
+    eyebrow="// 03 · はじめ方"
+    heading="やりたいことから選んでください。"
   >
-    <p>Vivarium は読み手によって入口が異なります。下のカードはペルソナ別の最短ルート——どのカードからでも、5〜30 分以内に「自分の目で動かす」段階まで辿り着けるよう設計されています。</p>
     <RouteCards
       cards={[
         {
-          kicker: '01 · 5 MIN',
+          kicker: '試す',
           icon: <Zap />,
-          title: '最初の 5 分',
-          body: 'ブラウザを開いて 1 つのレシピをクリック、verdict を読む。インストール不要・登録不要、いま試す。',
+          title: '最初のレシピを動かす',
+          body: 'ブラウザでレシピを開いて判定を読みます。インストールもアカウントも不要です。',
           href: '/vivarium/ja/guide/getting-started',
         },
         {
-          kicker: '02 · INTEGRATE',
-          icon: <GitBranch />,
-          title: '自分のリポジトリに統合',
-          body: '`.vivarium/manifest.toml` 1 ファイル + 再利用可能 workflow で、自分のリポからの再現を Vivarium に登録できます。',
-          href: '/vivarium/ja/guide/integrate-with-your-repo',
+          kicker: '検索',
+          icon: <Search />,
+          title: 'エラーからバグを探す',
+          body: 'エラーメッセージを貼り付けると、近いレシピが見つかります。',
+          href: '/vivarium/ja/repro/match',
         },
         {
-          kicker: '03 · AI AGENT',
+          kicker: 'AI エージェント',
           icon: <Bot />,
-          title: 'AI エージェントから使う',
-          body: 'Claude Code / Aider / Cline から `@aletheia-works/vivarium-mcp` で MCP ツールを呼び出します。',
+          title: 'AI エージェントをつなぐ',
+          body: 'Claude Code、Cursor、Cline からカタログを検索し、判定を読めます。',
           href: '/vivarium/ja/guide/use-from-ai-agent',
         },
         {
-          kicker: '04 · CONTRIBUTE',
+          kicker: '貢献',
           icon: <Code2 />,
-          title: 'はじめての再現を書く',
-          body: '近い Layer 1 レシピをコピーし、バグスクリプトを差し替える。verdict 配線は共有ヘルパーに合わせます。',
+          title: '再現を追加する',
+          body: '気になるバグのレシピを書きます。',
           href: '/vivarium/ja/guide/write-your-first-reproduction',
         },
       ]}
@@ -133,16 +120,16 @@ import {
   eyebrow="// NEXT"
   heading={
     <>
-      実際に動かしてみる{' '}
+      試してみる{' '}
       <span className="v-next-cta__heading-arrow">→</span>
     </>
   }
-  sub="ブラウザのタブ 1 枚で 1 つのレシピを動かして verdict を読むのが、Vivarium を理解する一番速い道。"
-  primary={{ label: 'はじめての 5 分 →', href: '/vivarium/ja/guide/getting-started' }}
+  sub="Vivarium を理解する一番の近道は、レシピを1つ動かすことです。"
+  primary={{ label: 'はじめる →', href: '/vivarium/ja/guide/getting-started' }}
   ghost={{ label: '再現一覧', href: '/vivarium/ja/repro/' }}
 />
 
 <BottomNote
-  text="VIVARIUM は ALETHEIA-WORKS の一部 · GitHub でソースを見る →"
+  text="VIVARIUM は ALETHEIA-WORKS の一部です · GITHUB でソースを見る →"
   href="https://github.com/aletheia-works/vivarium"
 />

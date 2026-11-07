@@ -9,7 +9,6 @@ import {
   Section,
   LayerCards,
   RouteCards,
-  InlineCta,
   Callout,
   NextCta,
   BottomNote,
@@ -18,9 +17,9 @@ import {
   Bot,
   Code2,
   Container,
-  GitBranch,
   Globe,
   History,
+  Search,
   Zap,
 } from 'lucide-react';
 
@@ -28,26 +27,25 @@ import {
   <PageHero
     eyebrow="// OVERVIEW"
     title="What Vivarium is."
-    sub="A platform for reproducing bugs across any language and any environment, from a single browser tab."
+    sub="A catalogue of real bugs from open-source projects that you can run yourself."
   />
 
   <Section
     eyebrow="// 01 · WHAT IT GIVES YOU"
-    heading="A platform for bug reproduction."
+    heading="Run the bug instead of reading about it."
   >
-    <p>Vivarium is <strong>a platform for reproducing bugs</strong>. Open a page, click once, and find out whether a previously-reported bug still reproduces — or whether a candidate fix actually fixes it.</p>
-    <p>For each upstream bug, the catalogue holds one <strong>recipe</strong>. Every recipe satisfies the same <code>verdict.json v1</code> contract, so each page returns either <code>reproduced</code> (the bug reproduces) or <code>unreproduced</code> (it does not). Results show inline on the page and are also exposed as machine-readable JSON.</p>
+    <p>Each entry in the catalogue, called a <strong>recipe</strong>, reproduces one bug. Run it and it gives a <strong>verdict</strong>: <code>reproduced</code> if the bug happens, <code>unreproduced</code> if it does not. The output the verdict is based on sits beside it, so you can check the result yourself.</p>
+    <p>Use it to find out whether a reported bug is real, whether it still happens, and whether a fix makes it go away.</p>
     <Callout>
-      Vivarium ships bugs as <strong>runnable artefacts, not write-ups</strong>. Instead of someone telling you "this is a bug," you open it in your browser and watch.
+      Every recipe reports its verdict in the same way, so people and tools can read any of them without learning each project first.
     </Callout>
-    <p>The trigger was the surge of AI-generated bug reports and pull requests. Maintainers were drowning in plausible-but-unverified claims arriving at machine speed, and contributors had no way to check whether their own AI-drafted fixes actually worked. The shared root cause — no cheap, universal way to verify whether a bug is real or whether a fix actually fixes it — is what Vivarium addresses.</p>
   </Section>
 
   <Section
-    eyebrow="// 02 · THREE EXECUTION SURFACES"
-    heading="Each recipe declares the layer that fits the bug."
+    eyebrow="// 02 · HOW RECIPES RUN"
+    heading="Each recipe uses the environment its bug needs."
   >
-    <p>Bugs differ wildly in what environment they need. Vivarium organises reproduction techniques into three layers, and you don't pick the layer — the recipe declares it for you.</p>
+    <p>You don't choose the environment. Each recipe already belongs to one of three layers.</p>
 
     <LayerCards
       layers={[
@@ -55,73 +53,62 @@ import {
           pill: 'L1',
           accent: 'teal',
           icon: <Globe />,
-          title: 'Instant start, browser-native',
-          body: "The reproduction runs directly in your browser via WebAssembly. Startup is milliseconds to a few seconds. Right for algorithms, parsers, data processing, and in-memory database operations — bugs that don't need a full OS.",
-          runtimes: 'Pyodide · sqlite-wasm · wasm32-wasi · Ruby.wasm · PHP.wasm',
+          title: 'In your browser',
+          body: 'Runs in the page through WebAssembly, with nothing to install. The first load can take a few tens of seconds while the runtime downloads.',
+          runtimes: 'Pyodide · Ruby.wasm · formicarium',
         },
         {
           pill: 'L2',
           accent: 'violet',
           icon: <Container />,
-          title: 'Full fidelity, container execution',
-          body: 'The reproduction runs inside Docker. Startup is seconds to a minute. Right for bugs that depend on a real filesystem, real processes, or real networking.',
-          runtimes: 'Docker · Firecracker · gVisor',
+          title: 'In Docker',
+          body: 'Runs on your machine from a published image, with one docker run. For bugs that need real processes, files or services.',
+          runtimes: 'Docker',
         },
         {
           pill: 'L3',
           accent: 'coral',
           icon: <History />,
-          title: 'Live previews',
-          body: "A pull request's whole application, backend included, built at its commit into a Lambda MicroVM and opened through a link that asks for a GitHub sign-in. For changes a reviewer checks by using them. Startup is seconds once built.",
-          runtimes: 'Lambda MicroVMs · OpenTofu',
+          title: 'As a live preview',
+          body: "A pull request's whole application, opened in the browser so a reviewer can check the change by using it. Previews need a GitHub sign-in and are open only to invited people.",
+          runtimes: 'Invitation required',
         },
       ]}
-    />
-
-    <InlineCta
-      text={
-        <>
-          <strong>See the layers in action.</strong>{' '}
-          The gallery shows L1 and L2 recipes side-by-side with facet filters, so you can compare layers in one click.
-        </>
-      }
-      link={{ label: 'Reproductions', href: '/vivarium/repro/' }}
     />
   </Section>
 
   <Section
     eyebrow="// 03 · WHERE TO START"
-    heading="One first page per audience."
+    heading="Pick what you want to do."
   >
-    <p>Vivarium has different entry points for different readers. The cards below are persona-route shortcuts — each one lands you at a "see it work yourself" surface within 5–30 minutes.</p>
     <RouteCards
       cards={[
         {
-          kicker: '01 · 5 MIN',
+          kicker: 'TRY IT',
           icon: <Zap />,
-          title: 'First five minutes',
-          body: 'Open a recipe in your browser, click once, read the verdict. No install, no account — try it now.',
+          title: 'Run your first recipe',
+          body: 'Open a recipe in your browser and read its verdict. No install, no account.',
           href: '/vivarium/guide/getting-started',
         },
         {
-          kicker: '02 · INTEGRATE',
-          icon: <GitBranch />,
-          title: 'Integrate with your repo',
-          body: "One `.vivarium/manifest.toml` plus a reusable workflow registers a reproduction from your own repository.",
-          href: '/vivarium/guide/integrate-with-your-repo',
+          kicker: 'SEARCH',
+          icon: <Search />,
+          title: 'Find a bug from an error',
+          body: 'Paste an error message to get matching recipes.',
+          href: '/vivarium/repro/match',
         },
         {
-          kicker: '03 · AI AGENT',
+          kicker: 'AI AGENT',
           icon: <Bot />,
-          title: 'Use from your AI agent',
-          body: 'Drive the MCP tools from Claude Code / Aider / Cline via `@aletheia-works/vivarium-mcp`.',
+          title: 'Connect your AI agent',
+          body: 'Search the catalogue and read verdicts from Claude Code, Cursor or Cline.',
           href: '/vivarium/guide/use-from-ai-agent',
         },
         {
-          kicker: '04 · CONTRIBUTE',
+          kicker: 'CONTRIBUTE',
           icon: <Code2 />,
-          title: 'Write your first reproduction',
-          body: 'Copy the closest Layer 1 recipe, swap the bug script, and let the shared helpers keep verdict wiring consistent.',
+          title: 'Add a reproduction',
+          body: 'Write a recipe for a bug you care about.',
           href: '/vivarium/guide/write-your-first-reproduction',
         },
       ]}
@@ -137,8 +124,8 @@ import {
       <span className="v-next-cta__heading-arrow">→</span>
     </>
   }
-  sub="The fastest way to understand Vivarium is to open one recipe in a browser tab and read the verdict."
-  primary={{ label: 'First five minutes →', href: '/vivarium/guide/getting-started' }}
+  sub="The quickest way to understand Vivarium is to run one recipe."
+  primary={{ label: 'Get started →', href: '/vivarium/guide/getting-started' }}
   ghost={{ label: 'Reproductions', href: '/vivarium/repro/' }}
 />
 

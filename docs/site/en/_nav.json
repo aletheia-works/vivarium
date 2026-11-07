@@ -15,18 +15,13 @@
     "activeMatch": "/repro/"
   },
   {
-    "text": "Architecture",
+    "text": "How it works",
     "link": "/architecture",
     "activeMatch": "/architecture"
   },
   {
-    "text": "Spec",
+    "text": "Reference",
     "link": "/spec/",
     "activeMatch": "/spec/"
-  },
-  {
-    "text": "Roadmap",
-    "link": "/roadmap",
-    "activeMatch": "/roadmap"
   }
 ]

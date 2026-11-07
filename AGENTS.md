@@ -17,9 +17,8 @@
   durable decisions over quick wins.
 - **AI-delegated development.** Humans set direction and merge; AI agents
   implement, review, and iterate.
-- **Current phase: Phase 8.** Phases 0–7 are closed (see
-  [`docs/site/en/roadmap.mdx`](docs/site/en/roadmap.mdx) for what
-  shipped, and the GitHub issue tracker for the active phase's plan).
+- **Current phase: Phase 8.** Phases 0–7 are closed (see the GitHub issue
+  tracker for the active phase's plan).
 
 ## 2. Non-negotiable guardrails
 
@@ -412,10 +411,7 @@ model.
 
 ## 6. When in doubt
 
-1. Re-read [`docs/site/en/roadmap.mdx`](docs/site/en/roadmap.mdx) for
-   the project's current phase scope and what each prior phase
-   shipped.
-2. Check the active phase's plan on the GitHub issue tracker for
+1. Check the active phase's plan on the GitHub issue tracker for
    the concrete near-term work.
-3. If still unclear, stop and ask the human. Deferring is cheaper
+2. If still unclear, stop and ask the human. Deferring is cheaper
    than unwinding a wrong decision on a lifelong project.

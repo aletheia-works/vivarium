@@ -1,6 +1,6 @@
 ---
 pageType: doc
-title: First five minutes
+title: Get started
 ---
 
 import {
@@ -12,133 +12,86 @@ import {
   NextCta,
   BottomNote,
 } from '../../_components/PageChrome';
-import { ExampleSlug } from '../../_components/LiveExamples';
 
 <Page>
   <PageHero
-    eyebrow="// GUIDE · FIRST 5 MINUTES"
-    title="Open the site, run a recipe, read the verdict."
-    sub="The shortest path through Vivarium for someone arriving cold. No install, no account, no terminal — one browser tab."
+    eyebrow="// GUIDE · GET STARTED"
+    title="Run a recipe and read its verdict."
+    sub="All you need is a browser. There is nothing to install and no account to create."
   />
 
   <Section
-    eyebrow="// 0 · WHAT YOU'LL DO"
+    eyebrow="// 1 · RUN A RECIPE"
     heading="Three steps."
   >
     <NumberedList
       items={[
         {
           lead: 'Open the gallery.',
-          body: 'Click "Reproductions" in the top nav, or jump straight to /repro/. Layer 1 (in-browser WebAssembly) recipes are listed there.',
+          body: <>Go to <a href="/vivarium/repro/">Reproductions</a>. You can filter by layer, language and severity, or search by text.</>,
         },
         {
-          lead: 'Pick a recipe and hit "Open".',
-          body: 'A real upstream bug opens in a dedicated page. Pandas, NumPy, CPython, Ruby, PHP, or Rust regex — any one works.',
+          lead: 'Open a recipe.',
+          body: <>Choose one marked Layer 1, such as <a href="/vivarium/repro/pandas/56679/">pandas #56679</a>. It opens in its own page and starts running.</>,
         },
         {
           lead: 'Read the verdict.',
-          body: 'The badge at the top settles from pending to either reproduced or unreproduced. "Reproduced = the bug still reproduces". That single sentence is enough to start.',
-        },
-      ]}
-    />
-    <Callout>
-      The verdict literals point in a counter-intuitive direction; the{' '}
-      <a href="/vivarium/guide/glossary#verdict">verdict glossary entry</a>{' '}
-      explains why. A useful mental model: "reproduced is red, unreproduced is green."
-    </Callout>
-  </Section>
-
-  <Section
-    eyebrow="// 1 · OPEN THE GALLERY"
-    heading="Every recipe satisfies the same Contract v1."
-  >
-    <p>The <a href="/vivarium/repro/">reproduction gallery</a> lists every recipe. Each card maps to one upstream bug and shows the project, issue number, layer, current verdict, and when that verdict was captured.</p>
-    <p>Facets filter the list: language (python / ruby / php / rust), symptom, severity, tag. To find a recipe by a concrete error message, use{' '} <a href="/vivarium/repro/match">match an error to a recipe</a>{' '} — it scores recipes by lexical overlap and returns ranked candidates.</p>
-  </Section>
-
-  <Section
-    eyebrow="// 2 · RUN A RECIPE"
-    heading="One click. The browser does the rest."
-  >
-    <p>Walk through it once with <code><ExampleSlug layer={1} language="python" linked /></code> as the running example. Hitting "Open" on the card pops a new tab at the recipe's page.</p>
-    <p>On load the page fetches Pyodide (CPython compiled to WebAssembly) and pandas from the jsDelivr CDN. The verdict badge sits at{' '} <code>pending</code> with "Loading runtime…" while that happens.</p>
-    <p>Once loaded, the embedded reproduction script runs and the verdict settles. First load takes a few to a few-tens of seconds depending on connection and cache state; subsequent visits hit the CDN cache and open in milliseconds to a second.</p>
-    <Callout>
-      Layer 1 means everything happens inside the browser — you don't
-      need Python or pandas locally. The three-layer model is in{' '}
-      <a href="/vivarium/architecture">architecture</a>.
-    </Callout>
-  </Section>
-
-  <Section
-    eyebrow="// 3 · READ THE VERDICT"
-    heading="Three values. reproduced / unreproduced / pending."
-  >
-    <p><code>reproduced</code> means the upstream bug still reproduces. <code>unreproduced</code> means it does not — typically because a newer runtime build resolved the issue, or because the conditions shifted. <code>pending</code> is the in-flight state while the script is running or the runtime is still loading.</p>
-    <p>Open the recipe and the verdict will settle to{' '} <code>reproduced</code> or <code>unreproduced</code> depending on what version of the upstream library the bundled WASM runtime currently ships. Underneath the badge you'll see the data the verdict was decided from — the recipe-specific values whose comparison <em>is</em> the verdict.</p>
-    <Callout>
-      Why "reproduced / unreproduced" instead of "pass / fail": pass and
-      fail flip meaning between teams. Vivarium pins the verb to one
-      thing — <em>did the bug reproduce</em>. Spec:{' '}
-      <a href="/vivarium/spec/contract-v1#verdict-semantics">contract v1 verdict semantics</a>.
-    </Callout>
-  </Section>
-
-  <Section
-    eyebrow="// 4 · READ THE EVIDENCE"
-    heading="Not just the badge — the basis is on the same page."
-  >
-    <p>Below the verdict badge sits an "Evidence" section bundling the reproduction script's run: stdout, stderr, exit code, duration in milliseconds. Contract v1 revision 2 makes the basis for a verdict readable on-page rather than buried in a separate file.</p>
-    <p>For a typical Python recipe, that includes the literal values whose mismatch <em>is</em> the bug, the boolean for whether they match, and the running library / interpreter versions — all serialised as JSON. That bundle <em>is</em> the evidence.</p>
-  </Section>
-
-  <Section
-    eyebrow="// 5 · WHERE TO GO NEXT"
-    heading="Entry points by intent."
-  >
-    <NumberedList
-      items={[
-        {
-          lead: 'Get the vocabulary straight.',
-          body: 'The glossary (/guide/glossary) pins down every word Vivarium uses with a fixed meaning — recipe, verdict, evidence, Layer 1/2/3, manifest, contract.',
-        },
-        {
-          lead: 'Verify a branch fix.',
-          body: 'The compare page (/repro/compare) accepts before/after verdict bundles and shows whether reproduced flipped to unreproduced. Built for verifying AI-agent-authored patches.',
-        },
-        {
-          lead: 'Declare a Vivarium reproduction in your repo.',
-          body: 'The "Integrate with your own repo" guide (/guide/integrate-with-your-repo) walks through it end-to-end. Authoritative spec: Manifest v1 (/spec/manifest-v1).',
-        },
-        {
-          lead: 'Drive Vivarium from an AI agent.',
-          body: 'The "Use Vivarium from your AI agent" guide (/guide/use-from-ai-agent) walks through Claude Code / Cursor / Cline / Continue setup with sample prompts for each MCP tool.',
-        },
-        {
-          lead: 'Understand why this project exists.',
-          body: 'Read overview (/overview), architecture (/architecture), and roadmap (/roadmap) in that order to fix the skeleton in your head.',
+          body: 'The verdict at the top starts as pending, then settles once the run finishes. The first load can take a few tens of seconds while the runtime downloads. Later visits are faster.',
         },
       ]}
     />
   </Section>
 
-  <Callout>
-    If any step on this page didn't work, that's a bug in
-    getting-started — not a stylistic preference. Please file an issue.
-  </Callout>
+  <Section
+    eyebrow="// 2 · READ THE RESULT"
+    heading="What the verdict means."
+  >
+    <ul>
+      <li><code>reproduced</code>: the bug happens.</li>
+      <li><code>unreproduced</code>: the bug does not happen. A newer version of the project may have fixed it.</li>
+      <li><code>pending</code>: the run has not finished.</li>
+    </ul>
+    <p>The output the verdict is based on is on the same page, so you can check the result yourself.</p>
+    <Callout>
+      If the page says <strong>Not judged</strong>, the run itself failed, which says nothing about the bug. Reload the page to try again.
+    </Callout>
+  </Section>
+
+  <Section
+    eyebrow="// 3 · RUN ONE IN DOCKER"
+    heading="Layer 2 recipes run on your machine."
+  >
+    <p>A recipe marked Layer 2 needs a real system, so it ships as an image. With Docker installed, run:</p>
+    <pre><code>{`docker run --rm ghcr.io/aletheia-works/vivarium-bash-local-shadows-exit:latest
+`}</code></pre>
+    <p>The last line of the output states the verdict.</p>
+  </Section>
+
+  <Section
+    eyebrow="// 4 · NEXT STEPS"
+    heading="Where to go from here."
+  >
+    <ul>
+      <li><a href="/vivarium/repro/match">Find a recipe from an error message.</a></li>
+      <li><a href="/vivarium/repro/compare">Compare two verdicts</a> to see whether a fix worked.</li>
+      <li><a href="/vivarium/guide/use-from-ai-agent">Connect your AI agent.</a></li>
+      <li><a href="/vivarium/guide/write-your-first-reproduction">Add a reproduction.</a></li>
+    </ul>
+    <p>Did a step here not work? Please <a href="https://github.com/aletheia-works/vivarium/issues/new/choose">open an issue</a>.</p>
+  </Section>
 </Page>
 
 <NextCta
   eyebrow="// NEXT"
   heading={
     <>
-      Read the glossary{' '}
+      Learn the terms{' '}
       <span className="v-next-cta__heading-arrow">→</span>
     </>
   }
-  sub="With something running in your head, five minutes on the glossary lets every other doc on this site read faster."
+  sub="Layers, verdicts and recipes explained in one page."
   primary={{ label: 'Glossary →', href: '/vivarium/guide/glossary' }}
-  ghost={{ label: 'Back to gallery', href: '/vivarium/repro/' }}
+  ghost={{ label: 'Reproductions', href: '/vivarium/repro/' }}
 />
 
 <BottomNote

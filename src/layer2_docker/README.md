@@ -6,8 +6,8 @@
 > guarantees the recipe and the registered image; the runtime
 > happens on the visitor's machine.
 >
-> See [Phase 3 — Layer 2: Docker](../../docs/site/en/roadmap.mdx#three-execution-layers)
-> for the visitor-facing description and the design rationale.
+> See [How it works](../../docs/site/en/architecture.mdx) for the
+> visitor-facing description.
 
 ---
 

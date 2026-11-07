@@ -7,7 +7,6 @@ import {
   Page,
   PageHero,
   Section,
-  Callout,
   NextCta,
   BottomNote,
 } from '../../_components/PageChrome';
@@ -15,187 +14,104 @@ import {
 <Page>
   <PageHero
     eyebrow="// GUIDE · GLOSSARY"
-    title="Words this project uses oddly."
-    sub="Most terms here have ordinary meanings elsewhere; Vivarium pins them to specific roles. Lookup-friendly, alphabetised, cross-linked to the spec where the word is load-bearing."
+    title="The terms Vivarium uses."
+    sub="What each word means on this site."
   />
 
   <Section
-    eyebrow="// CORE"
-    heading="The handful you'll see in every other page."
+    eyebrow="// BASICS"
+    heading="Terms you will see on most pages."
   >
     <dl className="v-glossary">
-      <dt id="bug-reproduction"><strong>Bug reproduction</strong></dt>
-      <dd>
-        A repeatable sequence of inputs and an environment under which a
-        previously-reported bug is observed to occur. Vivarium hosts these as
-        runnable artefacts, not as written-up incident reports.
-      </dd>
-
       <dt id="recipe"><strong>Recipe</strong></dt>
       <dd>
-        One reproduction. Lives in <code>src/layer{`{1,2,3}`}_*/&lt;slug&gt;/</code>
-        and ships as a runnable page (Layer 1), pinned image instructions
-        (Layer 2), or a page for a live preview (Layer 3). One recipe targets one upstream bug. The catalogue is
-        the set of all recipes this repository hosts.
+        One reproduction of one bug. The catalogue is the set of all recipes.
       </dd>
 
       <dt id="slug"><strong>Slug</strong></dt>
       <dd>
-        Kebab-case identifier for a recipe — usually
-        <code>&lt;project&gt;-&lt;issue-number&gt;</code> (e.g.
-        <code>pandas-56679</code>) when there is an upstream issue, or a
-        descriptive phrase otherwise (e.g. <code>bash-local-shadows-exit</code>).
-        Same shape as the directory name and the
-        <a href="/spec/manifest-v1#root-fields"><code>slug</code> field in
-        Manifest v1</a>.
+        A recipe's identifier, such as <code>pandas-56679</code> or{' '}
+        <code>bash-local-shadows-exit</code>. Tools use it to refer to a recipe.
       </dd>
 
-      <dt id="layer"><strong>Layer (1 / 2 / 3)</strong></dt>
+      <dt id="layer"><strong>Layer</strong></dt>
       <dd>
-        Which runtime a recipe lives on. Layer 1 = WASM in browser
-        (instant). Layer 2 = Docker (full fidelity). Layer 3 = live previews —
-        a pull request's whole application on a Lambda MicroVM. The choice is
-        about <em>which kind of bug the recipe can reproduce</em>, not about
-        which technology is fashionable. See
-        <a href="/architecture">Architecture</a> for the long form.
+        Where a recipe runs. Layer 1 runs in your browser through WebAssembly.
+        Layer 2 runs in Docker on your machine. Layer 3 is a live preview of a
+        pull request's whole application, open only to invited people. See{' '}
+        <a href="/vivarium/architecture">How it works</a>.
       </dd>
 
       <dt id="verdict"><strong>Verdict</strong></dt>
       <dd>
-        The output of running a recipe — either <code>"reproduced"</code>
-        or <code>"unreproduced"</code>. <strong>Reproduced means the
-        upstream bug reproduces.</strong> Unreproduced means it does
-        not. The values were originally <code>"pass"</code> /
-        <code>"fail"</code>; renamed in Contract v1 Revision 3
-        (ADR-0029) so the literal name now matches its meaning.
-        See <a href="/spec/contract-v1#verdict-semantics">verdict
-        semantics</a>.
+        The result of running a recipe. <code>reproduced</code> means the bug
+        happens. <code>unreproduced</code> means it does not. The words describe
+        the bug, not a test, so <code>reproduced</code> is not a good outcome
+        for the project. See{' '}
+        <a href="/vivarium/spec/contract-v1#verdict-semantics">verdict semantics</a>.
       </dd>
 
       <dt id="evidence"><strong>Evidence</strong></dt>
       <dd>
-        The supporting data behind a verdict — captured stdout / stderr,
-        exit code, duration. Layer 1 publishes evidence inline on the
-        page; Layer 2 ships it inside <code>verdict.json</code>. Contract
-        v1 rev 2 makes the comparison page show <em>why</em>, not just
-        <em>whether</em>.
+        The output a verdict is based on, such as standard output, standard
+        error, the exit code and the duration.
       </dd>
     </dl>
   </Section>
 
   <Section
-    eyebrow="// SPEC SURFACES"
-    heading="The three things external repos and tools read."
+    eyebrow="// VERIFYING A FIX"
+    heading="Terms for checking a change."
   >
     <dl className="v-glossary">
-      <dt id="contract"><strong>Contract (v1)</strong></dt>
+      <dt id="branch-fix"><strong>Branch fix</strong></dt>
       <dd>
-        The runtime surface every reproduction page publishes — DOM
-        attributes, JS globals, the meta tag, and the
-        <code>verdict.json</code> file shape. The contract a Vivarium page
-        signs by carrying
-        <code>&lt;meta name="vivarium-contract" content="v1"&gt;</code>.
-        Stable as v1; see
-        <a href="/spec/contract-v1">Contract v1</a>.
-      </dd>
-
-      <dt id="manifest"><strong>Manifest (v1)</strong></dt>
-      <dd>
-        The publication surface — a TOML file at
-        <code>.vivarium/manifest.toml</code> that an external repo ships to
-        declare its own Vivarium-runnable reproduction. v1 is stable; see
-        <a href="/spec/manifest-v1">Manifest v1</a>. A manifest
-        is what an external repo writes; a recipe (above) is what
-        <em>this</em> repo hosts.
-      </dd>
-
-      <dt id="recipes-index"><strong>Recipes index (v1)</strong></dt>
-      <dd>
-        The machine-readable catalogue at
-        <a href="https://aletheia-works.github.io/vivarium/api/recipes.json"><code>/api/recipes.json</code></a>.
-        Lists every recipe this repo hosts. Consumed by the MCP server, the
-        gallery facet UI, and any external tool that wants to enumerate or
-        filter recipes. Schema:
-        <a href="/spec/recipes-index-v1">recipes-index v1</a>.
-      </dd>
-    </dl>
-  </Section>
-
-  <Section
-    eyebrow="// WORKFLOWS"
-    heading="The verbs the spec pages keep referring to."
-  >
-    <dl className="v-glossary">
-      <dt id="branch-fix"><strong>Branch-fix</strong></dt>
-      <dd>
-        A candidate fix for the upstream bug, typically built from a
-        contributor's branch (or AI agent's draft). The branch-fix verdict
-        pipeline reproduces the recipe against the candidate fix; if the
-        verdict flips from <code>reproduced</code> to
-        <code>unreproduced</code>, the fix is doing its job. See
-        <a href="/spec/branch-fix-pipeline">branch-fix pipeline</a>.
-      </dd>
-
-      <dt id="ai-slop-verification"><strong>AI-slop verification</strong></dt>
-      <dd>
-        The motivating workflow: a contributor (human or AI agent) produces
-        a candidate fix, runs it against the recipe, and sees the comparison
-        before opening a PR. "Did my AI's draft actually solve the bug, or
-        does it just look right?" The walkthrough wires the branch-fix
-        pipeline + comparison page + MCP tools into one flow.
+        A candidate fix built from a branch. If the verdict changes from{' '}
+        <code>reproduced</code> to <code>unreproduced</code>, the fix works for
+        this bug. See <a href="/vivarium/guide/compare-branch-fix">Verify a branch fix</a>.
       </dd>
 
       <dt id="consumer-workflow"><strong>Consumer workflow</strong></dt>
       <dd>
-        The reusable GitHub Actions workflow at
-        <a href="/spec/consumer-workflow">spec/consumer-workflow</a>
-        that an external repo invokes from its CI to capture a
-        verdict for its own manifest's reproduction.
+        A reusable GitHub Actions workflow that runs a Layer 2 recipe from your
+        own repository's CI. See{' '}
+        <a href="/vivarium/spec/consumer-workflow">Consumer workflow</a>.
       </dd>
     </dl>
   </Section>
 
   <Section
-    eyebrow="// META"
-    heading="Words this project uses about itself."
+    eyebrow="// FOR TOOLS"
+    heading="Formats that tools read."
   >
     <dl className="v-glossary">
-      <dt id="phase"><strong>Phase</strong></dt>
+      <dt id="contract"><strong>Contract</strong></dt>
       <dd>
-        A coherent stretch of work measured in months-to-years, not sprints.
-        Each phase has a roadmap entry that records its opener and closure.
-        Closure is by partial-but-honest completion, not by exhaustive
-        feature list. See <a href="/roadmap">Roadmap</a>.
+        How every recipe reports its verdict, so tools can read any of them in
+        the same way. See <a href="/vivarium/spec/contract-v1">Contract v1</a>.
       </dd>
 
-      <dt id="layer-uniform"><strong>Layer-uniform</strong></dt>
+      <dt id="recipes-index"><strong>Recipes index</strong></dt>
       <dd>
-        A property describing surfaces that look the same regardless of
-        which Layer (1 / 2) produced them. Contract v1 is
-        layer-uniform: a verdict reads the same whether it came from
-        Pyodide or Docker.
+        The catalogue as data, at{' '}
+        <a href="https://aletheia-works.github.io/vivarium/api/recipes.json"><code>/api/recipes.json</code></a>.
+        See <a href="/vivarium/spec/recipes-index-v1">Recipes index v1</a>.
       </dd>
     </dl>
   </Section>
-
-  <Callout>
-    Found a term in the docs that isn't here? Open an issue —
-    glossary gaps are bugs in the onboarding surface, not stylistic
-    preferences.
-  </Callout>
 </Page>
 
 <NextCta
   eyebrow="// NEXT"
   heading={
     <>
-      Read the architecture{' '}
+      See how it works{' '}
       <span className="v-next-cta__heading-arrow">→</span>
     </>
   }
-  sub="Once the words make sense, the three-layer architecture is the next thing to internalise."
-  primary={{ label: 'Architecture →', href: '/architecture' }}
-  ghost={{ label: 'Overview', href: '/overview' }}
+  sub="What each layer can and cannot reproduce."
+  primary={{ label: 'How it works →', href: '/vivarium/architecture' }}
+  ghost={{ label: 'Reproductions', href: '/vivarium/repro/' }}
 />
 
 <BottomNote

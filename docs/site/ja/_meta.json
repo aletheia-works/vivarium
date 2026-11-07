@@ -17,16 +17,11 @@
   {
     "type": "file",
     "name": "architecture",
-    "label": "アーキテクチャ"
+    "label": "仕組み"
   },
   {
     "type": "dir",
     "name": "spec",
-    "label": "仕様"
-  },
-  {
-    "type": "file",
-    "name": "roadmap",
-    "label": "ロードマップ"
+    "label": "リファレンス"
   }
 ]
