@@ -26,6 +26,6 @@ import { ErrorRecipeMatcher } from '../../_components/ErrorRecipeMatcher';
     <p>A single-character typo like "<code>recursoin depth exceeded</code>" is absorbed via Levenshtein distance 1 (limited to tokens of length ≥ 6 to avoid false positives on short tokens, which stay strict). Fewer "I know there's a recipe for this but it isn't matching" surprises.</p>
 
     <h3>3. Mixed-language input is fine</h3>
-    <p>Pasting "<code>pandas で empty DataFrame の dtype が変わる</code>" works because matching uses the Latin-letter tokens, such as <code>pandas</code> and <code>dtype</code>. Japanese text is ignored, and common English words such as \"the\" and \"is\" are dropped.</p>
+    <p>Pasting "<code>pandas で empty DataFrame の dtype が変わる</code>" works because matching uses the Latin-letter tokens, such as <code>pandas</code> and <code>dtype</code>. Japanese text is ignored, and common English words such as "the" and "is" are dropped.</p>
   </Section>
 </Page>

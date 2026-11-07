@@ -60,7 +60,8 @@
         "notes": [
           "scaffolded from upstream issue dateutil/dateutil#1478 (sign of UTC±N offset inverted when the literal UTC prefix precedes a numeric offset). Native repro.py confirms reproduction against python-dateutil 2.9.0.post0; in-browser repro pinned to the same version via micropip.",
           "fix-candidate registered: JamBalaya56562/dateutil@fix-1478-utc-gmt-offset-sign (commit 63e0611 — \"Fix sign inversion when parsing literal UTC/GMT offsets\"). Wheel is built by CI on Vivarium PR merge so the live recipe page renders baseline + fix-candidate side-by-side; expected fixed verdict: unreproduced.",
-          "upstream PR opened: dateutil/dateutil#1500 (\"Fix UTC/GMT offset sign parsing\")."
+          "upstream PR opened: dateutil/dateutil#1500 (\"Fix UTC/GMT offset sign parsing\").",
+          "The result above was verified on the fork branch. The recipe page now builds its wheel from dateutil/dateutil#1500."
         ]
       }
     },
@@ -121,7 +122,8 @@
         "notes": [
           "scaffolded from upstream issue lark-parser/lark#1585 — infinite loop in lark's LALR/CYK back-ends on the grammar `start.1: \"a\" | start start*`",
           "Layer 1 recipe runs Pyodide + lark in a Web Worker so the hang does not freeze the page; main thread terminates the worker after an 8-second budget and that termination is the verdict signal",
-          "fix-candidate registered: JamBalaya56562/lark@claude/fix-lark-1585-QLVa7 — wheel built by CI on PR merge so the live recipe page renders baseline + fix-candidate side-by-side. verify_fix.py confirmed locally: baseline reproduces (hang past 8s) AND fix-candidate returns a parse tree in ~0.6s"
+          "fix-candidate registered: JamBalaya56562/lark@claude/fix-lark-1585-QLVa7 — wheel built by CI on PR merge so the live recipe page renders baseline + fix-candidate side-by-side. verify_fix.py confirmed locally: baseline reproduces (hang past 8s) AND fix-candidate returns a parse tree in ~0.6s",
+          "The result above was verified on the fork branch. The recipe page now builds its wheel from lark-parser/lark#1594."
         ]
       }
     },
