@@ -1,4 +1,4 @@
-import { describe, expect, setSystemTime, test } from 'bun:test';
+import { afterEach, describe, expect, setSystemTime, test } from 'bun:test';
 import type { RunResult } from '../pyodide-worker-client.js';
 import {
   capturePyodideRun,
@@ -68,6 +68,10 @@ describe('capturePyodideRun', () => {
 });
 
 describe('timingSince', () => {
+  afterEach(() => {
+    setSystemTime();
+  });
+
   test('measures from the start to now', () => {
     setSystemTime(new Date('2026-01-01T00:00:01.500Z'));
     expect(timingSince(new Date('2026-01-01T00:00:00.000Z'))).toEqual({
@@ -75,6 +79,5 @@ describe('timingSince', () => {
       finished_at: '2026-01-01T00:00:01.500Z',
       duration_ms: 1500,
     });
-    setSystemTime();
   });
 });
