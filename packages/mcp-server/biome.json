@@ -12,7 +12,8 @@
       "!**/node_modules",
       "!**/dist",
       "!**/src/bundled",
-      "!**/bun.lock"
+      "!**/bun.lock",
+      "!**/jsr.json"
     ]
   },
   "formatter": {
