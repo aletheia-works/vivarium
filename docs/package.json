@@ -17,7 +17,8 @@
     "build": "bun run generate && rspress build",
     "preview": "rspress preview",
     "test:e2e": "bun node_modules/@playwright/test/cli.js test",
-    "test:unit": "bun run generate-validators && bun run generate-repro-pages && bun test scripts/__tests__",
+    "test:unit": "bun run generate-validators && bun run generate-repro-pages && bun run typecheck && bun test scripts/__tests__",
+    "typecheck": "tsc -p tsconfig.json",
     "generate-repro-pages": "bun run scripts/generate-repro-pages.ts"
   },
   "devDependencies": {
@@ -31,7 +32,8 @@
     "ajv-formats": "3.0.1",
     "jszip": "^3.10.2",
     "node-html-parser": "^9.0.7",
-    "release-please": "17.6.0"
+    "release-please": "17.6.0",
+    "typescript": "^7.0.2"
   },
   "dependencies": {
     "lucide-react": "^1.70.0"

@@ -7,8 +7,8 @@ export const DOC_REPO_BASE_URL = `${GITHUB_REPO_URL}/tree/main/docs/site`;
 export const FOOTER_MESSAGE_HTML = `Apache License 2.0 · part of <a href="${GITHUB_ORG_URL}">aletheia-works</a>`;
 
 export interface FaviconLink {
+  readonly [attr: string]: string;
   rel: string;
-  type?: string;
   sizes: string;
   href: string;
 }

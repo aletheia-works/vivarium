@@ -50,7 +50,7 @@ function header(name: string, size: number): Uint8Array {
   return block;
 }
 
-function tgz(files: Record<string, string>): Uint8Array {
+function tgz(files: Record<string, string>): Uint8Array<ArrayBuffer> {
   const parts: Uint8Array[] = [];
   for (const [path, text] of Object.entries(files)) {
     const body = encoder.encode(text);
@@ -76,7 +76,7 @@ interface Registry {
 }
 
 function registry(
-  tarball: Uint8Array,
+  tarball: Uint8Array<ArrayBuffer>,
   doc: Record<string, unknown> = {},
 ): Registry {
   const requested: string[] = [];

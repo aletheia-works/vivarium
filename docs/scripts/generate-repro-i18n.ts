@@ -23,7 +23,7 @@ const ALLOWED_TAGS = new Set([
 interface RecipeIndexEntry {
   slug: string;
   layer: number;
-  page_url: string;
+  page_url?: string;
 }
 
 interface TranslationFile {
@@ -51,15 +51,15 @@ function checkValue(
   where: string,
   key: string,
   value: string,
-  hostTag: string,
+  plainTextHost: string | null,
 ): void {
   const tagRe = /<\s*\/?\s*([a-zA-Z][a-zA-Z0-9-]*)([^>]*)>/g;
   let m: RegExpExecArray | null = tagRe.exec(value);
   while (m !== null) {
     const tag = (m[1] ?? '').toLowerCase();
     const attrs = (m[2] ?? '').replace(/\/\s*$/, '').trim();
-    if (hostTag === 'title') {
-      fail(where, `key "${key}" is a <title>; it must be plain text`);
+    if (plainTextHost !== null) {
+      fail(where, `key "${key}" is in ${plainTextHost}; it must be plain text`);
     } else if (!ALLOWED_TAGS.has(tag)) {
       fail(where, `key "${key}" uses disallowed tag <${tag}>`);
     }
@@ -164,6 +164,10 @@ function translateRecipe(
   const usedKeys = new Set<string>();
   const seenKeys = new Set<string>();
 
+  if (entry.page_url === undefined) {
+    fail(label, 'recipes.json has no page_url for this recipe');
+    return null;
+  }
   const enPath = pagePath(entry.page_url);
   const jaPath = jaPagePath(enPath);
 
@@ -202,7 +206,12 @@ function translateRecipe(
       return el.outerHTML;
     }
     usedKeys.add(key);
-    checkValue(label, key, value, el.rawTagName.toLowerCase());
+    checkValue(
+      label,
+      key,
+      value,
+      el.rawTagName.toLowerCase() === 'title' ? 'a <title>' : null,
+    );
     const slots = el.childNodes
       .filter((n): n is HTMLElement => n.nodeType === NodeType.ELEMENT_NODE)
       .map((n) => renderTranslated(n));
@@ -223,7 +232,12 @@ function translateRecipe(
       continue;
     }
     usedKeys.add(key);
-    checkValue(label, key, value, el.rawTagName.toLowerCase());
+    checkValue(
+      label,
+      key,
+      value,
+      el.rawTagName.toLowerCase() === 'title' ? 'a <title>' : null,
+    );
     const slots = el.childNodes
       .filter((n): n is HTMLElement => n.nodeType === NodeType.ELEMENT_NODE)
       .map((n) => renderTranslated(n));
@@ -254,7 +268,7 @@ function translateRecipe(
         continue;
       }
       usedKeys.add(key);
-      checkValue(label, key, value);
+      checkValue(label, key, value, `the ${attr} attribute`);
       const current = el.getAttribute(attr);
       if (current === undefined) {
         fail(label, `data-i18n-attr names ${attr}, absent on the element`);

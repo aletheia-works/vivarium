@@ -140,7 +140,7 @@ export interface ArchiveLimits {
 
 export function checkArchivePath(
   path: string,
-  maxPathBytes = TRANSFER_LIMITS.maxPathBytes,
+  maxPathBytes: number = TRANSFER_LIMITS.maxPathBytes,
 ): void {
   if (new TextEncoder().encode(path).length > maxPathBytes)
     fail('LIMIT_EXCEEDED', `path is longer than ${maxPathBytes} bytes`);

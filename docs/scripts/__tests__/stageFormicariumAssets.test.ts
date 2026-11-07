@@ -106,7 +106,10 @@ function paxRecord(key: string, value: string): string {
   return `${length}${body}`;
 }
 
-function tar(entries: Entry[], trailing = new Uint8Array(1024)): Uint8Array {
+function tar(
+  entries: Entry[],
+  trailing: Uint8Array = new Uint8Array(1024),
+): Uint8Array {
   const parts: Uint8Array[] = [];
   for (const entry of entries) {
     const body =
@@ -130,7 +133,7 @@ function tar(entries: Entry[], trailing = new Uint8Array(1024)): Uint8Array {
   return Buffer.concat(parts);
 }
 
-function tgz(entries: Entry[], trailing?: Uint8Array): Uint8Array {
+function tgz(entries: Entry[], trailing?: Uint8Array): Uint8Array<ArrayBuffer> {
   return gzipSync(tar(entries, trailing));
 }
 
@@ -168,7 +171,7 @@ function packageFiles(): Map<string, Uint8Array> {
   );
 }
 
-function packageTarball(files = packageFiles()): Uint8Array {
+function packageTarball(files = packageFiles()): Uint8Array<ArrayBuffer> {
   return tgz(
     [...files].map(([name, body]) => ({ name: `package/${name}`, body })),
   );
@@ -362,7 +365,7 @@ function objectUrl(asset: string, key: string) {
 }
 
 function registry(
-  tarball: Uint8Array,
+  tarball: Uint8Array<ArrayBuffer>,
   override: Record<string, (call: Call) => Response | Promise<Response>> = {},
 ) {
   const calls: Call[] = [];

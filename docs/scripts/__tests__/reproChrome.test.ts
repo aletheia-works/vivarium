@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'bun:test';
 import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
+import type { UserConfig } from '@rspress/core';
 import { localeCounterpartPath } from '../../../src/layer1_wasm/_assets/locale.js';
 import { buildNavByLocale, renderChromeData } from '../generate-repro-chrome';
 import { FAVICONS, FOOTER_MESSAGE_HTML, GITHUB_REPO_URL } from '../site-chrome';
@@ -91,12 +92,12 @@ describe('repro nav — generated module matches the source', () => {
 
 describe('site chrome — repro pages and rspress agree', () => {
   test('rspress config renders the shared footer message', async () => {
-    const config = (await import('../../rspress.config')).default;
+    const config = (await import('../../rspress.config')).default as UserConfig;
     expect(config.themeConfig?.footer?.message).toBe(FOOTER_MESSAGE_HTML);
   });
 
   test('rspress config renders the shared favicons', async () => {
-    const config = (await import('../../rspress.config')).default;
+    const config = (await import('../../rspress.config')).default as UserConfig;
     const heads = (config.head ?? []) as unknown[];
     for (const icon of FAVICONS) {
       const found = heads.some(

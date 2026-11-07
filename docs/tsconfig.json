@@ -7,11 +7,16 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "resolveJsonModule": true,
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "allowJs": true,
+    "allowImportingTsExtensions": true,
+    "jsx": "react-jsx",
+    "noEmit": true
   },
   "include": [
     "rspress.config.ts",
     "scripts/**/*.ts",
-    "site/_components/**/*.tsx"
+    "site/_components/**/*.tsx",
+    "site/_components/**/*.ts"
   ]
 }

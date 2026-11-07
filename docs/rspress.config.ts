@@ -3,6 +3,7 @@ import { setupReproDevMiddleware } from './scripts/repro-dev-middleware';
 import {
   DOC_REPO_BASE_URL,
   FAVICONS,
+  type FaviconLink,
   FOOTER_MESSAGE_HTML,
   GITHUB_REPO_URL,
 } from './scripts/site-chrome';
@@ -15,6 +16,20 @@ export default defineConfig({
   description:
     'Universal bug reproduction — any language, any environment, any scale.',
   lang: 'en',
+  i18nSource: (source) => ({
+    ...source,
+    outlineTitle: {
+      ...source.outlineTitle,
+      en: 'On this page',
+      ja: 'このページの内容',
+    },
+    lastUpdatedText: { ...source.lastUpdatedText, en: 'Last updated' },
+    editLinkText: {
+      ...source.editLinkText,
+      en: 'Edit this page on GitHub',
+      ja: 'GitHub でこのページを編集',
+    },
+  }),
   locales: [
     {
       lang: 'en',
@@ -39,7 +54,7 @@ export default defineConfig({
     },
   },
   head: [
-    ...FAVICONS.map((attrs) => ['link', attrs] as [string, typeof attrs]),
+    ...FAVICONS.map((attrs) => ['link', attrs] as [string, FaviconLink]),
     [
       'link',
       {
@@ -83,28 +98,10 @@ export default defineConfig({
       {
         lang: 'en',
         label: 'English',
-        outlineTitle: 'On this page',
-        prevPageText: 'Previous page',
-        nextPageText: 'Next page',
-        lastUpdatedText: 'Last updated',
-        searchPlaceholderText: 'Search',
-        editLink: {
-          docRepoBaseUrl: DOC_REPO_BASE_URL,
-          text: 'Edit this page on GitHub',
-        },
       },
       {
         lang: 'ja',
         label: '日本語',
-        outlineTitle: 'このページの内容',
-        prevPageText: '前のページ',
-        nextPageText: '次のページ',
-        lastUpdatedText: '最終更新',
-        searchPlaceholderText: '検索',
-        editLink: {
-          docRepoBaseUrl: DOC_REPO_BASE_URL,
-          text: 'GitHub でこのページを編集',
-        },
       },
     ],
   },

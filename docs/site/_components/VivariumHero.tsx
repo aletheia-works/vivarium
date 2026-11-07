@@ -93,6 +93,8 @@ const STRINGS = {
   },
 } as const;
 
+type HeroStrings = (typeof STRINGS)[Lang];
+
 const WasmGlyph = () => (
   <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
     <path d="M3 6h3l1.5 7L9 6h2l1.5 7L14 6h3l-2.5 12h-2L11 11l-1.5 7h-2L5 6Z" />
@@ -139,7 +141,7 @@ const Chrome = ({ url, badge }: { url: string; badge: BadgeKind }) => (
   </div>
 );
 
-const CpythonInner = ({ s }: { s: typeof STRINGS.en }) => (
+const CpythonInner = ({ s }: { s: HeroStrings }) => (
   <>
     <Chrome url="vivarium/repro/cpython/137205" badge="wasm" />
     <div className="v-window__body">
@@ -202,7 +204,7 @@ const CpythonInner = ({ s }: { s: typeof STRINGS.en }) => (
   </>
 );
 
-const PostgresInner = ({ s }: { s: typeof STRINGS.en }) => (
+const PostgresInner = ({ s }: { s: HeroStrings }) => (
   <>
     <Chrome url="vivarium/repro/postgres/lost-update" badge="docker" />
     <div className="v-window__body">
@@ -270,7 +272,7 @@ const PostgresInner = ({ s }: { s: typeof STRINGS.en }) => (
   </>
 );
 
-const RubyInner = ({ s }: { s: typeof STRINGS.en }) => (
+const RubyInner = ({ s }: { s: HeroStrings }) => (
   <>
     <Chrome url="vivarium/repro/ruby/21709" badge="wasm" />
     <div className="v-window__body">
