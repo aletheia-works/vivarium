@@ -17,7 +17,7 @@
     "build": "bun run generate && rspress build",
     "preview": "rspress preview",
     "test:e2e": "bun node_modules/@playwright/test/cli.js test",
-    "test:unit": "bun run generate-validators && bun run generate-repro-pages && bun run typecheck && bun test scripts/__tests__",
+    "test:unit": "bun run generate-validators && bun run generate-site-stats && bun run generate-repro-pages && bun run typecheck && bun test scripts/__tests__",
     "typecheck": "tsc -p tsconfig.json",
     "generate-repro-pages": "bun run scripts/generate-repro-pages.ts"
   },
