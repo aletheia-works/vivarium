@@ -108,7 +108,7 @@ describe('buildKey', () => {
     const original = buildKey(inputs);
     const variants: KeyInputs[] = [
       { ...inputs, commit: 'f79f85d58ae499647c127f1e90a4931e3dbbb206' },
-      { ...inputs, repository: 'https://github.com/jambalaya56562/biome' },
+      { ...inputs, repository: 'https://github.com/example-user/biome' },
       {
         ...inputs,
         dependencies: keyDependencies(source, '4'.repeat(64), extras),

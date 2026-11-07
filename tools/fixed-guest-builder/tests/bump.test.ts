@@ -11,7 +11,7 @@ const allowlist = parseAllowlist({
   schemaVersion: 1,
   repositories: [
     'https://github.com/biomejs/biome',
-    'https://github.com/jambalaya56562/biome',
+    'https://github.com/example-user/biome',
   ],
 });
 
@@ -55,7 +55,7 @@ function guest(role: string, commit: string, extra = {}) {
     tool: 'biome',
     repository:
       role === 'fix'
-        ? 'https://github.com/jambalaya56562/biome'
+        ? 'https://github.com/example-user/biome'
         : 'https://github.com/biomejs/biome',
     commit,
     fixture: 'biome-migrate-prettier-override',
@@ -262,9 +262,9 @@ describe('bumpGuest', () => {
       },
     });
     expect(record?.role).toBe('fix');
-    expect(record?.repository).toBe('https://github.com/jambalaya56562/biome');
+    expect(record?.repository).toBe('https://github.com/example-user/biome');
     expect(new Set(repositories)).toEqual(
-      new Set(['https://github.com/jambalaya56562/biome']),
+      new Set(['https://github.com/example-user/biome']),
     );
     const [baseline, fix] = JSON.parse(await readFile(path, 'utf8')).guests;
     expect(fix.commit).toBe(upstream.main);

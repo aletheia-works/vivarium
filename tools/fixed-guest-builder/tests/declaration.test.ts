@@ -10,7 +10,7 @@ const allowlist = parseAllowlist({
   schemaVersion: 1,
   repositories: [
     'https://github.com/biomejs/biome',
-    'https://github.com/jambalaya56562/biome',
+    'https://github.com/example-user/biome',
   ],
 });
 const COMMIT = '2405c7620169bd0719166af09a8d89cc76fb37fb';
@@ -34,8 +34,8 @@ function code(run: () => unknown): string | undefined {
 describe('normalizeRepositoryUrl', () => {
   test('lowercases and strips a trailing .git and slash', () => {
     expect(
-      normalizeRepositoryUrl('https://github.com/JamBalaya56562/Biome.git/'),
-    ).toBe('https://github.com/jambalaya56562/biome');
+      normalizeRepositoryUrl('https://github.com/Example-User/Biome.git/'),
+    ).toBe('https://github.com/example-user/biome');
     expect(normalizeRepositoryUrl('https://github.com/biomejs/biome/')).toBe(
       'https://github.com/biomejs/biome',
     );
@@ -120,12 +120,12 @@ describe('validateDeclaration', () => {
     const result = validateDeclaration(
       {
         ...base,
-        repository: 'https://github.com/JamBalaya56562/biome.git',
+        repository: 'https://github.com/Example-User/biome.git',
         commit: 'f79f85d58ae499647c127f1e90a4931e3dbbb206',
       },
       allowlist,
     );
-    expect(result.repository).toBe('https://github.com/jambalaya56562/biome');
+    expect(result.repository).toBe('https://github.com/example-user/biome');
   });
 
   test('refuses a repository outside the allowlist', () => {

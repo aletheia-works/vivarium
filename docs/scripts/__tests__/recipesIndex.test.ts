@@ -416,7 +416,7 @@ describe('preview recipes', () => {
       path.join(recipe, 'preview.json'),
       JSON.stringify({
         repository: 'motioneye-project/motioneye',
-        source: 'JamBalaya56562/motioneye',
+        source: 'example-user/motioneye',
         issue: 3364,
         commit: '5ee7869c3710ce4135cf803e87338c1cd4ca8d85',
       }),
@@ -428,7 +428,7 @@ describe('preview recipes', () => {
       issue: 3364,
       commit: '5ee7869c3710ce4135cf803e87338c1cd4ca8d85',
       commit_url:
-        'https://github.com/JamBalaya56562/motioneye/commit/5ee7869c3710ce4135cf803e87338c1cd4ca8d85',
+        'https://github.com/example-user/motioneye/commit/5ee7869c3710ce4135cf803e87338c1cd4ca8d85',
       preview_url: `${PREVIEW_SIGN_IN_URL}/motioneye-pwa-samesite-lax/`,
     });
     expect(entry.pull).toBeUndefined();

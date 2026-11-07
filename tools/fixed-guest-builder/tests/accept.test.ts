@@ -7,7 +7,7 @@ import { BuildError } from '../src/errors.ts';
 
 const BUILD = {
   tool: 'biome',
-  repository: 'https://github.com/jambalaya56562/biome',
+  repository: 'https://github.com/example-user/biome',
   commit: 'c'.repeat(40),
   versionOrName: 'c'.repeat(40),
   buildKey: 'a'.repeat(64),

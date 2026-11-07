@@ -130,7 +130,7 @@ For example, a branch on a fork:
 ```json
 {
   "repository": "motioneye-project/motioneye",
-  "source": "JamBalaya56562/motioneye",
+  "source": "example-user/motioneye",
   "issue": 3364,
   "commit": "5ee7869c3710ce4135cf803e87338c1cd4ca8d85"
 }

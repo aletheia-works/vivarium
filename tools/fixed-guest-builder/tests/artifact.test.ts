@@ -156,7 +156,7 @@ describe('verifyArtifactSet', () => {
       code(() =>
         verifyArtifactSet(files, {
           ...expected,
-          repository: 'https://github.com/jambalaya56562/biome',
+          repository: 'https://github.com/example-user/biome',
         }),
       ),
     ).toBe('VERIFY_FAILED');

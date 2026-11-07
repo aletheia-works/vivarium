@@ -101,7 +101,7 @@ const FIXTURE_INDEX = {
       issue: 3364,
       commit: '5ee7869c3710ce4135cf803e87338c1cd4ca8d85',
       commit_url:
-        'https://github.com/JamBalaya56562/motioneye/commit/5ee7869c3710ce4135cf803e87338c1cd4ca8d85',
+        'https://github.com/example-user/motioneye/commit/5ee7869c3710ce4135cf803e87338c1cd4ca8d85',
       title: 'motionEye with a SameSite=Lax session cookie',
       preview_url:
         'https://sign-in.example.invalid/motioneye-pwa-samesite-lax/',
@@ -242,7 +242,7 @@ describe('lookup_verdict', () => {
       assert.equal(r.pull_url, undefined);
       assert.equal(
         r.commit_url,
-        'https://github.com/JamBalaya56562/motioneye/commit/5ee7869c3710ce4135cf803e87338c1cd4ca8d85',
+        'https://github.com/example-user/motioneye/commit/5ee7869c3710ce4135cf803e87338c1cd4ca8d85',
       );
     }
   });
@@ -496,7 +496,7 @@ describe('verify_branch_fix', () => {
     const r = await verifyBranchFix({ slug: 'motioneye-pwa-samesite-lax' });
     assert.equal(r.ok, false);
     if (!r.ok) {
-      assert.match(r.error, /JamBalaya56562\/motioneye\/commit\/5ee7869c/);
+      assert.match(r.error, /example-user\/motioneye\/commit\/5ee7869c/);
       assert.doesNotMatch(r.error, /#\?/);
     }
   });
@@ -780,7 +780,7 @@ describe('verify_and_report_fix', () => {
         upstream_issue: 'https://github.com/pandas-dev/pandas/issues/56679',
         vivarium_pr: 'https://github.com/aletheia-works/vivarium/pull/200',
         fork: {
-          owner: 'JamBalaya56562',
+          owner: 'example-user',
           repo: 'pandas',
           branch: 'fix-issue-56679',
         },
@@ -807,9 +807,9 @@ describe('verify_and_report_fix', () => {
         'open_fork_pr commands should contain a gh pr create line',
       );
       assert.match(ghCmd!, /--repo pandas-dev\/pandas/);
-      assert.match(ghCmd!, /--head JamBalaya56562:fix-issue-56679/);
+      assert.match(ghCmd!, /--head example-user:fix-issue-56679/);
       assert.ok(
-        !/--repo JamBalaya56562\/pandas/.test(ghCmd!),
+        !/--repo example-user\/pandas/.test(ghCmd!),
         '--repo must NOT be the fork repo',
       );
       assert.match(ghCmd!, /--draft/);
@@ -825,7 +825,7 @@ describe('verify_and_report_fix', () => {
         status: 'verified',
         vivarium_pr: 'https://github.com/aletheia-works/vivarium/pull/200',
         fork: {
-          owner: 'JamBalaya56562',
+          owner: 'example-user',
           repo: 'pandas',
           branch: 'fix-issue-56679',
         },
@@ -1964,7 +1964,7 @@ describe('create_fork_pr', () => {
     upstream_issue: 'https://github.com/pandas-dev/pandas/issues/56679',
     vivarium_pr: 'https://github.com/aletheia-works/vivarium/pull/200',
     fork: {
-      owner: 'JamBalaya56562',
+      owner: 'example-user',
       repo: 'pandas',
       branch: 'fix-issue-56679',
     },
@@ -2093,7 +2093,7 @@ describe('create_fork_pr', () => {
       slug: 'pandas-56679',
       current_state: {
         ...verifiedState,
-        fork: { owner: 'JamBalaya56562', repo: 'pandas', branch: '' },
+        fork: { owner: 'example-user', repo: 'pandas', branch: '' },
       },
       pr_title: 'fix: x',
     });
@@ -2118,10 +2118,10 @@ describe('create_fork_pr', () => {
     if (r.ok) {
       assert.equal(r.dry_run, true);
       assert.equal(r.upstream_repo, 'pandas-dev/pandas');
-      assert.equal(r.head, 'JamBalaya56562:fix-issue-56679');
+      assert.equal(r.head, 'example-user:fix-issue-56679');
       assert.equal(r.draft, true);
       assert.match(r.command, /gh pr create --repo pandas-dev\/pandas/);
-      assert.match(r.command, /--head JamBalaya56562:fix-issue-56679/);
+      assert.match(r.command, /--head example-user:fix-issue-56679/);
       assert.match(r.command, /--draft/);
       assert.ok(
         !/--label/.test(r.command),
@@ -2265,7 +2265,7 @@ describe('create_fork_pr', () => {
     const repoIdx = createCall!.indexOf('--repo');
     assert.equal(createCall![repoIdx + 1], 'pandas-dev/pandas');
     const headIdx = createCall!.indexOf('--head');
-    assert.equal(createCall![headIdx + 1], 'JamBalaya56562:fix-issue-56679');
+    assert.equal(createCall![headIdx + 1], 'example-user:fix-issue-56679');
     const bodyIdx = createCall!.indexOf('--body');
     assert.match(createCall![bodyIdx + 1]!, /Vivarium round-trip automation/);
   });
