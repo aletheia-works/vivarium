@@ -14,7 +14,7 @@
     "chip.bugContext": "{0} bug の背景",
     "section.baseline.h2": "baseline · jj-vcs/jj 最新リリース",
     "output.pending": "待機中…",
-    "section.fix.h2": "fix · Marukome0743/jj",
+    "section.fix.h2": "fix · jj-vcs/jj#10190",
     "page.title": "Vivarium · jj undo の後に同じ書き換えを 1 秒以内に再実行すると内部エラーになる不具合の再現",
     "verdict.pending": "formicarium を読み込み中…",
     "drawer.body.p1": "コミットのタイムスタンプは 1 秒単位である。{0} の後、その 1 秒以内に同じ書き換えをもう一度実行すると、取り消した操作が書いたのとまったく同じコミットが作られ、baseline はそれを {1} で拒否する。",
