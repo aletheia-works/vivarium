@@ -1,0 +1,81 @@
+name: fixed-guest-watch
+
+on:
+  schedule:
+    - cron: '45 1 * * *'
+  push:
+    branches: [main]
+    paths:
+      - 'src/layer1_wasm/*/recipe.json'
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: fixed-guest-watch
+  cancel-in-progress: false
+
+jobs:
+  watch:
+    name: start the bumps and the build the guests need
+    if: github.repository == 'aletheia-works/vivarium' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      actions: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup mise (bun, jq)
+        uses: jdx/mise-action@b44d12e7d0d8ee7461bb893e1b1993500433185b # v5.2.7
+        with:
+          install: true
+          cache: true
+          experimental: true
+          install_args: bun jq
+
+      - name: Install the builder's locked dependencies
+        working-directory: tools/fixed-guest-builder
+        run: bun install --frozen-lockfile
+
+      - name: Plan
+        working-directory: tools/fixed-guest-builder
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          bun run src/cli.ts watch \
+            --layer1 "${GITHUB_WORKSPACE}/src/layer1_wasm" \
+            --build-workflow fixed-guest-build.yml > "${RUNNER_TEMP}/watch.json"
+          {
+            echo '```json'
+            cat "${RUNNER_TEMP}/watch.json"
+            echo '```'
+          } >> "${GITHUB_STEP_SUMMARY}"
+
+      - name: Start the bumps
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          jq -r '.bumps[] | [.recipe, .role] | @tsv' "${RUNNER_TEMP}/watch.json" |
+            while IFS=$'\t' read -r recipe role; do
+              gh workflow run fixed-guest-bump.yml --ref main -f recipe="${recipe}" -f role="${role}"
+            done
+
+      - name: Start the build
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if [ "$(jq -r '.build != null' "${RUNNER_TEMP}/watch.json")" = true ]; then
+            gh workflow run fixed-guest-build.yml --ref main \
+              -f tool="$(jq -r .build.tool "${RUNNER_TEMP}/watch.json")" \
+              -f repository="$(jq -r .build.repository "${RUNNER_TEMP}/watch.json")" \
+              -f commit="$(jq -r .build.commit "${RUNNER_TEMP}/watch.json")" \
+              -f fixture="$(jq -r .build.fixture "${RUNNER_TEMP}/watch.json")" \
+              -f mbx=on
+          fi

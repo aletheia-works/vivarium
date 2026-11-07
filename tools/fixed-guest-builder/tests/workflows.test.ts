@@ -7,6 +7,7 @@ const NAMES = [
   'fixed-guest-release.yml',
   'fixed-guest-bump.yml',
   'fixed-guest-prune.yml',
+  'fixed-guest-watch.yml',
 ] as const;
 
 type Step = {
@@ -47,6 +48,7 @@ const TRIGGERS: Record<(typeof NAMES)[number], string[]> = {
   'fixed-guest-release.yml': ['workflow_dispatch', 'workflow_call'],
   'fixed-guest-bump.yml': ['workflow_dispatch'],
   'fixed-guest-prune.yml': ['schedule', 'workflow_dispatch'],
+  'fixed-guest-watch.yml': ['schedule', 'push', 'workflow_dispatch'],
 };
 
 const READ = { contents: 'read', actions: 'read' };
@@ -67,6 +69,10 @@ const PERMISSIONS: Record<
   'fixed-guest-prune.yml': {
     workflow: {},
     jobs: { prune: { contents: 'write', 'pull-requests': 'read' } },
+  },
+  'fixed-guest-watch.yml': {
+    workflow: {},
+    jobs: { watch: { contents: 'read', actions: 'write' } },
   },
 };
 
@@ -283,7 +289,7 @@ describe('builder workflows', () => {
     const title = /^ {10}title: '(.+)'$/m.exec(text)?.[1] ?? '';
     expect(title).toBe(
       // biome-ignore lint/suspicious/noTemplateCurlyInString: a GitHub expression, not a JS template
-      'chore(layer1): bump the ${{ inputs.role }} guest of ${{ steps.bump.outputs.slug }}',
+      'chore(layer1): bump the ${{ inputs.role }} guest of ${{ steps.bump.outputs.slug }} to ${{ steps.bump.outputs.short }}',
     );
     expect(title).toMatch(/^[a-z]+\([a-z0-9-]+\): [a-z]/);
     expect(text).not.toContain('inputs.tool');
@@ -320,6 +326,20 @@ describe('builder workflows', () => {
     expect(build.env?.MBX_CACHE_MATCHED_KEY).toContain(
       'steps.mbx-cache.outputs.cache-matched-key',
     );
+  });
+
+  test('watch starts on a recipe change on main and dispatches the bump and the build on main', async () => {
+    const { flow, text } = await load('fixed-guest-watch.yml');
+    expect(flow.on.push).toEqual({
+      branches: ['main'],
+      paths: ['src/layer1_wasm/*/recipe.json'],
+    });
+    expect(text).toContain('gh workflow run fixed-guest-bump.yml --ref main');
+    expect(text).toContain('gh workflow run fixed-guest-build.yml --ref main');
+    expect(flow.concurrency).toEqual({
+      group: 'fixed-guest-watch',
+      'cancel-in-progress': false,
+    });
   });
 
   test('prune from the full history, deleting on schedule and dry by default by hand', async () => {

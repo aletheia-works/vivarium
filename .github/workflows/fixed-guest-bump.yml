@@ -66,7 +66,7 @@ jobs:
         working-directory: tools/fixed-guest-builder
         run: bun install --frozen-lockfile
 
-      - name: Move the guest to the branch tip
+      - name: Move the guest to what it follows
         id: bump
         working-directory: tools/fixed-guest-builder
         env:
@@ -80,11 +80,13 @@ jobs:
             --work "${RUNNER_TEMP}/fgb-bump" > "${RUNNER_TEMP}/bump.json"
           changed=$(bun -e 'console.log((await Bun.file(process.argv[1]).json()).changed)' "${RUNNER_TEMP}/bump.json")
           echo "changed=${changed}" >> "${GITHUB_OUTPUT}"
+          short=$(bun -e 'console.log((await Bun.file(process.argv[1]).json()).record?.commit.slice(0, 8) ?? "")' "${RUNNER_TEMP}/bump.json")
+          echo "short=${short}" >> "${GITHUB_OUTPUT}"
           slug=$(basename "$(dirname "${RECIPE}")")
           echo "slug=${slug}" >> "${GITHUB_OUTPUT}"
           echo "branch=fixed-guest-bump/${slug}-${ROLE}" >> "${GITHUB_OUTPUT}"
           {
-            echo "Moves the ${ROLE} guest in \`${RECIPE}\` to the tip of the branch its declaration names."
+            echo "Moves the ${ROLE} guest in \`${RECIPE}\` to the tip of the branch or the latest release its declaration follows."
             echo "Only its commit moves; its accepted build stays until the build of the new commit is published and accepted."
             echo
             echo "The commit was resolved with \`git ls-remote\` against the declared repository and"
@@ -94,7 +96,7 @@ jobs:
             cat "${RUNNER_TEMP}/bump.json"
             echo '```'
             echo
-            echo "It merges itself once the required checks pass. The fixed build for the new key runs separately."
+            echo "It merges itself once the required checks pass. Its merge starts fixed-guest-watch, which starts the fixed build of the new commit."
           } > "${RUNNER_TEMP}/body.md"
 
       - name: Get an aletheia-works-bot token
@@ -113,5 +115,5 @@ jobs:
         with:
           token: ${{ steps.app-token.outputs.token }}
           branch: ${{ steps.bump.outputs.branch }}
-          title: 'chore(layer1): bump the ${{ inputs.role }} guest of ${{ steps.bump.outputs.slug }}'
+          title: 'chore(layer1): bump the ${{ inputs.role }} guest of ${{ steps.bump.outputs.slug }} to ${{ steps.bump.outputs.short }}'
           body-path: ${{ runner.temp }}/body.md

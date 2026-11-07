@@ -96,6 +96,7 @@ URL: <https://aletheia-works.github.io/vivarium/api/recipes.json>
 | 2026-11-03 | `page_url` を必須から外した。Layer 3 のエントリは Vivarium のページを持たなくなり、動いているプレビューを指す `preview_url` と、オプションの `pull_url`・`commit` を持つ。コンフォーマンス条項 5 を追加。すべてのエントリで `page_url` を読んでいたコンシューマーは壊れる。Vivarium MCP 0.9.0 以前もその一つで、Layer 3 のレシピに対して `lookup_verdict` と `verify_branch_fix` が空のページ URL を返す。Vivarium にはまだ既知の利用者がいないため v1 のままにした（AGENTS.md §4.9）。 |
 | 2026-11-03 | Layer 3 のエントリが、fork のブランチのような、まだプルリクエストになっていないコミットのプレビューも表せるようにした。その場合 `pull` と `pull_url` は無い。すべての Layer 3 エントリにオプションの `commit_url` を追加。`pull` はもともとオプションなので後方互換。 |
 | 2026-11-06 | `recipe.schema.json` にオプションの `title` を追加。README の無いレシピが、README の最初の H1 の代わりに使う。Layer 3 のプレビューは README を持たなくなったので、その `source_url` はメタデータだけのディレクトリを指す。インデックスのフィールドに変更はない。 |
+| 2026-11-07 | `recipe.schema.json` にオプションの `guests[].reference.release` を追加。`"latest"` を指定すると、formicarium の guest はブランチの代わりにリポジトリの最新の安定版リリースを追う。索引には出力しない。 |
 
 ## 生成方法
 

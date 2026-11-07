@@ -5,7 +5,7 @@ export interface FixedGuestDeclaration {
   repository: string;
   commit: string;
   fixture: string;
-  reference?: { pr?: string; branch?: string };
+  reference?: { pr?: string; branch?: string; release?: 'latest' };
 }
 
 export interface Allowlist {
@@ -114,8 +114,8 @@ export function validateDeclaration(
   if (reference !== undefined) {
     if (typeof reference !== 'object' || reference === null)
       fail('INVALID_INPUT', 'reference must be an object when present');
-    const { pr, branch } = reference as Record<string, unknown>;
-    const kept: { pr?: string; branch?: string } = {};
+    const { pr, branch, release } = reference as Record<string, unknown>;
+    const kept: NonNullable<FixedGuestDeclaration['reference']> = {};
     if (pr !== undefined) {
       if (typeof pr !== 'string')
         fail('INVALID_INPUT', 'reference.pr must be a string');
@@ -125,6 +125,13 @@ export function validateDeclaration(
       if (typeof branch !== 'string')
         fail('INVALID_INPUT', 'reference.branch must be a string');
       kept.branch = branch;
+    }
+    if (release !== undefined) {
+      if (release !== 'latest')
+        fail('INVALID_INPUT', 'reference.release must be "latest"');
+      if (branch !== undefined)
+        fail('INVALID_INPUT', 'reference names both a branch and a release');
+      kept.release = release;
     }
     result.reference = kept;
   }

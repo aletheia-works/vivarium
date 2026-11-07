@@ -104,7 +104,7 @@
       "type": "array",
       "minItems": 1,
       "maxItems": 2,
-      "description": "The fixed guests a formicarium recipe runs, one per role: exactly one baseline and at most one fix. Required in practice when expected_runtime is 'formicarium' (docs/scripts/generate-recipes-index.ts refuses such a recipe without it, and refuses fix_candidate on it); other runtimes leave it out. commit is the build input the fixed-guest builder reads and the fixed-guest-bump workflow moves; accepted records the build a maintainer accepted from its Release, and the site and the regression suite run only accepted. A recipe whose guests are not all accepted, or that has no formicarium pin, is pending: it stays out of the site and the regression suite. Added in the 2026-10-19 revision.",
+      "description": "The fixed guests a formicarium recipe runs, one per role: exactly one baseline and at most one fix. Required in practice when expected_runtime is 'formicarium' (docs/scripts/generate-recipes-index.ts refuses such a recipe without it, and refuses fix_candidate on it); other runtimes leave it out. commit is the build input the fixed-guest builder reads and the fixed-guest-bump workflow moves; accepted records the build accepted from its Release, and the site and the regression suite run only accepted. A recipe whose guests are not all accepted, or that has no formicarium pin, is pending: it stays out of the site and the regression suite. Added in the 2026-10-19 revision.",
       "items": {
         "type": "object",
         "required": ["role", "tool", "repository", "commit", "fixture"],
@@ -118,10 +118,12 @@
           "reference": {
             "type": "object",
             "additionalProperties": false,
-            "description": "Where the commit came from, for display only; never a build input.",
+            "not": { "required": ["branch", "release"] },
+            "description": "What the commit follows. The daily fixed-guest-watch workflow moves commit to the branch tip or the commit of the latest release and starts its build; it is never a build input itself.",
             "properties": {
               "branch": { "type": "string", "minLength": 1 },
-              "pr": { "type": "string", "minLength": 1 }
+              "pr": { "type": "string", "minLength": 1 },
+              "release": { "enum": ["latest"], "description": "Follow the repository's latest stable GitHub release. Added in the 2026-11-07 revision." }
             }
           },
           "accepted": {

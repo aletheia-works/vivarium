@@ -37,6 +37,7 @@ RULES = (
             ".github/workflows/fixed-guest-bump.yml",
             ".github/workflows/fixed-guest-release.yml",
             ".github/workflows/fixed-guest-prune.yml",
+            ".github/workflows/fixed-guest-watch.yml",
         ),
     ),
     # docs/scripts imports the builder's sources and reads its tools.json.
@@ -153,6 +154,7 @@ def self_test():
         "tools/fixed-guest-builder/bunfig.toml": {"builder"},
         ".github/workflows/fixed-guest-release.yml": {"builder"},
         ".github/workflows/fixed-guest-prune.yml": {"builder"},
+        ".github/workflows/fixed-guest-watch.yml": {"builder"},
         ".github/workflows/test-fixed-guest-builder.yml": {"builder"},
         "tools/fixed-guest-builder/src/artifact.ts": {"builder", "docs", "repro"},
         "tools/fixed-guest-builder/tools.json": {"builder", "docs", "repro"},

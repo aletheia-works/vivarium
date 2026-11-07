@@ -89,10 +89,12 @@ How the pane gets filled is not prescribed. The following shapes are supported:
 
 A pinned fix candidate follows its branch: the daily `upstream-bump`
 workflow opens a pull request when the branch head moves past the pin.
-A formicarium guest moves by hand instead: `fixed-guest-bump` moves only its
-`commit`, and the page keeps running the `accepted` build until a person
-accepts the build of the new commit, so an unbuilt commit cannot become the
-guest the page runs. The formicarium package itself follows its latest npm
+A formicarium guest follows the branch or the latest release its
+`reference` names: the daily `fixed-guest-watch` workflow starts
+`fixed-guest-bump`, which moves only its `commit`, and then the build of the
+new commit. The page keeps running the `accepted` build until that build is
+published and its accept pull request passes the regression suite, so an
+unbuilt commit cannot become the guest the page runs. The formicarium package itself follows its latest npm
 release: the daily `formicarium-bump` workflow regenerates
 [`formicarium.pin.json`](./formicarium.pin.json) with
 `mise run repro:formicarium:pin`, which reads every digest from the

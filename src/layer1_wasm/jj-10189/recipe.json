@@ -11,6 +11,7 @@
   ],
   "expected_verdict": "reproduced",
   "expected_runtime": "formicarium",
+  "upstream_pr": "https://github.com/jj-vcs/jj/pull/10190",
   "guests": [
     {
       "role": "baseline",
@@ -19,7 +20,7 @@
       "commit": "b5c61830e73eccb3f7f79661c0915681fdc00dd3",
       "fixture": "jj-10189",
       "reference": {
-        "branch": "main"
+        "release": "latest"
       },
       "accepted": {
         "commit": "b5c61830e73eccb3f7f79661c0915681fdc00dd3",

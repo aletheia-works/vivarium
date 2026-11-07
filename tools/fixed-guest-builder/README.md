@@ -48,8 +48,8 @@ and free disk are in the run's receipt.
 
 ## Publishing a set
 
-Publishing needs no approval. A person only starts the build; the release
-and the acceptance follow from it.
+Publishing needs no approval. The build starts by hand or from
+**fixed-guest-watch**; the release and the acceptance follow from it.
 
 1. When the build job succeeds, the same run calls **fixed-guest-release**
    with its own run ID.
@@ -118,15 +118,23 @@ default and deletes nothing. The scheduled run deletes.
 
 ## Moving a guest to a newer commit
 
-Start **fixed-guest-bump** with the recipe path and the guest's role
-(`baseline` or `fix`). The guest must name a branch in `reference.branch`:
-`main` of the upstream for the baseline, the fix branch of the fork for the
-fix. The branch tip is read with `git ls-remote`; PR pages are never used.
-Only the guest's `commit` moves; its `accepted` build stays, so the site keeps
-running it until the build of the new commit is published and accepted. The
-run opens a pull request on `fixed-guest-bump/<recipe>-<role>` that merges
-itself once the required checks pass; start the fixed build of the new
-commit after it merges, so the acceptance finds the commit on `main`.
+**fixed-guest-watch** runs daily and whenever a `recipe.json` changes on
+`main`. It starts **fixed-guest-bump** for each guest behind what its
+`reference` follows, and **fixed-guest-build** for one guest whose `commit` has
+no accepted build, unless a build run is active. The merge of the accept pull
+request starts it again for the next guest. A failed run of any of the three
+opens an Issue through **Schedule watch**. An accept pull request whose
+regression run fails stays open, and the site keeps the accepted build.
+
+**fixed-guest-bump** can also be started by hand with the recipe path and the
+guest's role (`baseline` or `fix`). The guest must name what it follows:
+`reference.branch`, or `reference.release` set to `latest` for the repository's
+latest stable GitHub release. The commit is read with `git ls-remote`; PR pages
+are never used. Only the guest's `commit` moves; its `accepted` build stays, so
+the site keeps running it until the build of the new commit is published and
+accepted. The run opens a pull request on `fixed-guest-bump/<recipe>-<role>`
+that merges itself once the required checks pass; the build starts after it
+merges, so the acceptance finds the commit on `main`.
 
 ## Changing what may be built
 

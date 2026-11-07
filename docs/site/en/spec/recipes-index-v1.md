@@ -98,6 +98,7 @@ There is no current v2.
 | 2026-11-03 | `page_url` is no longer required: a Layer 3 entry drops its Vivarium page and carries `preview_url`, the running preview, with optional `pull_url` and `commit`. Added conformance clause 5. This breaks a consumer that read `page_url` on every entry, Vivarium MCP 0.9.0 and earlier among them: their `lookup_verdict` and `verify_branch_fix` give an empty page URL for Layer 3 recipes. It stays v1 because Vivarium has no known users yet (AGENTS.md §4.9). |
 | 2026-11-03 | A Layer 3 entry may now preview a commit that is not a pull request yet, such as a branch on a fork: it then has no `pull` or `pull_url`. Added optional `commit_url` for every Layer 3 entry. Backwards-compatible — `pull` was already optional. |
 | 2026-11-06 | `recipe.schema.json` gains optional `title`, which a recipe with no README uses in place of the README's first H1. Layer 3 previews no longer have a README, so their `source_url` is a directory holding only their metadata. No field of the index changes. |
+| 2026-11-07 | `recipe.schema.json` gains optional `guests[].reference.release`: `"latest"` makes a formicarium guest follow the repository's latest stable release instead of a branch. Not exported to the index. |
 
 ## Generation
 

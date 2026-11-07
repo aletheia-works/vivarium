@@ -12,7 +12,7 @@
     "drawer.meta.k4": "ランタイム",
     "page.h1": "{0} の再現",
     "chip.bugContext": "{0} bug の背景",
-    "section.baseline.h2": "baseline · jj-vcs/jj main",
+    "section.baseline.h2": "baseline · jj-vcs/jj 最新リリース",
     "output.pending": "待機中…",
     "section.fix.h2": "fix · Marukome0743/jj",
     "page.title": "Vivarium · jj undo の後に同じ書き換えを 1 秒以内に再実行すると内部エラーになる不具合の再現",

@@ -18,6 +18,7 @@ import {
 } from './prune.ts';
 import { publishSet } from './release.ts';
 import { type TurnTiming, waitForPublishTurn } from './turn.ts';
+import { planWatch } from './watch.ts';
 
 export interface CliIo {
   stdout: (text: string) => void;
@@ -244,9 +245,23 @@ async function command(
         ),
         run: runProcess,
         workDirectory: work,
+        ...(deps.fetcher === undefined ? {} : { fetcher: deps.fetcher }),
+        token: environment(io, 'GITHUB_TOKEN'),
       });
       return { changed: record !== null, record };
     }
+    case 'watch':
+      return planWatch({
+        api: api(),
+        layer1Directory: resolve(required(flags, 'layer1')),
+        buildWorkflow: required(flags, 'build-workflow'),
+        allowlist: parseAllowlist(
+          await readJson(join(PACKAGE_ROOT, 'allowlist.json')),
+        ),
+        run: runProcess,
+        ...(deps.fetcher === undefined ? {} : { fetcher: deps.fetcher }),
+        token: environment(io, 'GITHUB_TOKEN'),
+      });
     case 'accept': {
       const published = (await readJson(required(flags, 'published'))) as {
         build?: unknown;
@@ -281,7 +296,7 @@ async function command(
     default:
       throw new BuildError(
         'INVALID_INPUT',
-        'usage: cli.ts <build|prepare|publish-turn|release|bump|accept|prune> [--flag value]...',
+        'usage: cli.ts <build|prepare|publish-turn|release|bump|watch|accept|prune> [--flag value]...',
       );
   }
 }

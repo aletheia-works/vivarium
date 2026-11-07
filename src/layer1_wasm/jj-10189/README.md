@@ -8,10 +8,10 @@ baseline aborts with `Internal error: Unexpected error from backend` caused by
 
 ## Sources
 
-| Role | Repository | Commit | Followed branch |
+| Role | Repository | Commit | Follows |
 | --- | --- | --- | --- |
-| baseline | [jj-vcs/jj](https://github.com/jj-vcs/jj) | `b5c61830e73eccb3f7f79661c0915681fdc00dd3` | `main` |
-| fix | [Marukome0743/jj](https://github.com/Marukome0743/jj/tree/fix-10189) | `226377683a389c15af492d695a9935223b74a8b3` | `fix-10189` |
+| baseline | [jj-vcs/jj](https://github.com/jj-vcs/jj) | `b5c61830e73eccb3f7f79661c0915681fdc00dd3` | latest release |
+| fix | [Marukome0743/jj](https://github.com/Marukome0743/jj/tree/fix-10189) | `226377683a389c15af492d695a9935223b74a8b3` | branch `fix-10189` |
 
 The fix is [jj-vcs/jj#10190](https://github.com/jj-vcs/jj/pull/10190). It
 lets `CommitBuilder::write()` accept a commit id that already exists when an
@@ -19,7 +19,8 @@ ancestor operation recorded the same rewrite with exactly the same
 predecessors, and rejects every other collision as before.
 
 `recipe.json` declares both as `guests`. `commit` is what the fixed-guest
-builder builds and what `fixed-guest-bump` moves; `accepted` is the build
+builder builds and what `fixed-guest-bump` moves, started daily by
+`fixed-guest-watch`; `accepted` is the build
 published as its Release, and only `accepted` runs on the site.
 
 | Role | Accepted Release | ELF SHA256 |

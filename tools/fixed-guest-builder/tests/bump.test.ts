@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'bun:test';
 import { readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { bumpGuest, resolveBranch } from '../src/bump.ts';
+import { bumpGuest, resolveBranch, resolveLatestRelease } from '../src/bump.ts';
 import { parseAllowlist } from '../src/declaration.ts';
 import { BuildError } from '../src/errors.ts';
 import { runProcess } from '../src/process.ts';
@@ -96,7 +96,115 @@ describe('resolveBranch', () => {
   });
 });
 
+function latest(tag: unknown, status = 200) {
+  const urls: string[] = [];
+  const headers: unknown[] = [];
+  const fetcher = async (url: string, init: RequestInit) => {
+    urls.push(url);
+    headers.push(init.headers);
+    return Response.json({ tag_name: tag }, { status });
+  };
+  return { fetcher, urls, headers };
+}
+
+describe('resolveLatestRelease', () => {
+  const options = (url: string) => ({
+    repository: 'https://github.com/biomejs/biome',
+    run: runProcess,
+    cloneUrl: () => url,
+  });
+
+  test('returns the commit of a lightweight tag from the releases/latest endpoint', async () => {
+    const upstream = await createUpstream();
+    const { fetcher, urls, headers } = latest('v1');
+    expect(
+      await resolveLatestRelease({
+        ...options(upstream.url),
+        fetcher,
+        token: 'token',
+      }),
+    ).toEqual({ tag: 'v1', commit: upstream.tagged });
+    expect(urls).toEqual([
+      'https://api.github.com/repos/biomejs/biome/releases/latest',
+    ]);
+    expect(headers[0]).toMatchObject({ authorization: 'Bearer token' });
+  });
+
+  test('peels an annotated tag to its commit', async () => {
+    const upstream = await createUpstream();
+    const tagged = await runProcess('git', [
+      '-C',
+      upstream.bare,
+      '-c',
+      'user.name=t',
+      '-c',
+      'user.email=t@example.com',
+      'tag',
+      '-a',
+      'v2',
+      '-m',
+      'v2',
+      upstream.main,
+    ]);
+    expect(tagged.code).toBe(0);
+    expect(
+      await resolveLatestRelease({
+        ...options(upstream.url),
+        fetcher: latest('v2').fetcher,
+      }),
+    ).toEqual({ tag: 'v2', commit: upstream.main });
+  });
+
+  test('refuses a failed lookup, an unsafe tag and a tag the repository lacks', async () => {
+    const upstream = await createUpstream();
+    const run = (fetcher: ReturnType<typeof latest>['fetcher']) =>
+      errorCode(resolveLatestRelease({ ...options(upstream.url), fetcher }));
+    expect(await run(latest('v1', 404).fetcher)).toBe('EXTERNAL');
+    expect(await run(latest('--upload-pack=x').fetcher)).toBe('EXTERNAL');
+    expect(await run(latest(1).fetcher)).toBe('EXTERNAL');
+    expect(
+      await run(async () => {
+        throw new Error('offline');
+      }),
+    ).toBe('EXTERNAL');
+    expect(await run(latest('v9').fetcher)).toBe('SOURCE_UNREACHABLE');
+  });
+});
+
 describe('bumpGuest', () => {
+  test('moves a guest that follows the latest release to its commit', async () => {
+    const upstream = await createUpstream();
+    const path = await recipe(
+      guest('baseline', upstream.main, {
+        reference: { release: 'latest' },
+        accepted: ACCEPTED,
+      }),
+    );
+    const record = await bumpGuest({
+      recipePath: path,
+      role: 'baseline',
+      allowlist,
+      run: runProcess,
+      workDirectory: await tempDir(),
+      fetcher: latest('v1').fetcher,
+      cloneUrl: () => upstream.url,
+      now: () => new Date('2026-11-07T00:00:00Z'),
+    });
+    expect(record).toEqual({
+      role: 'baseline',
+      tool: 'biome',
+      repository: 'https://github.com/biomejs/biome',
+      release: 'v1',
+      previousCommit: upstream.main,
+      commit: upstream.tagged,
+      resolvedAt: '2026-11-07T00:00:00.000Z',
+    });
+    const [baseline] = JSON.parse(await readFile(path, 'utf8')).guests;
+    expect(baseline.commit).toBe(upstream.tagged);
+    expect(baseline.accepted).toEqual(ACCEPTED);
+    expect(baseline.reference).toEqual({ release: 'latest' });
+  });
+
   test('moves only the commit of the chosen role and keeps accepted', async () => {
     const upstream = await createUpstream();
     const path = await recipe(

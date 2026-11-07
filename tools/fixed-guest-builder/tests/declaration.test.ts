@@ -179,6 +179,31 @@ describe('validateDeclaration', () => {
     });
   });
 
+  test('keeps a followed latest release and refuses anything else or both', () => {
+    expect(
+      validateDeclaration(
+        { ...base, reference: { release: 'latest' } },
+        allowlist,
+      ).reference,
+    ).toEqual({ release: 'latest' });
+    expect(
+      code(() =>
+        validateDeclaration(
+          { ...base, reference: { release: 'v1' } },
+          allowlist,
+        ),
+      ),
+    ).toBe('INVALID_INPUT');
+    expect(
+      code(() =>
+        validateDeclaration(
+          { ...base, reference: { release: 'latest', branch: 'main' } },
+          allowlist,
+        ),
+      ),
+    ).toBe('INVALID_INPUT');
+  });
+
   test('refuses a missing fixture and a malformed tool name', () => {
     expect(
       code(() => validateDeclaration({ ...base, fixture: '' }, allowlist)),

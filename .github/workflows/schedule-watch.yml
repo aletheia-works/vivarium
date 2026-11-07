@@ -4,7 +4,7 @@ on:
   schedule:
     - cron: '17 18 * * *'
   workflow_run:
-    workflows: [formicarium-bump, repro-regression, retire-merged, upstream-bump]
+    workflows: [fixed-guest-build, fixed-guest-bump, fixed-guest-watch, formicarium-bump, repro-regression, retire-merged, upstream-bump]
     types: [completed]
   workflow_dispatch:
 

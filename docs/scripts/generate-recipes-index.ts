@@ -42,7 +42,7 @@ export interface RecipeGuest {
   repository: string;
   commit: string;
   fixture: string;
-  reference?: { branch?: string; pr?: string };
+  reference?: { branch?: string; pr?: string; release?: 'latest' };
   accepted?: AcceptedGuest;
 }
 
