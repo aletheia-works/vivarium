@@ -48,7 +48,7 @@ jobs:
             echo
             echo "Every digest above was read from the tarball the npm registry serves, checked against the registry's own integrity, and the source commit is the release tag's. This pull request's own repro-regression run stages the new package and re-runs every formicarium recipe on it, and the pull request merges itself once the required checks pass."
             echo
-            echo "- If staging fails, the release moved or renamed something \`stage-formicarium-assets.ts\` expects (\`BUNDLE_ENTRIES\`): adapt the stager and the recipe driver on this branch."
+            echo "- If staging fails, the release moved or renamed something the stager expects (\`BUNDLE_ENTRIES\` in \`docs/scripts/formicarium-staging/shared.ts\`): adapt the stager and the recipe driver on this branch."
             echo "- If a verdict flips, the runtime changed underneath the recipe; check the recipe page before merging by hand."
             echo "- Fix the recipe on this branch; once the branch differs from what the bot last pushed, the nightly run leaves it alone."
           } > "${RUNNER_TEMP}/body.md"

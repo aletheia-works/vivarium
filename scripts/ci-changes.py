@@ -183,6 +183,7 @@ def self_test():
         ".gitignore": {"docs"},
         ".github/workflows/repro-regression.yml": {"docs", "repro"},
         "docs/scripts/stage-formicarium-assets.ts": {"docs", "repro"},
+        "docs/scripts/formicarium-staging/stage.ts": {"docs", "repro"},
         "docs/site/public/api/recipes.json": {"docs", "repro", "mcp"},
         "docs/site/public/api/projects.json": {"docs", "repro"},
         "src/layer3_previews/motioneye-3506/preview.json": {"docs", "repro"},
