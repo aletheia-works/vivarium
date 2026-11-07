@@ -8,29 +8,25 @@ baseline aborts with `Internal error: Unexpected error from backend` caused by
 
 ## Sources
 
-| Role | Repository | Commit | Follows |
-| --- | --- | --- | --- |
-| baseline | [jj-vcs/jj](https://github.com/jj-vcs/jj) | `b5c61830e73eccb3f7f79661c0915681fdc00dd3` | latest release |
-| fix | [Marukome0743/jj](https://github.com/Marukome0743/jj/tree/fix-10189) | `226377683a389c15af492d695a9935223b74a8b3` | branch `fix-10189` |
+| Role | Repository | Follows |
+| --- | --- | --- |
+| baseline | [jj-vcs/jj](https://github.com/jj-vcs/jj) | latest release |
+| fix | [Marukome0743/jj](https://github.com/Marukome0743/jj/tree/fix-10189) | branch `fix-10189` |
 
 The fix is [jj-vcs/jj#10190](https://github.com/jj-vcs/jj/pull/10190). It
 lets `CommitBuilder::write()` accept a commit id that already exists when an
 ancestor operation recorded the same rewrite with exactly the same
 predecessors, and rejects every other collision as before.
 
-`recipe.json` declares both as `guests`. `commit` is what the fixed-guest
-builder builds and what `fixed-guest-bump` moves, started daily by
-`fixed-guest-watch`; `accepted` is the build
-published as its Release, and only `accepted` runs on the site.
+`recipe.json` declares both as `guests` and holds their current commits and
+builds. `commit` is what the fixed-guest builder builds and what
+`fixed-guest-bump` moves, started daily by `fixed-guest-watch`; `accepted` is
+the build published as the Release `guest-jj-<accepted.buildKey>`, and only
+`accepted` runs on the site.
 
-| Role | Accepted Release | ELF SHA256 |
-| --- | --- | --- |
-| baseline | `guest-jj-a59a45398d836404f8d3bb7f6bf469589a9024ecff94f5bd0e8f83873299515e` | `d7bf88b8fb1829952c8e4a83a1dadee9a93c4f10fefa09622a46c79bac8dc55f` |
-| fix | `guest-jj-8b8baadf381637c244d3628fcd4ae6ba587ac1268b6c8ca01f8a5bac238f6ca1` | `fb50f1a7afdb57a1ee9ab73ce9bd24293b1fe35199e3e6c2aecea422a1579ba9` |
-
-Both guests are accepted, and `src/layer1_wasm/formicarium.pin.json` pins the
-formicarium package, so the recipe is **active**: it is on the site and in
-the regression suite.
+While both guests are accepted and `src/layer1_wasm/formicarium.pin.json` pins
+the formicarium package, the recipe is **active**: it is on the site and in the
+regression suite.
 
 ## The input
 
