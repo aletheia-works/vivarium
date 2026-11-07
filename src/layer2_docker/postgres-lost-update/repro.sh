@@ -12,10 +12,11 @@
 #
 # Verdict semantics:
 #   exit 0 -> reproduced (lost update reproduces)
-#   exit 1 -> unreproduced (both increments preserved)
+#   exit 1 -> unreproduced (both increments preserved, or an
+#             unexpected final value)
 #   exit 2 -> error (postgres never became ready; no verdict is
 #             recorded)
-# Each prints a matching verdict= line on stderr just before it exits.
+# Exit 0 and 1 each print a matching verdict= line on stderr first.
 # An error that stops the script before that line records no verdict.
 #
 # The wrapper starts postgres in the background using its own

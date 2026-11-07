@@ -16,7 +16,7 @@
 #   exit 1 -> unreproduced — naive form silently happens to work
 #                            (which would mean xargs default
 #                            semantics changed).
-# Each prints a matching verdict= line on stderr just before it exits.
+# Exit 0 and 1 each print a matching verdict= line on stderr first.
 # An error that stops the script before that line records no verdict.
 
 set -uo pipefail

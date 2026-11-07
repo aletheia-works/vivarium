@@ -13,7 +13,7 @@
 #                          when using `local`)
 #   exit 1 -> unreproduced — bash now propagates the RHS exit code
 #                            through `local`
-# Each prints a matching verdict= line on stderr just before it exits.
+# Exit 0 and 1 each print a matching verdict= line on stderr first.
 # An error that stops the script before that line records no verdict.
 #
 # Two parallel demos are run inside subshells so a non-zero exit

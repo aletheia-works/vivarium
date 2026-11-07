@@ -16,7 +16,7 @@
 #   exit 1 -> unreproduced — kernel suddenly enforces flock as
 #                            mandatory (it won't, but the verdict
 #                            captures that branch honestly)
-# Each prints a matching verdict= line on stderr just before it exits.
+# Exit 0 and 1 each print a matching verdict= line on stderr first.
 # An error that stops the script before that line records no verdict.
 
 set -uo pipefail
