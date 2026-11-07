@@ -28,8 +28,8 @@ const STRINGS = {
       },
       {
         micro: 'SLUG + URL',
-        title: 'Enter the recipe path',
-        body: 'For a Layer 2 recipe, enter its path (e.g. `bash/local-shadows-exit`) to load the deployed snapshot, then add your branch-fix verdict.',
+        title: 'Enter the slug',
+        body: 'For a Layer 2 recipe, enter its slug (e.g. `bash-local-shadows-exit`) to load the deployed snapshot, then add your branch-fix verdict.',
       },
     ],
   },
@@ -50,8 +50,8 @@ const STRINGS = {
       },
       {
         micro: 'SLUG + URL',
-        title: 'レシピのパスを入力',
-        body: 'Layer 2 のレシピのパス（例: `bash/local-shadows-exit`）を入れてデプロイ済みスナップショットを読み込み、branch-fix の判定を追加する。',
+        title: 'slug を入力',
+        body: 'Layer 2 のレシピの slug（例: `bash-local-shadows-exit`）を入れてデプロイ済みスナップショットを読み込み、branch-fix の判定を追加する。',
       },
     ],
   },

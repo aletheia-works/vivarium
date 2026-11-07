@@ -13,6 +13,21 @@ export interface RecipeSourceFields {
   source_url: string;
 }
 
+export interface RecipeSnapshotFields {
+  slug: string;
+  verdict_url?: string;
+}
+
+export function snapshotUrl(
+  slugOrPath: string,
+  pagesBase: string,
+  recipes: readonly RecipeSnapshotFields[],
+): string {
+  const deployed = recipes.find((r) => r.slug === slugOrPath)?.verdict_url;
+  const path = deployed?.split('/repro/')[1];
+  return `${pagesBase}/${path ?? `${slugOrPath}/verdict.json`}`;
+}
+
 export function recipeSourceUrl(recipe: RecipeSourceFields): string {
   if (!recipe.preview_url) return recipe.source_url;
   return recipe.pull_url ?? recipe.commit_url ?? recipe.source_url;

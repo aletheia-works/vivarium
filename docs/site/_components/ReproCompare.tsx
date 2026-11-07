@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import validateVerdictRaw from '../_generated/validators/verdict-validator.mjs';
+import recipesIndex from '../public/api/recipes.json';
+import { snapshotUrl } from './recipe-url';
 import './repro-compare.css';
 
 type VerdictLiteral = 'reproduced' | 'unreproduced';
@@ -142,10 +144,10 @@ const STRINGS: Record<Lang, Strings> = {
     pasteOriginal: 'original-verdict.json',
     pasteBranch: 'branch-fix-verdict.json',
     pasteApply: 'Apply pasted JSON',
-    slugLabel: 'Recipe path',
-    slugPlaceholder: 'e.g. bash/local-shadows-exit',
+    slugLabel: 'Recipe slug',
+    slugPlaceholder: 'e.g. bash-local-shadows-exit',
     slugHelp:
-      'The path of a Layer 2 recipe in its page URL. The button loads its deployed snapshot as the original side.',
+      'The slug of a Layer 2 recipe. The button loads its deployed snapshot as the original side.',
     expectedLabel: 'Expected branch-fix verdict',
     expectedFailDesc:
       'unreproduced — bug does NOT reproduce on the fix (typical "fix works")',
@@ -208,10 +210,10 @@ const STRINGS: Record<Lang, Strings> = {
     pasteOriginal: 'original-verdict.json',
     pasteBranch: 'branch-fix-verdict.json',
     pasteApply: 'ペーストした JSON を適用',
-    slugLabel: 'レシピのパス',
-    slugPlaceholder: '例: bash/local-shadows-exit',
+    slugLabel: 'レシピ slug',
+    slugPlaceholder: '例: bash-local-shadows-exit',
     slugHelp:
-      'ページ URL にある Layer 2 レシピのパス。ボタンでデプロイ済みスナップショットを元の判定として読み込む。',
+      'Layer 2 レシピの slug。ボタンでデプロイ済みスナップショットを元の判定として読み込む。',
     expectedLabel: '期待する branch-fix の verdict',
     expectedFailDesc:
       'unreproduced — 修正によりバグが再現しなくなる (典型的な「修正成立」)',
@@ -647,7 +649,11 @@ export function ReproCompareApp({ lang }: ReproCompareProps) {
         setBusy(false);
       });
     } else if (urlSlug) {
-      const deployedUrl = `${PAGES_BASE}/${urlSlug}/verdict.json`;
+      const deployedUrl = snapshotUrl(
+        urlSlug,
+        PAGES_BASE,
+        recipesIndex.recipes,
+      );
       setBusy(true);
       fetchVerdictFromUrl(deployedUrl).then((r) => {
         if (r.ok) {
@@ -776,7 +782,7 @@ export function ReproCompareApp({ lang }: ReproCompareProps) {
   const fetchOriginalFromSlug = useCallback(async () => {
     if (!slug) return;
     setBusy(true);
-    const url = `${PAGES_BASE}/${slug}/verdict.json`;
+    const url = snapshotUrl(slug, PAGES_BASE, recipesIndex.recipes);
     const r = await fetchVerdictFromUrl(url);
     if (r.ok) {
       setOriginal(r.data);
