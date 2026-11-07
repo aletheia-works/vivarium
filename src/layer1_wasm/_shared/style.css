@@ -1501,7 +1501,7 @@ body.vh-drawer-open:has(#path-a-mount) {
   margin-top: 1.4rem;
 }
 
-@media (min-aspect-ratio: 16/10), (max-height: 900px) {
+@media (min-aspect-ratio: 16 / 10), (max-height: 900px) {
   .vh-variant-head--secondary {
     margin-top: 0.4rem;
   }
@@ -1512,7 +1512,7 @@ body.vh-drawer-open:has(#path-a-mount) {
 }
 
 .vh-variant-head__spec {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: "JetBrains Mono", monospace;
   font-size: 0.78rem;
   opacity: 0.7;
   word-break: break-all;
@@ -1594,7 +1594,7 @@ body.vh-drawer-open:has(#path-a-mount) {
   padding: 0.5rem 0.75rem;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
-  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
 }
 
 .vh-terminal__plain-input {
@@ -1605,7 +1605,7 @@ body.vh-drawer-open:has(#path-a-mount) {
   border-top: 1px solid var(--vh-terminal-border);
   background: transparent;
   color: inherit;
-  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
 }
 
 .vh-terminal__notice {

@@ -57,11 +57,7 @@ interface WorkerError {
   message: string;
 }
 
-type WorkerMessage =
-  | WorkerProgress
-  | WorkerReady
-  | WorkerResult
-  | WorkerError;
+type WorkerMessage = WorkerProgress | WorkerReady | WorkerResult | WorkerError;
 
 function stageStrings(options: StartOptions): Record<ProgressStage, string> {
   const en: Record<ProgressStage, string> = {

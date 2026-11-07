@@ -1,20 +1,20 @@
-import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 
-import { expect, test, type Page } from "@playwright/test";
+import { expect, type Page, test } from '@playwright/test';
 
-const LAYER1 = "http://localhost:8767";
-const LAYER2 = "http://localhost:8768";
+const LAYER1 = 'http://localhost:8767';
+const LAYER2 = 'http://localhost:8768';
 
-const SUPPORTED_VERDICTS = ["reproduced", "unreproduced"] as const;
+const SUPPORTED_VERDICTS = ['reproduced', 'unreproduced'] as const;
 const SUPPORTED_RUNTIMES = [
-  "browser",
-  "pyodide",
-  "ruby.wasm",
-  "php-wasm",
-  "rust-wasi",
-  "formicarium",
-  "docker-snapshot",
+  'browser',
+  'pyodide',
+  'ruby.wasm',
+  'php-wasm',
+  'rust-wasi',
+  'formicarium',
+  'docker-snapshot',
 ] as const;
 
 type ExpectedVerdict = (typeof SUPPORTED_VERDICTS)[number];
@@ -54,10 +54,10 @@ function isExpectedRuntimeName(value: unknown): value is ExpectedRuntimeName {
 function loadRecipeEntries(): RecipeEntry[] {
   const indexPath = resolve(
     import.meta.dirname,
-    "../../..",
-    "docs/site/public/api/recipes.json",
+    '../../..',
+    'docs/site/public/api/recipes.json',
   );
-  const raw = readFileSync(indexPath, "utf-8");
+  const raw = readFileSync(indexPath, 'utf-8');
   const parsed = JSON.parse(raw) as RecipesIndex;
   return parsed.recipes;
 }
@@ -75,12 +75,12 @@ function recipeUrl(recipe: RecipeEntry): string {
 function caseFromRecipe(recipe: RecipeEntry): ReproCase {
   if (!isExpectedVerdict(recipe.expected_verdict)) {
     throw new Error(
-      `${recipe.slug}: expected_verdict must be one of ${SUPPORTED_VERDICTS.join(", ")}`,
+      `${recipe.slug}: expected_verdict must be one of ${SUPPORTED_VERDICTS.join(', ')}`,
     );
   }
   if (!isExpectedRuntimeName(recipe.expected_runtime)) {
     throw new Error(
-      `${recipe.slug}: expected_runtime must be one of ${SUPPORTED_RUNTIMES.join(", ")}`,
+      `${recipe.slug}: expected_runtime must be one of ${SUPPORTED_RUNTIMES.join(', ')}`,
     );
   }
   return {
@@ -96,12 +96,12 @@ function caseFromRecipe(recipe: RecipeEntry): ReproCase {
 
 function loadRegressionCases(): ReproCase[] {
   const smoke: ReproCase = {
-    name: "_shared/_test smoke test",
+    name: '_shared/_test smoke test',
     url: `${LAYER1}/_shared/_test/`,
-    expectedVerdict: "reproduced",
-    expectedBugProject: "vivarium",
+    expectedVerdict: 'reproduced',
+    expectedBugProject: 'vivarium',
     expectedBugIssue: 0,
-    expectedRuntimeName: "browser",
+    expectedRuntimeName: 'browser',
     expectsFixPane: false,
   };
   const recipes = loadRecipeEntries()
@@ -141,10 +141,10 @@ async function readVivariumState(page: Page): Promise<VivariumPageState> {
   });
 }
 
-function timeoutForRuntime(name: ReproCase["expectedRuntimeName"]): number {
-  if (name === "browser" || name === "docker-snapshot") return 10_000;
-  if (name === "pyodide") return 120_000;
-  if (name === "formicarium") return 300_000;
+function timeoutForRuntime(name: ReproCase['expectedRuntimeName']): number {
+  if (name === 'browser' || name === 'docker-snapshot') return 10_000;
+  if (name === 'pyodide') return 120_000;
+  if (name === 'formicarium') return 300_000;
   return 75_000;
 }
 
@@ -156,10 +156,9 @@ for (const c of cases) {
 
     await page.waitForFunction(
       () => {
-        const v = (
-          globalThis as unknown as { __VIVARIUM_VERDICT__?: string }
-        ).__VIVARIUM_VERDICT__;
-        return v === "reproduced" || v === "unreproduced";
+        const v = (globalThis as unknown as { __VIVARIUM_VERDICT__?: string })
+          .__VIVARIUM_VERDICT__;
+        return v === 'reproduced' || v === 'unreproduced';
       },
       undefined,
       { timeout: timeoutForRuntime(c.expectedRuntimeName) },
@@ -167,36 +166,34 @@ for (const c of cases) {
 
     const state = await readVivariumState(page);
 
-    expect.soft(state.verdict, "DOM/global verdict").toBe(c.expectedVerdict);
-    expect.soft(state.contract, "envelope contract").toBe("v1");
+    expect.soft(state.verdict, 'DOM/global verdict').toBe(c.expectedVerdict);
+    expect.soft(state.contract, 'envelope contract').toBe('v1');
     expect
-      .soft(state.bugProject, "envelope bug.project")
+      .soft(state.bugProject, 'envelope bug.project')
       .toBe(c.expectedBugProject);
-    expect
-      .soft(state.bugIssue, "envelope bug.issue")
-      .toBe(c.expectedBugIssue);
+    expect.soft(state.bugIssue, 'envelope bug.issue').toBe(c.expectedBugIssue);
 
     const domVerdict = await page
-      .locator("#verdict")
-      .getAttribute("data-verdict");
-    expect.soft(domVerdict, "#verdict[data-verdict]").toBe(c.expectedVerdict);
+      .locator('#verdict')
+      .getAttribute('data-verdict');
+    expect.soft(domVerdict, '#verdict[data-verdict]').toBe(c.expectedVerdict);
 
     const contractMeta = await page
       .locator('meta[name="vivarium-contract"]')
-      .getAttribute("content");
-    expect.soft(contractMeta, "<meta vivarium-contract>").toBe("v1");
+      .getAttribute('content');
+    expect.soft(contractMeta, '<meta vivarium-contract>').toBe('v1');
 
     expect
-      .soft(state.runtimeName, "envelope runtime.name")
+      .soft(state.runtimeName, 'envelope runtime.name')
       .toBe(c.expectedRuntimeName);
 
     if (c.expectsFixPane) {
-      const fixPane = page.locator("#output-fix");
-      await expect.soft(fixPane, "#output-fix exists").toHaveCount(1);
+      const fixPane = page.locator('#output-fix');
+      await expect.soft(fixPane, '#output-fix exists').toHaveCount(1);
 
       await expect
-        .soft(fixPane, "#output-fix settled (not left pending)")
-        .not.toHaveAttribute("data-fix-status", "pending", {
+        .soft(fixPane, '#output-fix settled (not left pending)')
+        .not.toHaveAttribute('data-fix-status', 'pending', {
           timeout: 60_000,
         });
 
@@ -204,14 +201,14 @@ for (const c of cases) {
         await fixPane.evaluate(
           (el) =>
             el.querySelector<HTMLElement & { transcript: string }>(
-              "formicarium-terminal",
+              'formicarium-terminal',
             )?.transcript ??
             el.textContent ??
-            "",
+            '',
         )
       ).trim();
       expect
-        .soft(fixText.length, "#output-fix is non-empty")
+        .soft(fixText.length, '#output-fix is non-empty')
         .toBeGreaterThan(0);
     }
   });

@@ -9,7 +9,12 @@ import { localeCounterpartPath } from './locale.js';
 
 (function injectFavicons() {
   for (const spec of FAVICONS) {
-    if (document.head.querySelector(`link[rel="${spec.rel}"][sizes="${spec.sizes}"]`)) continue;
+    if (
+      document.head.querySelector(
+        `link[rel="${spec.rel}"][sizes="${spec.sizes}"]`,
+      )
+    )
+      continue;
     const link = document.createElement('link');
     for (const [k, v] of Object.entries(spec)) link.setAttribute(k, v);
     document.head.appendChild(link);
@@ -91,9 +96,9 @@ function injectChrome() {
     document.createElement('header');
   nav.className = 'vh-topnav';
 
-  const navLinks = NAV_ITEMS[LANG].map(
-    (it) => `<a class="vh-topnav__link" href="${it.link}">${it.text}</a>`,
-  ).join('');
+  const navLinks = NAV_ITEMS[LANG]
+    .map((it) => `<a class="vh-topnav__link" href="${it.link}">${it.text}</a>`)
+    .join('');
 
   const counterpart = localeCounterpartPath(location.pathname, SITE_BASE);
   const langHref =
@@ -114,7 +119,8 @@ function injectChrome() {
       <button class="vh-topnav__theme" type="button" aria-label="${T.themeAria}">${moon}</button>
     </div>
   `;
-  if (!nav.isConnected) document.body.insertBefore(nav, document.body.firstChild);
+  if (!nav.isConnected)
+    document.body.insertBefore(nav, document.body.firstChild);
 
   const outputEl = document.querySelector('#output');
   if (outputEl?.parentElement) {

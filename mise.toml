@@ -88,6 +88,16 @@ description = "Biome check + apply safe + unsafe auto-fixes"
 dir = "docs"
 run = "bunx --bun biome check --write --unsafe ."
 
+[tasks."repro:check"]
+description = "Biome check of the Layer 1 sources (read-only)"
+dir = "src/layer1_wasm"
+run = "bunx --bun biome check ."
+
+[tasks."repro:check:fix"]
+description = "Biome check + apply safe + unsafe auto-fixes for the Layer 1 sources"
+dir = "src/layer1_wasm"
+run = "bunx --bun biome check --write --unsafe ."
+
 [tasks."repro:typecheck"]
 description = "TypeScript type-check Layer 1 sources + tests"
 dir = "src/layer1_wasm"
@@ -318,7 +328,7 @@ run = "rumdl fmt ."
 
 [tasks."lint:all"]
 description = "Run all formatters/linters (read-only) — Biome + Mago + Ruff + Tombi + rumdl + Rust + ShellCheck + actionlint + OpenTofu"
-depends = ["docs:check", "php:check", "python:check", "toml:check", "markdown:check", "rust:check", "shell:check", "actions:check", "fixed-guest-builder:check", "infra:check", "infra:aws:check"]
+depends = ["docs:check", "php:check", "python:check", "toml:check", "markdown:check", "rust:check", "shell:check", "actions:check", "fixed-guest-builder:check", "repro:check", "infra:check", "infra:aws:check"]
 
 [tasks."lint:all:fix"]
 description = "Apply all autofixes (in-place) across every language"
@@ -330,6 +340,7 @@ depends = [
   "markdown:check:fix",
   "rust:check:fix",
   "fixed-guest-builder:check:fix",
+  "repro:check:fix",
   "infra:check:fix",
   "infra:aws:check:fix",
 ]

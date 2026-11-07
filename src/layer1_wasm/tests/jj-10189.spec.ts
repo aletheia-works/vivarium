@@ -53,7 +53,7 @@ test.skip(
   `${SLUG} is not staged: stage it with stage-formicarium-assets.ts to run this spec`,
 );
 
-function escape(text: string): string {
+function escapeRegExp(text: string): string {
   return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
@@ -73,7 +73,7 @@ async function observe(page: Page): Promise<Observed> {
       marks: store.__VIVARIUM_FORMICARIUM_MARKS__ ?? [],
       terminals: [...document.querySelectorAll('formicarium-terminal')].map(
         (terminal) => ({
-          state: (terminal as HTMLElement).dataset['state'],
+          state: (terminal as HTMLElement).dataset.state,
           status:
             terminal.querySelector('.vh-progress__label')?.textContent ?? '',
           transcript:
@@ -140,12 +140,12 @@ test('en: both terminals start isolated, verify and run the recorded commands', 
   const [baselineTerminal, fixTerminal] = observed.terminals;
   expect(baselineTerminal?.transcript).toMatch(
     new RegExp(
-      `\\$ ${escape(RETRY_COMMAND)}\\n[^$]*Newly-created commit [0-9a-f]{40} already exists\\n[^$]*$`,
+      `\\$ ${escapeRegExp(RETRY_COMMAND)}\\n[^$]*Newly-created commit [0-9a-f]{40} already exists\\n[^$]*$`,
     ),
   );
   expect(fixTerminal?.transcript).toMatch(
     new RegExp(
-      `\\$ ${escape(RETRY_COMMAND)}\\n[^$]*Parent commit \\(@-\\)\\s*: \\S+ [0-9a-f]+ \\(empty\\) NEW\\n[^$]*$`,
+      `\\$ ${escapeRegExp(RETRY_COMMAND)}\\n[^$]*Parent commit \\(@-\\)\\s*: \\S+ [0-9a-f]+ \\(empty\\) NEW\\n[^$]*$`,
     ),
   );
   const names = observed.marks.map((mark) => mark.name);
@@ -189,10 +189,7 @@ test('en: a changed ELF is not run and the page says why', async ({
   }
 });
 
-test('en: a visitor types a command into the terminal', async ({
-  page,
-  browserName,
-}) => {
+test('en: a visitor types a command into the terminal', async ({ page }) => {
   test.setTimeout(360_000);
   await settle(page, PAGES.en);
   const baseline = page.locator('#output-baseline formicarium-terminal');

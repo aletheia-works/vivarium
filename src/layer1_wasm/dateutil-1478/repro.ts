@@ -96,7 +96,7 @@ const reproCodeEl = requiredElement('dateutil-1478', 'repro-code');
 
 function setFixPane(text: string, status: 'pending' | 'ok' | 'error'): void {
   outputFixEl.textContent = text;
-  outputFixEl.dataset['fixStatus'] = status;
+  outputFixEl.dataset.fixStatus = status;
 }
 
 showReproSource(reproCodeEl, REPRO_CODE);
@@ -243,7 +243,7 @@ try {
   metaEl.textContent =
     `Baseline python-dateutil ${baselineVersions.dateutil || '?'} on Python ` +
     `${baselineVersions.python || '?'} via Pyodide v${pyodideVersion} ` +
-    `(Web Worker).`;
+    '(Web Worker).';
 
   setFixPane('Fetching wheel manifest…', 'pending');
   const manifestResult = await fetchWheelManifest();

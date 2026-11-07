@@ -1,17 +1,17 @@
-import { readFileSync, writeFileSync } from "node:fs";
-import { resolve } from "node:path";
+import { readFileSync, writeFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 
-import { expect, test } from "@playwright/test";
+import { expect, test } from '@playwright/test';
 
-const LAYER1 = "http://localhost:8767";
+const LAYER1 = 'http://localhost:8767';
 
 const SUPPORTED_RUNTIMES = [
-  "browser",
-  "pyodide",
-  "ruby.wasm",
-  "php-wasm",
-  "rust-wasi",
-  "formicarium",
+  'browser',
+  'pyodide',
+  'ruby.wasm',
+  'php-wasm',
+  'rust-wasi',
+  'formicarium',
 ] as const;
 
 type ExpectedRuntimeName = (typeof SUPPORTED_RUNTIMES)[number];
@@ -38,17 +38,17 @@ function isExpectedRuntimeName(value: unknown): value is ExpectedRuntimeName {
 function loadLayer1Recipes(): Layer1Recipe[] {
   const indexPath = resolve(
     import.meta.dirname,
-    "../../..",
-    "docs/site/public/api/recipes.json",
+    '../../..',
+    'docs/site/public/api/recipes.json',
   );
-  const raw = readFileSync(indexPath, "utf-8");
+  const raw = readFileSync(indexPath, 'utf-8');
   const parsed = JSON.parse(raw) as RecipesIndex;
   return parsed.recipes
     .filter((r) => r.layer === 1)
     .map((r) => {
       if (!isExpectedRuntimeName(r.expected_runtime)) {
         throw new Error(
-          `${r.slug}: expected_runtime must be one of ${SUPPORTED_RUNTIMES.join(", ")}`,
+          `${r.slug}: expected_runtime must be one of ${SUPPORTED_RUNTIMES.join(', ')}`,
         );
       }
       return { slug: r.slug, expectedRuntimeName: r.expected_runtime };
@@ -57,15 +57,15 @@ function loadLayer1Recipes(): Layer1Recipe[] {
 }
 
 function timeoutForRuntime(name: ExpectedRuntimeName): number {
-  if (name === "browser") return 10_000;
-  if (name === "pyodide") return 120_000;
-  if (name === "formicarium") return 300_000;
+  if (name === 'browser') return 10_000;
+  if (name === 'pyodide') return 120_000;
+  if (name === 'formicarium') return 300_000;
   return 75_000;
 }
 
 const RECIPES = loadLayer1Recipes();
-const FIX_URL = process.env["PLAYWRIGHT_FIX_URL"];
-const OUTPUT_PATH = process.env["VERDICT_CAPTURE_OUTPUT"];
+const FIX_URL = process.env.PLAYWRIGHT_FIX_URL;
+const OUTPUT_PATH = process.env.VERDICT_CAPTURE_OUTPUT;
 
 for (const { slug, expectedRuntimeName } of RECIPES) {
   test(`verdict-capture: ${slug}`, async ({ page }) => {
@@ -73,17 +73,16 @@ for (const { slug, expectedRuntimeName } of RECIPES) {
 
     let url = `${LAYER1}/${slug}/`;
     if (FIX_URL) {
-      const sep = url.includes("?") ? "&" : "?";
+      const sep = url.includes('?') ? '&' : '?';
       url = `${url}${sep}fix_url=${encodeURIComponent(FIX_URL)}`;
     }
     await page.goto(url);
 
     await page.waitForFunction(
       () => {
-        const v = (
-          globalThis as unknown as { __VIVARIUM_VERDICT__?: string }
-        ).__VIVARIUM_VERDICT__;
-        return v === "reproduced" || v === "unreproduced";
+        const v = (globalThis as unknown as { __VIVARIUM_VERDICT__?: string })
+          .__VIVARIUM_VERDICT__;
+        return v === 'reproduced' || v === 'unreproduced';
       },
       undefined,
       { timeout: timeoutForRuntime(expectedRuntimeName) },
@@ -104,10 +103,10 @@ for (const { slug, expectedRuntimeName } of RECIPES) {
           fix_url: FIX_URL ?? null,
           captured_at: new Date().toISOString(),
         })}\n`,
-        "utf-8",
+        'utf-8',
       );
     }
 
-    expect(["reproduced", "unreproduced"]).toContain(verdict);
+    expect(['reproduced', 'unreproduced']).toContain(verdict);
   });
 }

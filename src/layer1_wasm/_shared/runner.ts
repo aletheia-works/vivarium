@@ -191,7 +191,9 @@ export function enableRunner(opts: RunnerOptions): void {
     SVG_RESET,
   );
 
-  const staticActions = colEl?.querySelector<HTMLElement>('.vh-runner__actions');
+  const staticActions = colEl?.querySelector<HTMLElement>(
+    '.vh-runner__actions',
+  );
   const actions =
     staticActions ??
     el('div', { class: 'vh-runner__actions' }, editBtn, runBtn, resetBtn);
@@ -231,10 +233,7 @@ export function enableRunner(opts: RunnerOptions): void {
     const span = el('span', { 'aria-hidden': 'true' });
     span.innerHTML = isEditing ? SVG_EYE : SVG_PENCIL;
     editBtn.append(span, isEditing ? S.view : S.edit);
-    editBtn.setAttribute(
-      'aria-label',
-      isEditing ? S.viewAria : S.editAria,
-    );
+    editBtn.setAttribute('aria-label', isEditing ? S.viewAria : S.editAria);
   };
 
   const setEditing = (next: boolean): void => {

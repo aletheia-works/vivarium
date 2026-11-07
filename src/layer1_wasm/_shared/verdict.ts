@@ -48,7 +48,7 @@ export function setVerdict(
   }
   el.classList.remove('reproduced', 'unreproduced', 'pending');
   el.classList.add(state);
-  el.dataset['verdict'] = state;
+  el.dataset.verdict = state;
   let label: string;
   if (state === 'pending') {
     const resolved = phase ?? (/running/i.test(text) ? 'running' : 'loading');
@@ -72,7 +72,7 @@ export function setVerdict(
 }
 
 export function setResult(envelope: VivariumResultV1): void {
-  if (!envelope || envelope.contract !== 'v1') {
+  if (envelope?.contract !== 'v1') {
     throw new Error(
       `vivarium contract v1: setResult expected contract="v1", got ${
         envelope ? JSON.stringify(envelope.contract) : 'null'

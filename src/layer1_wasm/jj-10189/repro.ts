@@ -121,7 +121,7 @@ function record(): void {
       finishedAt: new Date(),
     }),
   );
-  panes.fix.dataset['fixStatus'] = decision.fixStatus;
+  panes.fix.dataset.fixStatus = decision.fixStatus;
   const failure = decision.baselineError ?? decision.fixError;
   setVerdict(
     decision.verdict,

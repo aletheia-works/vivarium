@@ -58,7 +58,8 @@ export class LineEditor {
   handle(data: string): EditorAction[] {
     const actions: EditorAction[] = [];
     const newline = data.search(/[\r\n]/);
-    const input = data.length > 1 && newline !== -1 ? data.slice(0, newline) : data;
+    const input =
+      data.length > 1 && newline !== -1 ? data.slice(0, newline) : data;
     for (let index = 0; index < input.length; ) {
       const character = String.fromCodePoint(input.codePointAt(index) ?? 0);
       if (character === '\x1b') {
@@ -84,8 +85,7 @@ export class LineEditor {
         continue;
       }
       if (character.charCodeAt(0) < 0x20) continue;
-      if (utf8Length(this.line) + utf8Length(character) > MAX_LINE_BYTES)
-        break;
+      if (utf8Length(this.line) + utf8Length(character) > MAX_LINE_BYTES) break;
       this.line += character;
       actions.push({ kind: 'write', text: character });
     }

@@ -70,7 +70,7 @@ class FormicariumTerminal extends HTMLElement {
     this.#plainInput.setAttribute('aria-label', strings.input);
     const view: TerminalView = {
       setState: (state, text) => {
-        this.dataset['state'] = state;
+        this.dataset.state = state;
         this.#status.textContent = text;
         if (state === 'ready' || state === 'running') {
           this.#fill.style.width = '100%';

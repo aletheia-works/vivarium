@@ -79,7 +79,8 @@ function evaluate(result: ReproOutput | null): Evaluation {
   if (!result) {
     return {
       verdict: 'unreproduced',
-      message: 'bug not reproduced — the script left no `result` mapping behind.',
+      message:
+        'bug not reproduced — the script left no `result` mapping behind.',
     };
   }
   if (result.fk_disagreement) {
@@ -126,7 +127,7 @@ try {
   metaEl.textContent =
     `Python ${baselineResult.python_version} with stdlib sqlite3 ` +
     `(SQLite ${baselineResult.sqlite_version}) via Pyodide v${worker.pyodideVersion} ` +
-    `(Web Worker).`;
+    '(Web Worker).';
 
   const envelope: VivariumResultV1 = {
     contract: 'v1',

@@ -1,9 +1,4 @@
 import {
-  loadVivariumRuby,
-  type RubyRunner,
-  type RunResult,
-} from '../_shared/ruby_loader.js';
-import {
   reportRuntimeFailure,
   requiredElement,
   showReproSource,
@@ -13,6 +8,11 @@ import {
   type RecipeCapture,
   timingSince,
 } from '../_shared/recipe_result.js';
+import {
+  loadVivariumRuby,
+  type RubyRunner,
+  type RunResult,
+} from '../_shared/ruby_loader.js';
 import { enableRunner } from '../_shared/runner.js';
 import {
   setResult,

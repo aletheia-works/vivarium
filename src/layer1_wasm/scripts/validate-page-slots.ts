@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 
-import { existsSync, readFileSync, readdirSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
@@ -39,7 +39,7 @@ const LAYER1_SLOTS: ReadonlyArray<readonly [string, string]> = [
   ],
   [
     'runtime-label',
-    'the drawer\'s Runtime row would render empty; it names the exact runtime + package versions the verdict was produced against.',
+    "the drawer's Runtime row would render empty; it names the exact runtime + package versions the verdict was produced against.",
   ],
   [
     'fix-pane',
@@ -54,7 +54,7 @@ const TERMINAL_SLOTS: ReadonlyArray<readonly [string, string]> = [
   ],
   [
     'runtime-label',
-    'the drawer\'s Runtime row would render empty; it names the runtime the verdict was produced against.',
+    "the drawer's Runtime row would render empty; it names the runtime the verdict was produced against.",
   ],
   [
     'baseline-heading',
@@ -66,13 +66,20 @@ const TERMINAL_SLOTS: ReadonlyArray<readonly [string, string]> = [
   ],
 ];
 
-function layer1Slots(recipeDir: string): ReadonlyArray<readonly [string, string]> {
+function layer1Slots(
+  recipeDir: string,
+): ReadonlyArray<readonly [string, string]> {
   const recipePath = join(recipeDir, 'recipe.json');
   const runtime = existsSync(recipePath)
-    ? (JSON.parse(readFileSync(recipePath, 'utf-8')) as { expected_runtime?: string })
-        .expected_runtime
+    ? (
+        JSON.parse(readFileSync(recipePath, 'utf-8')) as {
+          expected_runtime?: string;
+        }
+      ).expected_runtime
     : undefined;
-  return pageTemplateFor(runtime) === TERMINAL_TEMPLATE ? TERMINAL_SLOTS : LAYER1_SLOTS;
+  return pageTemplateFor(runtime) === TERMINAL_TEMPLATE
+    ? TERMINAL_SLOTS
+    : LAYER1_SLOTS;
 }
 
 const LAYER2_SLOTS: ReadonlyArray<readonly [string, string]> = [
@@ -291,9 +298,9 @@ for (const f of failures) {
   console.error(`      → ${f.remedy}\n`);
 }
 console.error(
-  `Why this matters: a reproduction page earns its keep by showing the ` +
-    `wrong result next to the right one, and by explaining the bug it ` +
-    `reproduces. The template guarantees the shell; these slots are the ` +
-    `part only the recipe author can supply.\n`,
+  'Why this matters: a reproduction page earns its keep by showing the ' +
+    'wrong result next to the right one, and by explaining the bug it ' +
+    'reproduces. The template guarantees the shell; these slots are the ' +
+    'part only the recipe author can supply.\n',
 );
 process.exit(1);

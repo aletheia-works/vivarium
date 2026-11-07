@@ -103,9 +103,8 @@ for (const c of cases) {
 
     await page.waitForFunction(
       () => {
-        const v = (
-          globalThis as unknown as { __VIVARIUM_VERDICT__?: string }
-        ).__VIVARIUM_VERDICT__;
+        const v = (globalThis as unknown as { __VIVARIUM_VERDICT__?: string })
+          .__VIVARIUM_VERDICT__;
         return v === 'reproduced' || v === 'unreproduced';
       },
       undefined,

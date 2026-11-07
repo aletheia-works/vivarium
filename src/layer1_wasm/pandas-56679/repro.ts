@@ -67,7 +67,8 @@ function evaluate(result: ReproOutput | null): Evaluation {
   if (!result) {
     return {
       verdict: 'unreproduced',
-      message: 'bug not reproduced — the script left no `result` mapping behind.',
+      message:
+        'bug not reproduced — the script left no `result` mapping behind.',
     };
   }
   if (result.mismatch) {

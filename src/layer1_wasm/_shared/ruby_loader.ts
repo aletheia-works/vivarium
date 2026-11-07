@@ -1,16 +1,16 @@
-import { pick } from "./i18n.js";
-import { setVerdict } from "./verdict.js";
+import { pick } from './i18n.js';
+import { setVerdict } from './verdict.js';
 
 const S = pick(
   { pending: 'Loading Ruby.wasm runtime…' },
   { pending: 'Ruby.wasm runtime を読み込み中…' },
 );
 
-export const DEFAULT_RUBY_WASM_VERSION = "2.10.1";
+export const DEFAULT_RUBY_WASM_VERSION = '2.10.1';
 
-export const DEFAULT_RUBY_VERSION = "4.0";
+export const DEFAULT_RUBY_VERSION = '4.0';
 
-export const DEFAULT_WASI_SHIM_VERSION = "0.4.2";
+export const DEFAULT_WASI_SHIM_VERSION = '0.4.2';
 
 export interface LoadOptions {
   rubyWasmVersion?: string;
@@ -80,21 +80,29 @@ export async function loadVivariumRuby(
   const pendingText = options.pendingText ?? S.pending;
   const total = 22.0; // ruby+stdlib.wasm is ~21 MB
 
-  setVerdict("pending", pendingText, "loading");
-  emitProgress(5, "Initialising…", `0.0 MB / ${total.toFixed(1)} MB`);
+  setVerdict('pending', pendingText, 'loading');
+  emitProgress(5, 'Initialising…', `0.0 MB / ${total.toFixed(1)} MB`);
 
   const rubyUrl = `https://cdn.jsdelivr.net/npm/@ruby/wasm-wasi@${rubyWasmVersion}/+esm`;
   const shimUrl = `https://cdn.jsdelivr.net/npm/@bjorn3/browser_wasi_shim@${wasiShimVersion}/dist/index.js`;
   const wasmUrl = `https://cdn.jsdelivr.net/npm/@ruby/${rubyVersion}-wasm-wasi@${rubyWasmVersion}/dist/ruby+stdlib.wasm`;
 
   try {
-    emitProgress(20, "Fetching Ruby.wasm loader…", `0.0 MB / ${total.toFixed(1)} MB`);
+    emitProgress(
+      20,
+      'Fetching Ruby.wasm loader…',
+      `0.0 MB / ${total.toFixed(1)} MB`,
+    );
     const [ruby, shim] = (await Promise.all([
       import(/* @vite-ignore */ rubyUrl),
       import(/* @vite-ignore */ shimUrl),
     ])) as [RubyModule, WasiShimModule];
 
-    emitProgress(40, "Downloading ruby+stdlib.wasm…", `0.0 MB / ${total.toFixed(1)} MB`);
+    emitProgress(
+      40,
+      'Downloading ruby+stdlib.wasm…',
+      `0.0 MB / ${total.toFixed(1)} MB`,
+    );
     const response = await fetch(wasmUrl);
     if (!response.ok) {
       throw new Error(
@@ -104,13 +112,21 @@ export async function loadVivariumRuby(
     const buffer = await response.arrayBuffer();
     const downloadedMB = (buffer.byteLength / 1_000_000).toFixed(1);
 
-    emitProgress(70, "Compiling WebAssembly…", `${downloadedMB} MB / ${total.toFixed(1)} MB`);
+    emitProgress(
+      70,
+      'Compiling WebAssembly…',
+      `${downloadedMB} MB / ${total.toFixed(1)} MB`,
+    );
     const wasmModule = await WebAssembly.compile(buffer);
 
-    emitProgress(88, "Instantiating Ruby VM…", `${downloadedMB} MB / ${total.toFixed(1)} MB`);
+    emitProgress(
+      88,
+      'Instantiating Ruby VM…',
+      `${downloadedMB} MB / ${total.toFixed(1)} MB`,
+    );
 
-    let stdout = "";
-    let stderr = "";
+    let stdout = '';
+    let stderr = '';
     const printer = ruby.consolePrinter({
       stdout: (text) => {
         stdout += text;
@@ -127,7 +143,7 @@ export async function loadVivariumRuby(
         new shim.OpenFile(new shim.File([])),
         new shim.OpenFile(new shim.File([])),
         new shim.OpenFile(new shim.File([])),
-        new shim.PreopenDirectory("/", new Map()),
+        new shim.PreopenDirectory('/', new Map()),
       ],
       { debug: false },
     );
@@ -139,12 +155,16 @@ export async function loadVivariumRuby(
       setMemory: (memory) => printer.setMemory(memory),
     });
 
-    emitProgress(94, "Runtime ready.", `${downloadedMB} MB / ${total.toFixed(1)} MB`);
+    emitProgress(
+      94,
+      'Runtime ready.',
+      `${downloadedMB} MB / ${total.toFixed(1)} MB`,
+    );
     return {
       ruby: {
         eval(source: string): RunResult {
-          stdout = "";
-          stderr = "";
+          stdout = '';
+          stderr = '';
           try {
             const value = vm.eval(source).toString();
             return { stdout, stderr, value, error: null };
@@ -159,10 +179,9 @@ export async function loadVivariumRuby(
     };
   } catch (err: unknown) {
     const errAny = err as { stack?: string; message?: string } | null;
-    const message =
-      (errAny && (errAny.stack ?? errAny.message)) ?? String(err);
+    const message = (errAny && (errAny.stack ?? errAny.message)) ?? String(err);
     setVerdict(
-      "unreproduced",
+      'unreproduced',
       `bug not reproduced — runtime error during Ruby.wasm load: ${message}`,
     );
     throw err;
@@ -170,10 +189,10 @@ export async function loadVivariumRuby(
 }
 
 function emitProgress(pct: number, label: string, bytes: string): void {
-  if (typeof document === "undefined") return;
+  if (typeof document === 'undefined') return;
   document.dispatchEvent(
-    new CustomEvent("vh-progress", {
-      detail: { pct, label, bytes, stage: "runtime" },
+    new CustomEvent('vh-progress', {
+      detail: { pct, label, bytes, stage: 'runtime' },
     }),
   );
 }

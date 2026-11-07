@@ -22,7 +22,10 @@ function run(fields: Partial<RunResult>): RunResult {
 describe('capturePyodideRun', () => {
   test('reports a runtime error without evaluating', () => {
     expect(
-      capturePyodideRun(run({ error: 'boom', value: { buggy: true } }), evaluate),
+      capturePyodideRun(
+        run({ error: 'boom', value: { buggy: true } }),
+        evaluate,
+      ),
     ).toEqual({
       run: {
         exitCode: 1,
@@ -37,7 +40,12 @@ describe('capturePyodideRun', () => {
   test('evaluates a result mapping', () => {
     const value = { buggy: true };
     expect(capturePyodideRun(run({ value }), evaluate)).toEqual({
-      run: { exitCode: 0, verdict: 'reproduced', message: 'yes', stdout: 'out' },
+      run: {
+        exitCode: 0,
+        verdict: 'reproduced',
+        message: 'yes',
+        stdout: 'out',
+      },
       parsed: value,
     });
   });
@@ -61,7 +69,12 @@ describe('capturePyodideRun', () => {
     const parse = (value: unknown): Output | null =>
       Array.isArray(value) ? { buggy: value.length > 0 } : null;
     expect(capturePyodideRun(run({ value: [1] }), evaluate, parse)).toEqual({
-      run: { exitCode: 0, verdict: 'reproduced', message: 'yes', stdout: 'out' },
+      run: {
+        exitCode: 0,
+        verdict: 'reproduced',
+        message: 'yes',
+        stdout: 'out',
+      },
       parsed: { buggy: true },
     });
   });

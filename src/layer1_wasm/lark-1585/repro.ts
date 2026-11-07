@@ -90,12 +90,9 @@ const outputFixEl = requiredElement('lark-1585', 'output-fix');
 const metaEl = requiredElement('lark-1585', 'meta');
 const reproCodeEl = requiredElement('lark-1585', 'repro-code');
 
-function setFixPane(
-  text: string,
-  status: 'pending' | 'ok' | 'error',
-): void {
+function setFixPane(text: string, status: 'pending' | 'ok' | 'error'): void {
   outputFixEl.textContent = text;
-  outputFixEl.dataset['fixStatus'] = status;
+  outputFixEl.dataset.fixStatus = status;
 }
 
 const BUDGET_LABEL = `${(TIMEOUT_MS / 1000).toFixed(1)} s`;
@@ -203,11 +200,7 @@ async function runVariant(
       `Running Lark(...).parse('aa') with a ${TIMEOUT_MS / 1000}s budget…`,
     );
   }
-  writePane(
-    variant,
-    `(running with a ${BUDGET_LABEL} budget…)`,
-    'pending',
-  );
+  writePane(variant, `(running with a ${BUDGET_LABEL} budget…)`, 'pending');
 
   const resultPromise = new Promise<WorkerResult | WorkerError>(
     (resolve, reject) => {
@@ -254,7 +247,7 @@ async function runVariant(
       message:
         `bug reproduced — Lark('start.1: "a" | start start*', parser='lalr')` +
         `.parse('aa') did not return within ${TIMEOUT_MS / 1000}s; ` +
-        `the LALR back-end is in an infinite loop.`,
+        'the LALR back-end is in an infinite loop.',
       stdout,
     };
   }
@@ -389,7 +382,7 @@ try {
     setFixPane(`Could not fetch wheel manifest: ${message}`, 'error');
   }
 
-  if (manifestRes && manifestRes.ok) {
+  if (manifestRes?.ok) {
     manifest = (await manifestRes.json()) as WheelManifest;
     const wheelUrl = new URL(
       `./wheels/${manifest.filename}`,
@@ -416,7 +409,10 @@ try {
       setFixPane(`Fix-candidate run failed: ${message}`, 'error');
     }
   } else if (manifestRes && !manifestRes.ok) {
-    setFixPane(`Wheel manifest unavailable (HTTP ${manifestRes.status}).`, 'error');
+    setFixPane(
+      `Wheel manifest unavailable (HTTP ${manifestRes.status}).`,
+      'error',
+    );
   }
 
   publishEnvelope();

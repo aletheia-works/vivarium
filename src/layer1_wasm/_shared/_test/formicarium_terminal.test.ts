@@ -2,6 +2,7 @@ import { describe, expect, test } from 'bun:test';
 import {
   type AcceptedGuest,
   type CommandResult,
+  catalogElfBytes,
   DEFAULT_STRINGS,
   type FormicariumApi,
   fetchBytes,
@@ -11,7 +12,6 @@ import {
   MAX_TRANSCRIPT_BYTES,
   MAX_TRANSCRIPT_LINES,
   progressText,
-  catalogElfBytes,
   type RecipeGuest,
   TerminalController,
   type TerminalOptions,

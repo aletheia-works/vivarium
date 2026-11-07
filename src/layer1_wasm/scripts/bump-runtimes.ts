@@ -20,21 +20,59 @@ interface NpmPackument {
   versions: Record<string, { dependencies?: Record<string, string> }>;
 }
 
-const PYODIDE: Pin = { label: 'Pyodide', short: 'Pyodide', file: 'loader.ts', name: 'DEFAULT_PYODIDE_VERSION' };
-const RUBY_WASM: Pin = { label: 'ruby.wasm', short: 'ruby.wasm', file: 'ruby_loader.ts', name: 'DEFAULT_RUBY_WASM_VERSION' };
-const RUBY: Pin = { label: 'Ruby (ruby.wasm line)', short: 'Ruby', file: 'ruby_loader.ts', name: 'DEFAULT_RUBY_VERSION' };
-const RUBY_WASI_SHIM: Pin = { label: 'browser_wasi_shim (Ruby)', short: 'wasi-shim', file: 'ruby_loader.ts', name: 'DEFAULT_WASI_SHIM_VERSION' };
-const RUST_WASI_SHIM: Pin = { label: 'browser_wasi_shim (Rust)', short: 'wasi-shim', file: 'rust_loader.ts', name: 'DEFAULT_WASI_SHIM_VERSION' };
-const XTERM: Pin = { label: 'xterm.js', short: 'xterm', file: 'xterm_loader.ts', name: 'DEFAULT_XTERM_VERSION' };
-const XTERM_FIT: Pin = { label: 'xterm.js fit addon', short: 'xterm-fit', file: 'xterm_loader.ts', name: 'DEFAULT_XTERM_FIT_VERSION' };
+const PYODIDE: Pin = {
+  label: 'Pyodide',
+  short: 'Pyodide',
+  file: 'loader.ts',
+  name: 'DEFAULT_PYODIDE_VERSION',
+};
+const RUBY_WASM: Pin = {
+  label: 'ruby.wasm',
+  short: 'ruby.wasm',
+  file: 'ruby_loader.ts',
+  name: 'DEFAULT_RUBY_WASM_VERSION',
+};
+const RUBY: Pin = {
+  label: 'Ruby (ruby.wasm line)',
+  short: 'Ruby',
+  file: 'ruby_loader.ts',
+  name: 'DEFAULT_RUBY_VERSION',
+};
+const RUBY_WASI_SHIM: Pin = {
+  label: 'browser_wasi_shim (Ruby)',
+  short: 'wasi-shim',
+  file: 'ruby_loader.ts',
+  name: 'DEFAULT_WASI_SHIM_VERSION',
+};
+const RUST_WASI_SHIM: Pin = {
+  label: 'browser_wasi_shim (Rust)',
+  short: 'wasi-shim',
+  file: 'rust_loader.ts',
+  name: 'DEFAULT_WASI_SHIM_VERSION',
+};
+const XTERM: Pin = {
+  label: 'xterm.js',
+  short: 'xterm',
+  file: 'xterm_loader.ts',
+  name: 'DEFAULT_XTERM_VERSION',
+};
+const XTERM_FIT: Pin = {
+  label: 'xterm.js fit addon',
+  short: 'xterm-fit',
+  file: 'xterm_loader.ts',
+  name: 'DEFAULT_XTERM_FIT_VERSION',
+};
 
 function pinPattern(pin: Pin): RegExp {
   return new RegExp(`(export const ${pin.name}\\s*=\\s*["'])([^"']+)(["'])`);
 }
 
 function readPin(pin: Pin): string {
-  const match = readFileSync(join(SHARED_DIR, pin.file), 'utf-8').match(pinPattern(pin));
-  if (!match?.[2]) throw new Error(`${pin.name} not found in _shared/${pin.file}`);
+  const match = readFileSync(join(SHARED_DIR, pin.file), 'utf-8').match(
+    pinPattern(pin),
+  );
+  if (!match?.[2])
+    throw new Error(`${pin.name} not found in _shared/${pin.file}`);
   return match[2];
 }
 
@@ -45,9 +83,12 @@ function writePin(pin: Pin, value: string): void {
 }
 
 async function packument(name: string): Promise<NpmPackument | null> {
-  const res = await fetch(`https://registry.npmjs.org/${name.replace('/', '%2F')}`);
+  const res = await fetch(
+    `https://registry.npmjs.org/${name.replace('/', '%2F')}`,
+  );
   if (res.status === 404) return null;
-  if (!res.ok) throw new Error(`npm registry returned ${res.status} for ${name}`);
+  if (!res.ok)
+    throw new Error(`npm registry returned ${res.status} for ${name}`);
   return (await res.json()) as NpmPackument;
 }
 
@@ -83,26 +124,46 @@ async function rubyLine(current: string, rubyWasm: string): Promise<string> {
 
 function mentions(version: string): string[] {
   const proc = Bun.spawnSync(
-    ['git', 'grep', '-n', '-F', version, '--', '.', ':!**/bun.lock', ':!src/layer1_wasm/_shared/*loader.ts'],
+    [
+      'git',
+      'grep',
+      '-n',
+      '-F',
+      version,
+      '--',
+      '.',
+      ':!**/bun.lock',
+      ':!src/layer1_wasm/_shared/*loader.ts',
+    ],
     { cwd: REPO_ROOT },
   );
   return proc.stdout.toString().split('\n').filter(Boolean);
 }
 
 const pyodide = (await requirePackument('pyodide'))['dist-tags'].latest;
-await assertReachable(`https://cdn.jsdelivr.net/pyodide/v${pyodide}/full/pyodide.mjs`);
+await assertReachable(
+  `https://cdn.jsdelivr.net/pyodide/v${pyodide}/full/pyodide.mjs`,
+);
 
 const rubyWasmDoc = await requirePackument('@ruby/wasm-wasi');
 const rubyWasm = rubyWasmDoc['dist-tags'].latest;
 const ruby = await rubyLine(readPin(RUBY), rubyWasm);
 
-const shimVersions = Object.keys((await requirePackument('@bjorn3/browser_wasi_shim')).versions);
-const rubyShimRange = rubyWasmDoc.versions[rubyWasm]?.dependencies?.['@bjorn3/browser_wasi_shim'];
+const shimVersions = Object.keys(
+  (await requirePackument('@bjorn3/browser_wasi_shim')).versions,
+);
+const rubyShimRange =
+  rubyWasmDoc.versions[rubyWasm]?.dependencies?.['@bjorn3/browser_wasi_shim'];
 
 const xterm = (await requirePackument('@xterm/xterm'))['dist-tags'].latest;
-const xtermFit = (await requirePackument('@xterm/addon-fit'))['dist-tags'].latest;
-await assertReachable(`https://cdn.jsdelivr.net/npm/@xterm/xterm@${xterm}/lib/xterm.mjs`);
-await assertReachable(`https://cdn.jsdelivr.net/npm/@xterm/addon-fit@${xtermFit}/lib/addon-fit.mjs`);
+const xtermFit = (await requirePackument('@xterm/addon-fit'))['dist-tags']
+  .latest;
+await assertReachable(
+  `https://cdn.jsdelivr.net/npm/@xterm/xterm@${xterm}/lib/xterm.mjs`,
+);
+await assertReachable(
+  `https://cdn.jsdelivr.net/npm/@xterm/addon-fit@${xtermFit}/lib/addon-fit.mjs`,
+);
 
 const targets: Array<[Pin, string]> = [
   [PYODIDE, pyodide],
@@ -146,7 +207,12 @@ if (bumps.length > 0) {
 
   const titleFile = process.env.BUMP_TITLE_FILE;
   if (titleFile) {
-    const versions = [...new Set(bumps.map(({ pin, to }) => `${pin.short} ${to}`))].join(', ');
-    writeFileSync(titleFile, `chore(wasm): bump layer 1 runtimes (${versions})`.slice(0, 100));
+    const versions = [
+      ...new Set(bumps.map(({ pin, to }) => `${pin.short} ${to}`)),
+    ].join(', ');
+    writeFileSync(
+      titleFile,
+      `chore(wasm): bump layer 1 runtimes (${versions})`.slice(0, 100),
+    );
   }
 }

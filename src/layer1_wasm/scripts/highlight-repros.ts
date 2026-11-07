@@ -1,9 +1,9 @@
 #!/usr/bin/env bun
 
-import { codeToHtml, type BundledLanguage } from 'shiki';
-import { readdirSync, readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { type BundledLanguage, codeToHtml } from 'shiki';
 import { pageTemplateFor, TERMINAL_TEMPLATE } from './page-templates';
 import { extractReproSource } from './repro-source';
 
@@ -29,7 +29,9 @@ function readRecipeLanguage(recipeDir: string): BundledLanguage | null {
 function readRecipeRuntime(recipeDir: string): string | undefined {
   const recipePath = join(recipeDir, 'recipe.json');
   if (!existsSync(recipePath)) return undefined;
-  const meta = JSON.parse(readFileSync(recipePath, 'utf-8')) as { expected_runtime?: string };
+  const meta = JSON.parse(readFileSync(recipePath, 'utf-8')) as {
+    expected_runtime?: string;
+  };
   return meta.expected_runtime;
 }
 
@@ -61,7 +63,8 @@ for (const slug of slugs) {
   if (!existsSync(reproPath)) continue;
 
   const recipeDir = join(LAYER1_DIR, slug);
-  if (pageTemplateFor(readRecipeRuntime(recipeDir)) === TERMINAL_TEMPLATE) continue;
+  if (pageTemplateFor(readRecipeRuntime(recipeDir)) === TERMINAL_TEMPLATE)
+    continue;
   const lang = readRecipeLanguage(recipeDir);
   if (!lang) {
     console.warn(
@@ -74,7 +77,9 @@ for (const slug of slugs) {
   const src = readFileSync(reproPath, 'utf-8');
   const code = extractReproSource(src);
   if (!code) {
-    console.warn(`[highlight-repros] no REPRO_CODE/REPRO_SOURCE_HINT in ${slug}/repro.ts; skipping.`);
+    console.warn(
+      `[highlight-repros] no REPRO_CODE/REPRO_SOURCE_HINT in ${slug}/repro.ts; skipping.`,
+    );
     skipped += 1;
     continue;
   }
