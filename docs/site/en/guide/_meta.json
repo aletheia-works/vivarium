@@ -40,10 +40,5 @@
     "type": "file",
     "name": "write-your-first-reproduction",
     "label": "Add a reproduction"
-  },
-  {
-    "type": "file",
-    "name": "fork-your-own",
-    "label": "Run on your own fork"
   }
 ]

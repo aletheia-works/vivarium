@@ -1,13 +1,5 @@
 # Reproduction — bash `local` shadows command-substitution exit code
 
-> Phase 3 reproduction page — second **Layer 2 (Docker)** entry
-> in Vivarium's gallery (after
-> [`postgres-lost-update`](../postgres-lost-update/)). Conforms
-> to the catalogue conventions in
-> [`src/layer2_docker/README.md`](../README.md): pinned
-> `Dockerfile` + `repro.sh` + a public pre-built image, with
-> the visitor reproducing the bug locally via `docker run`.
-
 ## The behaviour
 
 In bash, the `local` builtin completes successfully (exit 0) as

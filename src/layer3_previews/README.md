@@ -35,10 +35,7 @@ resumes on the next one. motionEye previews sign in as `admin` with the
 password `password`. [`infra/aws/`](../../infra/aws/README.md) has the
 details, the cost, and where a preview's link is listed.
 
-A reader needs only a browser, so a preview clears the bar this layer has
-always had: a reader on an ordinary machine can reproduce and check the
-result. That bar is why `rr` record-replay, which needs Linux on x86_64
-with an exposed PMU, was removed from this layer.
+A reader needs only a browser.
 
 ## What a motionEye preview contains
 
@@ -100,8 +97,7 @@ src/layer3_previews/
     └── recipe.json    # title, language, severity, tags, as in the other layers
 ```
 
-`preview.json`, as the first preview (motionEye #3506, removed once it
-merged) had it:
+An example `preview.json`:
 
 ```json
 {

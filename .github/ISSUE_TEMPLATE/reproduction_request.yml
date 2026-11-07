@@ -41,8 +41,7 @@ body:
     attributes:
       label: Runtime and versions
       description: |
-        Language, library, and version information. If unknown, say so — we
-        will guess defaults.
+        Language, library, and version information. If unknown, say so.
       placeholder: |
         Python 3.12, pandas 2.3.0
 
@@ -52,6 +51,5 @@ body:
       label: Minimal reproducer (if available)
       description: |
         Paste the smallest self-contained snippet that triggers the claim.
-        Optional — Vivarium will attempt to construct one from the source
-        Issue if you leave this blank.
+        Optional, but it makes the request much easier to pick up.
       render: python

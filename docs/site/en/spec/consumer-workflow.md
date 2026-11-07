@@ -43,8 +43,7 @@ their own CI. Slugs are the directory names under
 
 `reproduced` means **the upstream bug reproduces** in this run —
 the reproduction is doing its job. `unreproduced` means the bug
-**does not reproduce**, usually because the upstream project
-shipped a fix the bundled image picked up. See
+**does not reproduce**. See
 [Contract v1: Verdict semantics](./contract-v1.md#verdict-semantics)
 for the full reasoning.
 
@@ -60,8 +59,9 @@ jobs:
       expected_verdict: reproduced  # default; spelled out for clarity
 ```
 
-…and the workflow flips red the moment the bug stops reproducing,
-which is exactly the upstream-fix-detected signal.
+…and the job fails when the bug does not reproduce. The default image
+changes only when the recipe changes in Vivarium, so use the `image`
+input to check a build of your own.
 
 ## Artefact
 
@@ -75,10 +75,7 @@ Actions API.
 
 - **Layer 1 (WASM) verification.** Layer 1 reproductions run
   in-page in a browser; the verdict surface is live DOM /
-  JavaScript. CI consumer-side verification of Layer 1 is a
-  separate problem and does not benefit from a reusable
-  workflow — the Vivarium gallery's Playwright suite is the
-  canonical Layer 1 regression check.
+  JavaScript, so there is no image for this workflow to run.
 
 ## See also
 

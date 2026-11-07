@@ -2,22 +2,12 @@
   {
     "type": "file",
     "name": "index",
-    "label": "Spec overview"
+    "label": "Overview"
   },
   {
     "type": "file",
     "name": "contract-v1",
     "label": "Contract v1"
-  },
-  {
-    "type": "file",
-    "name": "manifest-v1",
-    "label": "Manifest v1"
-  },
-  {
-    "type": "file",
-    "name": "manifest-create",
-    "label": "Manifest scaffolder"
   },
   {
     "type": "file",

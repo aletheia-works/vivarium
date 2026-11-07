@@ -30,13 +30,8 @@
 |----------|---------------------------------|----------|
 | Python   | [Pyodide](https://pyodide.org)  | Active |
 | SQLite   | Pyodide `sqlite3`               | Active |
-| Rust     | `wasm32-wasip1`                 | Active |
 | CLI      | [formicarium](https://www.npmjs.com/package/@aletheia-works/formicarium) | Active |
 | Ruby     | [Ruby.wasm](https://github.com/ruby/ruby.wasm) | Active |
-| PHP      | [php-wasm](https://github.com/WordPress/wordpress-playground) | Active |
-
-Concrete runtime choices land in [`docs/site/`](../../docs/site/) as ADRs, not
-here.
 
 ## Catalogue
 
@@ -49,9 +44,9 @@ workflow.
 ## Conventions
 
 Each new Layer 1 recipe is its own immediate subdirectory of this folder
-(e.g. `numpy-12345/`, `pandas-56679/`). The directory is required to
-contain an `index.html`; companion files (`repro.ts`, `README.md`,
-fixtures, generated-highlight inputs) live alongside.
+(e.g. `pandas-56679/`). It holds `recipe.json`, `page.en.html`,
+`i18n.ja.json`, `repro.ts` and `README.md`. `index.html` is generated from
+`page.en.html` by `mise run repro:pages` and is not committed.
 
 ## Page shape — two output panes
 

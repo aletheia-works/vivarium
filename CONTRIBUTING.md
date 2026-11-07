@@ -44,6 +44,13 @@ Each layer's README explains its conventions:
 - [Layer 3](src/layer3_previews/README.md): previews are written by hand and
   need infrastructure access, so talk to the maintainers first.
 
+## Publish your own copy
+
+To publish your recipes from a fork, add the repository variable
+`VIVARIUM_FORK_DEPLOY` with the value `true`. The `deploy-docs` workflow then
+deploys the site to your fork's GitHub Pages on the next push to `main`. Layer 2
+images and verdict snapshots are published only from this repository.
+
 ## Before you open a pull request
 
 Run the quick checks for what you changed:

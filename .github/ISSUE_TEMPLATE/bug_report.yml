@@ -9,9 +9,8 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thanks for filing a bug report. This form asks for the structured
-        information Claude Code and the human maintainer need to act on
-        the report without a round-trip.
+        Thanks for filing a bug report. These details help us act on it
+        without having to ask you for more.
 
   - type: textarea
     id: problem

@@ -47,4 +47,4 @@ body:
     id: hints
     attributes:
       label: Hints
-      description: File paths, prior art, related Issues, relevant ADRs.
+      description: File paths, prior art and related Issues.

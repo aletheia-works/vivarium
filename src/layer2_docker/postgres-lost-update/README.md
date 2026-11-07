@@ -1,12 +1,5 @@
 # Reproduction — PostgreSQL lost update under READ COMMITTED
 
-> Phase 3 reproduction page — first **Layer 2 (Docker)** entry in
-> Vivarium's gallery. Conforms to the
-> [catalogue conventions in `src/layer2_docker/README.md`](../README.md):
-> a pinned `Dockerfile` + `repro.sh` + a public pre-built image,
-> with the visitor reproducing the bug locally via `docker run`
-> or one-click via Codespaces.
-
 ## The behaviour
 
 The textbook **lost update anomaly**: under PostgreSQL's default
@@ -103,13 +96,6 @@ verdict=reproduced — lost update reproduces under default READ COMMITTED isola
 ```
 
 Exit code `0`: lost update reproduced, page reports `reproduced`.
-
-## One-click cloud — Codespaces (optional tier)
-
-> Optional `.devcontainer/devcontainer.json` not yet authored
-> for this page. To be added in a follow-up PR once the local
-> path has been live for a couple of weeks and the per-page
-> conventions are stable.
 
 ## Building locally — `docker build`
 

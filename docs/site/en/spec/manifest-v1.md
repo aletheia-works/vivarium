@@ -1,11 +1,13 @@
 # Vivarium Manifest v1
 
+> **Status: a format only.** Nothing in Vivarium reads this file yet. Adding
+> one does not list your repository in the catalogue or run anything.
+>
 > A static manifest an external repository ships at
 > `.vivarium/manifest.toml` to declare a Vivarium-runnable
 > reproduction.
 
-This is the *upstream* surface — how an external project tells
-Vivarium "we host a reproduction; here is where to find it." The
+It describes a reproduction an external project hosts. The
 *runtime* surface (DOM verdict, `verdict.json`) is defined
 separately in [Contract v1](./contract-v1.md).
 

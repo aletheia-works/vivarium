@@ -1,9 +1,5 @@
 # Reproduction — python/cpython#137205
 
-> Phase 1 reproduction page — third entry in Vivarium's Layer 1
-> Pyodide gallery and the first to exercise SQLite via the Python
-> `sqlite3` stdlib module. Conforms to `vivarium-contract: v1`.
-
 ## The bug
 
 [python/cpython#137205](https://github.com/python/cpython/issues/137205)

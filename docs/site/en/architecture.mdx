@@ -1,13 +1,13 @@
 ---
 pageType: doc
-title: Architecture
+title: How it works
 ---
 
 import {
   Page,
   PageHero,
   LayerMatrix,
-  LayerSection,
+  Section,
   Callout,
   NextCta,
   BottomNote,
@@ -16,202 +16,76 @@ import { LiveExamples } from '../_components/LiveExamples';
 
 <Page>
   <PageHero
-    eyebrow="// ARCHITECTURE"
-    title="Three execution layers — one per bug."
-    sub="Layer 1 browser-native WebAssembly, Layer 2 containers, Layer 3 live previews of pull requests. The recipe declares which layer it runs on — you don't pick. The matrix below scans the trade-offs at a glance; the deep-dive sections follow."
+    eyebrow="// HOW IT WORKS"
+    title="Three layers, chosen by the bug."
+    sub="Bugs need different environments, so each recipe runs in the layer that fits. You don't choose: opening a recipe shows you how it runs."
   />
 
   <LayerMatrix
-    rowLabels={['Startup', 'Bugs it fits', "Can't reach", 'Runtimes']}
+    rowLabels={['Runs in', 'Starts in', 'Good for', 'Not for']}
     layers={[
       {
-        pill: 'L1 / WASM',
+        pill: 'L1 / BROWSER',
         accent: 'teal',
-        title: 'In the browser, instantly.',
+        title: 'In your browser.',
         cells: [
-          <>
-            <strong>ms to a few seconds</strong>. First load 1–10 s for the runtime download (Pyodide ≈ 10 MB); cached loads under 1 s.
-          </>,
-          <>
-            Algorithms, data processing, DB queries, library-internal logic.
-          </>,
-          <>
-            Memory ceiling <code>~4 GB</code>, real <code>fork</code>/<code>exec</code>, data races, building the compiler itself.
-          </>,
-          <>
-            Pyodide / Ruby.wasm / php-wasm / <code>wasm32-wasip1</code> / sqlite-wasm.
-          </>,
+          <>Your browser tab, through WebAssembly. Nothing to install.</>,
+          <>A few tens of seconds on the first load, faster afterwards.</>,
+          <>Parsers, data processing, library logic and command-line tools.</>,
+          <>Large amounts of memory, real network services and multi-process behaviour.</>,
         ],
       },
       {
         pill: 'L2 / DOCKER',
         accent: 'violet',
-        title: 'Docker, for fidelity.',
+        title: 'In Docker.',
         cells: [
-          <>
-            <strong>Seconds to minutes</strong>. Catalogue distribution — runs on the visitor's Docker or Codespaces.
-          </>,
-          <>
-            Whole-project repros, syscall-dependent, toolchain-specific, multi-process.
-          </>,
-          <>
-            Cannot run on the page itself; needs Docker or Codespaces; races that a fresh run does not reproduce.
-          </>,
-          <>
-            Pinned <code>Dockerfile</code> + <code>ghcr.io/aletheia-works/vivarium-&lt;slug&gt;</code> + Codespaces badge.
-          </>,
+          <>A container on your machine, from a published image.</>,
+          <>Seconds to minutes, depending on the image download.</>,
+          <>Real processes, files, locks, signals and services.</>,
+          <>Running inside the page. Races may not appear on every run.</>,
         ],
       },
       {
         pill: 'L3 / PREVIEW',
         accent: 'coral',
-        title: 'A pull request, live.',
+        title: 'As a live preview.',
         cells: [
-          <>
-            <strong>Seconds</strong> to resume a suspended preview; minutes to build one from a new commit.
-          </>,
-          <>
-            Changes a reviewer checks by using the running application: backend behaviour behind the UI, UI that needs a live backend.
-          </>,
-          <>
-            Changes whose effect does not show through the application; bugs the reader can reproduce on their own machine.
-          </>,
-          <>
-            Lambda MicroVM image per pull request, behind CloudFront, at a link that asks for a GitHub sign-in, managed with OpenTofu.
-          </>,
+          <>A hosted copy of a pull request's whole application.</>,
+          <>Seconds to resume, minutes to build a new commit.</>,
+          <>Changes a reviewer checks by using the application.</>,
+          <>People who are not invited, and effects the application does not show.</>,
         ],
       },
     ]}
   />
 
-  <LayerSection
-    pill="L1 / WASM"
-    accent="teal"
+  <Section
     eyebrow="// 01 · LAYER 1"
-    heading="WebAssembly, in the page."
-    intro={
-      <p>Reproductions run directly inside your browser tab. No account, no install — open the page and it starts. Phases 0–2 built up Python / Ruby / PHP / Rust recipes, e.g. <LiveExamples layer={1} kind="numeric" limit={2} format="inline-prose" lang="en" />; this layer is the most "browser-only" surface Vivarium ships.</p>
-    }
-    cellLabels={{
-      fits: 'Bugs this layer fits',
-      startup: 'Startup time',
-      cantReach: "What this layer can't reach",
-      runtimes: 'Runtimes and live examples',
-    }}
-    fits={
-      <ul>
-        <li>Algorithmic bugs (sorting, parsing, text processing).</li>
-        <li>Data-processing regressions (pandas / polars / numpy shape bugs).</li>
-        <li>Database behavioural bugs (SQLite query anomalies, JSON path edge cases).</li>
-        <li>Library-internal logic where the repro doesn't touch the filesystem, network, or process model.</li>
-      </ul>
-    }
-    startup={
-      <ul>
-        <li><strong>Cold load (no cache)</strong>: 1–10 seconds. Dominated by runtime download (Pyodide ≈ 10 MB compressed) and instantiation.</li>
-        <li><strong>Warm load (cached)</strong>: under a second.</li>
-        <li><strong>Per-run execution</strong>: milliseconds to a few seconds.</li>
-      </ul>
-    }
-    cantReach={
-      <ul>
-        <li><strong>Memory.</strong> A browser tab degrades past ~1 GB peak; ~4 GB is the practical ceiling. Production-scale data goes to Layer 2.</li>
-        <li><strong>System calls.</strong> No real <code>fork</code>/<code>exec</code> or real sockets. The WASI shim covers common cases, not all.</li>
-        <li><strong>Concurrency bugs.</strong> Single-threaded by default, so data races do not show.</li>
-        <li><strong>Compiler builds.</strong> A Rust bug reproduces fine in-browser, but building the Rust compiler itself is Layer 2.</li>
-      </ul>
-    }
-    runtimes={
-      <ul>
-        <li><strong>Python</strong>: <a href="https://pyodide.org">Pyodide</a> — live: <LiveExamples layer={1} language="python" kind="numeric" limit={2} format="inline-prose" lang="en" /></li>
-        <li><strong>Rust</strong>: <code>wasm32-wasip1</code> — live: <LiveExamples layer={1} language="rust" kind="numeric" limit={1} format="inline-prose" lang="en" /></li>
-        <li><strong>Ruby</strong>: <a href="https://github.com/ruby/ruby.wasm">Ruby.wasm</a> — live: <LiveExamples layer={1} language="ruby" kind="numeric" limit={1} format="inline-prose" lang="en" /></li>
-        <li><strong>PHP</strong>: <a href="https://github.com/WordPress/wordpress-playground">php-wasm</a> — live: <LiveExamples layer={1} language="php" kind="numeric" limit={1} format="inline-prose" lang="en" /></li>
-        <li><strong>SQLite</strong>: <a href="https://sqlite.org/wasm/">sqlite-wasm</a> (via Pyodide) — recipes that hit the sqlite WASM build via Pyodide live under the Python listing above.</li>
-      </ul>
-    }
-  />
+    heading="In your browser."
+  >
+    <p>The reproduction runs in the page, so opening it is all you need to do. Python recipes use <a href="https://pyodide.org">Pyodide</a>, Ruby recipes use <a href="https://github.com/ruby/ruby.wasm">Ruby.wasm</a>, and command-line tools use <a href="https://www.npmjs.com/package/@aletheia-works/formicarium">formicarium</a>, which runs Linux programs in the browser.</p>
+    <p>Examples: <LiveExamples layer={1} kind="numeric" limit={3} format="inline-prose" lang="en" /></p>
+  </Section>
 
-  <LayerSection
-    pill="L2 / DOCKER"
-    accent="violet"
+  <Section
     eyebrow="// 02 · LAYER 2"
-    heading="Docker, on your own machine."
-    intro={
-      <p>For bugs that need a real filesystem, real processes, and real networking. Vivarium does not host execution; recipes are <strong>distributed as a catalogue</strong> that runs on your own Docker (or Codespaces).</p>
-    }
-    cellLabels={{
-      fits: 'Bugs this layer fits',
-      startup: 'How to use it',
-      cantReach: "What this layer can't reach",
-      runtimes: 'Live examples',
-    }}
-    fits={
-      <ul>
-        <li>Whole-project reproductions — bugs that require dependency resolution against real package indexes.</li>
-        <li>Syscall-dependent bugs — real <code>fork</code>, real sockets, real file locks, real signals.</li>
-        <li>Toolchain-specific bugs — quirks of a specific GCC, glibc, or kernel ABI.</li>
-        <li>Multi-process bugs where the interaction between processes is the bug.</li>
-      </ul>
-    }
-    startup={
-      <p>Each recipe page ships a pinned <code>Dockerfile</code>, a copy-pasteable <code>docker run …</code> command, and a link to a published image at <code>ghcr.io/aletheia-works/vivarium-&lt;slug&gt;</code>. The page also shows the latest CI verdict snapshot — your own <code>docker run</code> becomes the live confirmation. Where applicable an "Open in Codespaces" badge is provided.</p>
-    }
-    cantReach={
-      <ul>
-        <li><strong>No in-page execution.</strong> The repro runs locally or in Codespaces, not on the gallery page.</li>
-        <li><strong>Docker (or Codespaces) required.</strong> Without either, you can still browse recipes and verdict snapshots.</li>
-        <li><strong>Heisenbugs.</strong> Layer 2 runs on real threads, but a fresh run does not reliably reproduce a race.</li>
-      </ul>
-    }
-    runtimes={<LiveExamples layer={2} lang="en" />}
-  />
+    heading="In Docker, on your machine."
+  >
+    <p>Each recipe page has a <code>docker run</code> command for a published image and shows the verdict from the latest CI run. Run the command to confirm that verdict yourself.</p>
+    <p>Examples:</p>
+    <LiveExamples layer={2} lang="en" />
+  </Section>
 
-  <LayerSection
-    pill="L3 / PREVIEW"
-    accent="coral"
+  <Section
     eyebrow="// 03 · LAYER 3"
-    heading="A pull request's whole application, in your browser."
-    intro={
-      <p>For changes a reviewer checks by <strong>using</strong> them. Each preview builds an upstream pull request at one commit, backend included, into a Lambda MicroVM image, and opens it through a link that asks for a GitHub sign-in. The first one ran motionEye with four fake cameras.</p>
-    }
-    cellLabels={{
-      fits: 'Changes this layer fits',
-      startup: 'How it runs',
-      cantReach: "What this layer can't reach",
-      runtimes: 'Recipes',
-    }}
-    fits={
-      <ul>
-        <li>Backend behaviour a reviewer checks through the UI, such as a setting that should outlast a schedule.</li>
-        <li>UI changes that need a live backend behind them.</li>
-        <li>Anything where screenshots and test output describe the change, and trying it would settle the review.</li>
-      </ul>
-    }
-    startup={
-      <ul>
-        <li>The MicroVM starts on the first request, suspends after five minutes without traffic, and resumes in seconds on the next one.</li>
-        <li>The link asks for a GitHub sign-in and lets in only the pull request's author, the maintainers Vivarium lists for the project and anyone the recipe adds. Its card in the gallery opens it.</li>
-        <li>A reader needs only a browser — the bar <code>rr</code> record-replay failed, since it ran only on Linux/x86_64 with an exposed PMU.</li>
-      </ul>
-    }
-    cantReach={
-      <ul>
-        <li><strong>Effects outside the application.</strong> How files land on a network share, or what a kernel does, does not show in the UI.</li>
-        <li><strong>Changes the diff settles.</strong> Documentation and refactors need no preview.</li>
-      </ul>
-    }
-    runtimes={
-      <ul>
-        <li>One directory per pull request under <code>src/layer3_previews/</code>, with a <code>preview.json</code> naming the repository, pull request and commit, or one per commit that is not a pull request yet, which leaves out the pull request and may name the fork it comes from as <code>source</code>. Adding one adds a preview; removing it removes the preview.</li>
-        <li>Each preview is a Layer 3 entry in the gallery, whose card opens the preview through the GitHub sign-in. The steps to check the change are on the pull request.</li>
-      </ul>
-    }
-  />
-
-  <Callout>
-    Which layer a recipe runs on is declared by the recipe itself. You don't pick — opening the page runs it on the right layer automatically.
-  </Callout>
+    heading="A pull request you can use."
+  >
+    <p>A preview builds a pull request's application at one commit, backend included, so a reviewer can try the change instead of reading about it. It starts on the first request and suspends when idle.</p>
+    <Callout>
+      Opening a preview needs a GitHub sign-in. Only the pull request's author, the project's listed maintainers and people named on the preview can enter. A preview has no verdict.
+    </Callout>
+  </Section>
 </Page>
 
 <NextCta
@@ -222,7 +96,7 @@ import { LiveExamples } from '../_components/LiveExamples';
       <span className="v-next-cta__heading-arrow">→</span>
     </>
   }
-  sub="The reproductions gallery shows live recipes for each layer."
+  sub="The gallery lists the recipes in each layer."
   primary={{ label: 'Reproductions →', href: '/vivarium/repro/' }}
   ghost={{ label: 'Overview', href: '/vivarium/overview' }}
 />

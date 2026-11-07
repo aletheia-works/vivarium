@@ -1,4 +1,4 @@
-# `_shared/` — Phase 1 reproduction gallery scaffolding
+# `_shared/` — shared code for Layer 1 pages
 
 Shared modules used by every reproduction page in `src/layer1_wasm/`.
 The leading underscore is the convention for "this directory is not a
@@ -58,8 +58,7 @@ that uses them must declare:
 The contract surface is canonical here. Reproduction pages should not
 hand-roll the verdict logic — import from `_shared/verdict.js` so a
 future `v2` migrates in one place. The full surface (DOM, globals,
-envelope shape) is documented as TypeScript types in `verdict.ts` and
-in the maintainer's private ADR-0008.
+envelope shape) is documented as TypeScript types in `verdict.ts`.
 
 ## Verdict semantics
 
@@ -68,10 +67,6 @@ in the maintainer's private ADR-0008.
 - `unreproduced` — the bug does **not** reproduce. Either the runtime
   ships a fixed version, or it errored before producing a result.
 - `pending` — the run has not yet produced a verdict.
-
-The values were originally `pass` / `fail`; renamed in Contract v1
-Revision 3 (ADR-0029) so the literal name now matches its meaning
-directly.
 
 ## Local development
 

@@ -1,8 +1,5 @@
 # Reproduction — ruby/ruby#21709
 
-> Phase 2 reproduction page — first non-Pyodide entry in Vivarium's
-> gallery. Conforms to `vivarium-contract: v1`.
-
 ## The bug
 
 [ruby/ruby#21709](https://bugs.ruby-lang.org/issues/21709) — Regexp

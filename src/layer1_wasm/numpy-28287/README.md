@@ -1,8 +1,5 @@
 # Reproduction — numpy/numpy#28287
 
-> Phase 1 reproduction page. The second entry in Vivarium's gallery,
-> conforming to `vivarium-contract: v1` like every other Phase 1 page.
-
 ## The bug
 
 [numpy/numpy#28287](https://github.com/numpy/numpy/issues/28287) —
@@ -30,8 +27,7 @@ contradicts itself is a clear violation.
   `loadPyodide({ packages: ["numpy"] })`), and reproduces there too.
 - Pure NumPy, no I/O, no network, no FFI — nothing in the repro path
   touches a browser-restricted surface.
-- Demonstrates that Vivarium's Phase 1 gallery is not pandas-only:
-  numpy is in scope as a first-class Layer 1 reproduction target.
+- Shows numpy as a Layer 1 reproduction target, alongside pandas.
 
 ## Files
 

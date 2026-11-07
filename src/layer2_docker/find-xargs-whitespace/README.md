@@ -1,13 +1,5 @@
 # Reproduction — `find … | xargs cmd` is unsafe for whitespace in filenames
 
-> Phase 3 reproduction page — fourth **Layer 2 (Docker)** entry
-> in Vivarium's gallery (after
-> [`postgres-lost-update`](../postgres-lost-update/),
-> [`bash-local-shadows-exit`](../bash-local-shadows-exit/), and
-> [`flock-is-advisory`](../flock-is-advisory/)). Conforms to the
-> catalogue conventions in
-> [`src/layer2_docker/README.md`](../README.md).
-
 ## The behaviour
 
 `xargs` splits its stdin on whitespace **by default**. A filename

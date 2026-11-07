@@ -297,10 +297,7 @@ checked by the same validation and nowhere else.
 The optional revision-2 evidence surface deliberately has **no**
 conformance clause: gating an optional surface on CI would create
 the wrong incentive (page authors padding empty evidence elements
-just to satisfy the gate). When another gallery page emits evidence,
-a follow-up Issue can decide whether to enforce shape (e.g. "if
-`#evidence` exists, it must contain at least one
-`[data-evidence]` child") at that point.
+just to satisfy the gate).
 
 ## Revision history
 

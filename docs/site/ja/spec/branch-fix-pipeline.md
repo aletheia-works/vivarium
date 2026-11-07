@@ -28,7 +28,7 @@ gh workflow run branch-fix-verdict.yml \
 | インプット | 型 | 必須 | デフォルト | 目的 |
 |---|---|---|---|---|
 | `slug` | 文字列 | ✅ | — | [`src/layer2_docker/`](https://github.com/aletheia-works/vivarium/tree/main/src/layer2_docker) 以下のレシピスラッグ（例: `bash-local-shadows-exit`）。スラッグはワークフローのチェックアウト時にツリー内に存在しなければならない。タイポがあればワークフローは早期に失敗する。 |
-| `branch_image` | 文字列 | ✅ | — | 検証する Docker イメージ参照（例: `ghcr.io/contributor/foo-fix:branch-x`）。ランナーが認証なしにプルできなければならない。プライベートレジストリサポートは追加作業。 |
+| `branch_image` | 文字列 | ✅ | — | 検証する Docker イメージ参照（例: `ghcr.io/contributor/foo-fix:branch-x`）。ランナーが認証なしにプルできなければならない。プライベートレジストリには対応していない。 |
 | `expected_verdict` | 選択肢（`reproduced`\|`unreproduced`） | — | `unreproduced` | branch-fix イメージに対してコントリビューターが期待する verdict。`unreproduced`（バグが再現されない）が典型的な「修正が機能している」答えだ。ワークフローの最終ステップはキャプチャした verdict がこれと一致するかアサートし、一致しない場合はゼロ以外で終了する。 |
 | `original_image` | 文字列 | — | （空） | オプションのオーバーライド。デフォルトではワークフローは GitHub Pages からデプロイ済みの元の verdict をフェッチする——イメージを再実行するより安価で、ギャラリーが提供するものと同一だ。`original_image` を指定すると代わりにそのイメージから再キャプチャする。特定のタグへの比較をアンカーしたいときやプライベートフォークのテストに有用。 |
 
@@ -55,9 +55,7 @@ gh workflow run branch-fix-verdict.yml \
 | `branch-fix-verdict.json` | `branch_image` からライブキャプチャ。 | 常に存在。[Contract v1](./contract-v1.md) に準拠し [`verdict.schema.json`](https://github.com/aletheia-works/vivarium/blob/main/docs/site/public/spec/verdict.schema.json) に対して検証パスする。 |
 | `original-verdict.json` | デフォルト: `https://aletheia-works.github.io/vivarium/repro/<project>/<issue_path>/verdict.json` からフェッチ（`recipes.json` 内エントリの `page_url` に `verdict.json` を付加した形）。`original_image` を指定した場合: そのイメージからキャプチャ。 | デプロイ済みの Pages スナップショットが 404 を返す場合（例: まだライブサイトにない新しいレシピ）は省略。 |
 
-R.3 比較ページ UI はこのバンドル構造を正確に消費する。
-このようにファイルに名前を付けることで、R.2 が R.3 のプログラミング対象となる
-ワイヤーフォーマットにコミットする。
+[比較ページ](../repro/compare.mdx)はこのバンドルを読み込む。
 
 ## 比較サマリー
 
@@ -87,7 +85,7 @@ zip を [比較ページ](../repro/compare.mdx) に file-drop または paste �
 ## 関連情報
 
 - [比較ページ](../repro/compare.mdx) — このパイプラインのアーティファクトバンドルを
-  消費する R.3 のサイドバイサイド UI（file-drop、URL パラメータ、JSON paste の
+  消費するサイドバイサイド UI（file-drop、URL パラメータ、JSON paste の
   3 経路）。
 - [Contract v1](./contract-v1.md) — このパイプラインが出力・消費する verdict サーフェス。
 - [`verdict.schema.json`](https://github.com/aletheia-works/vivarium/blob/main/docs/site/public/spec/verdict.schema.json) —

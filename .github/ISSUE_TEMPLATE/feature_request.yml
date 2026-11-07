@@ -9,8 +9,8 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thanks for proposing a feature. This form asks for the structured
-        information needed to evaluate fit with the project's phased roadmap.
+        Thanks for proposing a feature. These details help us understand
+        what you need.
 
   - type: textarea
     id: problem

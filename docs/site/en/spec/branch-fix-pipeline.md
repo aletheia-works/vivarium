@@ -28,7 +28,7 @@ fetch.
 | Input | Type | Required | Default | Purpose |
 |---|---|---|---|---|
 | `slug` | string | ✅ | — | Recipe slug under [`src/layer2_docker/`](https://github.com/aletheia-works/vivarium/tree/main/src/layer2_docker), e.g. `bash-local-shadows-exit`. The slug must exist in tree on the workflow's checkout; the workflow fails fast on a typo. |
-| `branch_image` | string | ✅ | — | Docker image ref to verify (e.g. `ghcr.io/contributor/foo-fix:branch-x`). Must be pullable by the runner without authentication. Private-registry support is a follow-up. |
+| `branch_image` | string | ✅ | — | Docker image ref to verify (e.g. `ghcr.io/contributor/foo-fix:branch-x`). Must be pullable by the runner without authentication. Private registries are not supported. |
 | `expected_verdict` | choice (`reproduced`\|`unreproduced`) | — | `unreproduced` | Verdict the contributor expects on the branch-fix image. `unreproduced` (bug does NOT reproduce) is the typical "fix works" answer. The workflow's final step asserts the captured verdict matches this and exits non-zero on divergence. |
 | `original_image` | string | — | (empty) | Optional override. By default the workflow fetches the deployed original verdict from GitHub Pages — cheaper than re-running an image and identical to what the gallery serves. Supplying an `original_image` re-captures from that image instead, useful for anchoring the comparison at a specific tag or testing a private fork. |
 
@@ -56,9 +56,7 @@ bundle contains:
 | `branch-fix-verdict.json` | Captured live from `branch_image`. | Always present. Conforms to [Contract v1](./contract-v1.md) and validates against [`verdict.schema.json`](https://github.com/aletheia-works/vivarium/blob/main/docs/site/public/spec/verdict.schema.json). |
 | `original-verdict.json` | Default: fetched from `https://aletheia-works.github.io/vivarium/repro/<project>/<issue_path>/verdict.json` (the `page_url` value from the recipe's entry in `recipes.json`, with `verdict.json` appended). With `original_image`: captured from that image. | Omitted when the deployed Pages snapshot returns 404 (e.g. brand-new recipe not yet on the live site). |
 
-The R.3 comparison-page UI consumes this exact bundle structure;
-naming the files this way commits R.2 to a wire format R.3 can
-program against without further coordination.
+The [comparison page](../repro/compare.mdx) reads this bundle.
 
 ## Comparison summary
 
@@ -90,7 +88,7 @@ artefact is the source of truth either way.
 
 ## See also
 
-- [Comparison page](../repro/compare.mdx) — the R.3 side-by-side UI
+- [Comparison page](../repro/compare.mdx) — the side-by-side UI
   that consumes this pipeline's artefact bundle (file-drop, URL
   params, or JSON paste).
 - [Contract v1](./contract-v1.md) — the verdict surface this

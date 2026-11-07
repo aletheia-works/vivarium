@@ -1,12 +1,5 @@
 # Reproduction — `flock(2)` is advisory only
 
-> Phase 3 reproduction page — third **Layer 2 (Docker)** entry
-> in Vivarium's gallery (after
-> [`postgres-lost-update`](../postgres-lost-update/) and
-> [`bash-local-shadows-exit`](../bash-local-shadows-exit/)).
-> Conforms to the catalogue conventions in
-> [`src/layer2_docker/README.md`](../README.md).
-
 ## The behaviour
 
 Linux's `flock(2)` (and the `flock(1)` CLI on top of it) creates

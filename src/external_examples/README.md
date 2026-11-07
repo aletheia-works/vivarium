@@ -64,7 +64,3 @@ the manifest's `slug` field — they are conceptually separate
 (directory name = "this example", manifest slug = "the
 reproduction the example describes"). In practice keeping them
 similar is helpful.
-
-## Phase context
-
-Manifest format is locked at v1.

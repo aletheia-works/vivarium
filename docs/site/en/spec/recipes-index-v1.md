@@ -50,7 +50,7 @@ URL: <https://aletheia-works.github.io/vivarium/api/recipes.json>
 
 | Field | Type | Required | Notes |
 |---|---|---|---|
-| `slug` | string (kebab-case) | ✅ | Recipe directory name under `src/layer{N}_*/`. Same convention as Manifest v1's `slug`. |
+| `slug` | string (kebab-case) | ✅ | Recipe directory name under `src/layer{N}_*/`. |
 | `layer` | integer (`1` \| `2` \| `3`) | ✅ | Layer 1 = WASM in browser; Layer 2 = Docker; Layer 3 = live preview of an upstream pull request, or of a commit before it becomes one. |
 | `project` | string | ✅ | Upstream project name (e.g. `"pandas"`, `"bash"`). |
 | `issue` | integer | ✅ | Upstream issue number; `0` if no upstream tracker entry. For a Layer 3 preview, the issue its change fixes or is checked against. |
@@ -142,7 +142,3 @@ are surfaced to the consumer as "no snapshot available").
 
 - [Contract v1](./contract-v1.md) — the runtime verdict surface each
   recipe page publishes.
-- [Manifest v1](./manifest-v1.md) — the upstream-side manifest format an
-  external repo ships at `.vivarium/manifest.toml`. Recipe entries in
-  this index correspond to internal recipes; external repos publish their
-  own per-repo manifest instead of being listed here.
