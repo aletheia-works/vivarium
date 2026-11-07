@@ -112,7 +112,7 @@ export const STRINGS: Record<Lang, Strings> = {
     workflowDocs: 'Pipeline spec → /vivarium/spec/branch-fix-pipeline',
     semanticsHeader: '// VERDICT SEMANTICS',
     semanticsBody:
-      '`reproduced` means the upstream bug was reproduced; `unreproduced` means it was not. A working branch-fix flips the verdict from `reproduced` to `unreproduced`.',
+      '`reproduced` means the upstream bug was reproduced; `unreproduced` means it was not. A working branch-fix flips the verdict from `reproduced` to `unreproduced`. A run that fails is also `unreproduced`, so check the stdout as well.',
     durationMsSuffix: 'ms',
   },
   ja: {
@@ -175,7 +175,7 @@ export const STRINGS: Record<Lang, Strings> = {
     workflowDocs: 'パイプライン仕様 → /vivarium/ja/spec/branch-fix-pipeline',
     semanticsHeader: '// VERDICT のセマンティクス',
     semanticsBody:
-      '`reproduced` は アップストリームのバグが再現したことを意味する。`unreproduced` は再現しなかったことを意味する。修正が機能している branch-fix は verdict を `reproduced` から `unreproduced` に反転させる。',
+      '`reproduced` は アップストリームのバグが再現したことを意味する。`unreproduced` は再現しなかったことを意味する。修正が機能している branch-fix は verdict を `reproduced` から `unreproduced` に反転させる。失敗した実行も `unreproduced` になるので、stdout も確認すること。',
     durationMsSuffix: 'ms',
   },
 };
