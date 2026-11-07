@@ -47,6 +47,10 @@ the reproduction is doing its job. `unreproduced` means the bug
 [Contract v1: Verdict semantics](./contract-v1.md#verdict-semantics)
 for the full reasoning.
 
+The workflow reports `unreproduced` for any non-zero exit code, so a job
+with `expected_verdict: unreproduced` also passes when the image crashes.
+Check the captured output to tell the two apart.
+
 Consumers that want a "this bug is fixed" alert can therefore
 write:
 

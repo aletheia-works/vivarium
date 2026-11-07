@@ -43,6 +43,10 @@ a different way before producing a verdict at all. Either reading is
 worth investigating — the page is no longer demonstrating what its
 README claims.
 
+v1 has no error verdict, so a run that fails before reaching the bug
+also reports `unreproduced`. Read the output to tell it from an absent
+bug.
+
 `pending` is the default state until the reproduction code (Layer 1)
 or the verdict-snapshot fetch (Layer 2) settles.
 
@@ -309,6 +313,7 @@ pages stay conformant unchanged.
 | 3 | 2026-05-05 | Verdict enum values renamed: `"pass"` → `"reproduced"`, `"fail"` → `"unreproduced"` (`"pending"` unchanged). The contract version literal stays `v1`. `verdict.schema.json` enum is updated; old snapshots that still carry `"pass"` / `"fail"` no longer validate. CSS class names on `#verdict` and the `data-verdict` attribute follow the same rename. |
 | 4 | 2026-10-19 | The `runtime.name` table lists `"formicarium"`. `runtime.name` stays free-form, so the surface and the version literal are unchanged. |
 | 5 | 2026-11-07 | States that no page emits the evidence surface today, and which `runtime.name` values recipes use. No format change. |
+| 6 | 2026-11-07 | States that a failed run also reports `unreproduced`, because v1 has no error verdict. No format change. |
 
 ## References
 

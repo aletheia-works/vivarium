@@ -45,6 +45,10 @@ jobs:
 完全な説明は
 [Contract v1: Verdict セマンティクス](./contract-v1.md#verdict-セマンティクス)を参照。
 
+このワークフローは 0 以外の終了コードをすべて `unreproduced` と報告する。そのため
+`expected_verdict: unreproduced` のジョブは、イメージがクラッシュした場合も成功する。
+両者はキャプチャした出力で見分ける。
+
 「このバグは修正された」アラートを望むコンシューマーは:
 
 ```yaml
