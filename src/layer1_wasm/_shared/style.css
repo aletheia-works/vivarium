@@ -55,6 +55,10 @@ html.dark {
   box-sizing: border-box;
 }
 
+html:lang(ja) {
+  word-break: auto-phrase;
+}
+
 body {
   margin: 0;
   background: var(--vh-bg);

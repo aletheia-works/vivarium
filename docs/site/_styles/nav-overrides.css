@@ -14,6 +14,10 @@ html.dark:root {
   --rp-c-brand-lighter: #99f5dd;
 }
 
+html:lang(ja) {
+  word-break: auto-phrase;
+}
+
 @media (min-width: 960px) {
   .rp-nav .rp-nav__others {
     display: flex;
