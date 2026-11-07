@@ -17,7 +17,7 @@
       "role": "baseline",
       "tool": "jj",
       "repository": "https://github.com/jj-vcs/jj",
-      "commit": "b5c61830e73eccb3f7f79661c0915681fdc00dd3",
+      "commit": "d16ee1fc88a72c54142241b079a34bbf3b033bc0",
       "fixture": "jj-10189",
       "reference": {
         "release": "latest"
