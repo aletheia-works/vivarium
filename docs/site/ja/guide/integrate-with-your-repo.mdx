@@ -57,7 +57,7 @@ jobs:
     eyebrow="// 3 · 自分のビルドを確かめる"
     heading="自分でビルドしたイメージに対して再現を実行する。"
   >
-    <p>修正でバグが消えることを確かめるには、ジョブに自分のイメージを指定し、<code>unreproduced</code> を期待します。ランナーは認証なしでイメージを取得するので、公開イメージにしてください。</p>
+    <p>修正でバグが消えることを確かめるには、ジョブに自分のイメージを指定し、<code>unreproduced</code> を期待します。ランナーは認証なしでイメージを取得するので、公開イメージにしてください。0 以外の終了コードはすべて <code>unreproduced</code> になるので、実行の出力も確認してください。</p>
     <pre><code>{`jobs:
   check-my-fix:
     uses: aletheia-works/vivarium/.github/workflows/vivarium-verdict.yml@main

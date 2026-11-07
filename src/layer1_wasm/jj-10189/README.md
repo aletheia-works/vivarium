@@ -47,8 +47,9 @@ NEW` must print the parent commit it created. When the last command fails
 naming that commit as already existing, the run is reproduced; when it
 succeeds and prints the same parent commit, it is corrected. The verdict comes
 from the baseline alone; the fix pane reports whether the fix is corrected. A
-failed command or unexpected output is reported as an error, never as a
-verdict.
+failed command or unexpected output is recorded in `baseline_error` or
+`fix_error` and shown on the page as `Not judged`. Contract v1 has no error
+verdict, so a baseline failure still reports `unreproduced`.
 
 ## Runtime
 

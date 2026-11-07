@@ -45,9 +45,10 @@ import {
       <dt id="verdict"><strong>Verdict</strong></dt>
       <dd>
         The result of running a recipe. <code>reproduced</code> means the bug
-        happens. <code>unreproduced</code> means it does not. The words describe
-        the bug, not a test, so <code>reproduced</code> is not a good outcome
-        for the project. See{' '}
+        happens. <code>unreproduced</code> means it did not, either because it is
+        absent or because the run failed before reaching it, so check the
+        output. The words describe the bug, not a test, so
+        <code>reproduced</code> is not a good outcome for the project. See{' '}
         <a href="/vivarium/spec/contract-v1#verdict-semantics">verdict semantics</a>.
       </dd>
 
