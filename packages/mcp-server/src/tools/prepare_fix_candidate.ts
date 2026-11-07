@@ -192,9 +192,6 @@ export async function prepareFixCandidate(
     '',
     '# 6. Open the PR against aletheia-works/vivarium (paste pr_body into pr-body.md first).',
     `gh pr create --repo aletheia-works/vivarium --base main --title '${prTitle}' --body-file pr-body.md`,
-    '',
-    '# 7. Apply the AI authorship label (replace <pr-number> with the URL the previous step prints).',
-    "# gh pr edit <pr-number> --repo aletheia-works/vivarium --add-label 'ai: generated'",
   ];
 
   const nextSteps = [
@@ -240,7 +237,7 @@ export const PREPARE_FIX_CANDIDATE_TOOL = {
         type: 'string' as const,
         pattern: '^https?://github\\.com/[^/]+/[^/]+/?$',
         description:
-          "Bare GitHub repo URL of the fork that hosts the fix branch (e.g. 'https://github.com/JamBalaya56562/lark'). Tree / blob / pull URLs are rejected; pass the canonical clone URL.",
+          "Bare GitHub repo URL of the fork that hosts the fix branch (e.g. 'https://github.com/your-user/lark'). Tree / blob / pull URLs are rejected; pass the canonical clone URL.",
       },
       branch: {
         type: 'string' as const,

@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://aletheia-works.github.io/vivarium/spec/manifest.schema.json",
   "title": "Vivarium third-party reproduction manifest (v1)",
-  "description": "Static manifest an external repository ships at `.vivarium/manifest.toml` to declare a Vivarium-runnable reproduction. Validated as JSON after a TOML→JSON conversion (the manifest itself is TOML; this schema validates the equivalent JSON object). See https://aletheia-works.github.io/vivarium/spec/manifest-v1 for the prose spec and ADR-0015 for the design rationale.",
+  "description": "Static manifest an external repository ships at `.vivarium/manifest.toml` to declare a Vivarium-runnable reproduction. Validated as JSON after a TOML→JSON conversion (the manifest itself is TOML; this schema validates the equivalent JSON object). See https://aletheia-works.github.io/vivarium/spec/manifest-v1 for the prose spec.",
   "type": "object",
   "required": ["manifest", "slug", "layer", "bug"],
   "additionalProperties": false,
@@ -65,7 +65,7 @@
         "expected_verdict": {
           "enum": ["reproduced", "unreproduced"],
           "default": "reproduced",
-          "description": "Expected verdict at this manifest's last review. 'reproduced' = bug reproduces; 'unreproduced' = bug does not reproduce (sentinel page tracking an upstream fix). Most pages declare 'reproduced'. Renamed from 'pass'/'fail' in Contract v1 Revision 3 (ADR-0029)."
+          "description": "Expected verdict at this manifest's last review. 'reproduced' = bug reproduces; 'unreproduced' = bug does not reproduce (sentinel page tracking an upstream fix). Most pages declare 'reproduced'. Renamed from 'pass'/'fail' in Contract v1 Revision 3."
         }
       }
     },
@@ -87,7 +87,7 @@
         "expected_verdict": {
           "enum": ["reproduced", "unreproduced"],
           "default": "reproduced",
-          "description": "Expected verdict at this manifest's last review. 'reproduced' = bug reproduces; 'unreproduced' = bug does not reproduce (sentinel). Renamed from 'pass'/'fail' in Contract v1 Revision 3 (ADR-0029)."
+          "description": "Expected verdict at this manifest's last review. 'reproduced' = bug reproduces; 'unreproduced' = bug does not reproduce (sentinel). Renamed from 'pass'/'fail' in Contract v1 Revision 3."
         }
       }
     }

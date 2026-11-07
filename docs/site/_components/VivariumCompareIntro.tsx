@@ -19,7 +19,7 @@ const STRINGS = {
       {
         micro: 'DROP',
         title: 'Drop the bundle',
-        body: 'Drag a `branch-fix-verdict.yml` artefact (zip) — or a bare `verdict.json` — onto the page. Original is auto-fetched from the deployed snapshot.',
+        body: 'Drag a `branch-fix-verdict.yml` artifact (zip) or a `verdict.json` onto the page. The zip also holds the original verdict when one is deployed.',
       },
       {
         micro: 'PASTE',
@@ -28,8 +28,8 @@ const STRINGS = {
       },
       {
         micro: 'SLUG + URL',
-        title: 'Type the slug',
-        body: 'Enter a recipe slug (e.g. `pandas/56679`) — the deployed snapshot loads automatically; supply your branch-fix verdict URL or drop file alongside.',
+        title: 'Enter the recipe path',
+        body: 'For a Layer 2 recipe, enter its path (e.g. `bash/local-shadows-exit`) to load the deployed snapshot, then add your branch-fix verdict.',
       },
     ],
   },
@@ -41,7 +41,7 @@ const STRINGS = {
       {
         micro: 'DROP',
         title: 'バンドルをドロップ',
-        body: '`branch-fix-verdict.yml` の artefact (zip) または bare の `verdict.json` をページに投下。オリジナルはデプロイ済みスナップショットから自動取得。',
+        body: '`branch-fix-verdict.yml` のアーティファクト（zip）または `verdict.json` をページにドロップ。デプロイ済みの判定がある場合は、zip に元の判定も入っている。',
       },
       {
         micro: 'PASTE',
@@ -50,8 +50,8 @@ const STRINGS = {
       },
       {
         micro: 'SLUG + URL',
-        title: 'slug を入力',
-        body: 'レシピ slug（例: `pandas/56679`）を入れるとデプロイ済みスナップショットが自動ロード。branch-fix verdict の URL を入れるかファイルを併用。',
+        title: 'レシピのパスを入力',
+        body: 'Layer 2 のレシピのパス（例: `bash/local-shadows-exit`）を入れてデプロイ済みスナップショットを読み込み、branch-fix の判定を追加する。',
       },
     ],
   },

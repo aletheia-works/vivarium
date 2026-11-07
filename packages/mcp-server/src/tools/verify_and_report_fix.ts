@@ -150,7 +150,7 @@ function buildCommands(args: BuildCommandsArgs): string[] {
         return [
           `# Capture the fixed verdict against the candidate fix source.`,
           `PLAYWRIGHT_FIX_URL='<fix-url>' bunx playwright test --grep ${slug}`,
-          `# Or open ${compareUrl} in a browser; the fix is pre-loaded via ?fix_url= / ?fix=<base64>.`,
+          `# Or open ${compareUrl} in a browser if the recipe sets path_a; the fix is pre-loaded via ?fix_url= / ?fix=<base64>.`,
         ];
       }
       return [
@@ -175,9 +175,9 @@ function buildCommands(args: BuildCommandsArgs): string[] {
         ];
       }
       return [
-        `# Open the upstream PR in draft mode (AI agents must keep it --draft per round-trip guardrail 4).`,
+        `# Open the upstream PR in draft mode (AI agents must keep it --draft so a person decides when it is ready).`,
         `# Base repo = upstream (${upstream.owner}/${upstream.repo}); head = contributor fork (${fork.owner}:${fork.branch}).`,
-        `gh pr create --repo ${upstream.owner}/${upstream.repo} --head ${fork.owner}:${fork.branch} --draft --label 'ai: generated' --title '<title>' --body '<body>'`,
+        `gh pr create --repo ${upstream.owner}/${upstream.repo} --head ${fork.owner}:${fork.branch} --draft --title '<title>' --body '<body>'`,
       ];
     }
     case 'open_vivarium_pr':
@@ -445,7 +445,7 @@ export const VERIFY_AND_REPORT_FIX_TOOL = {
       fix_source: {
         type: 'string' as const,
         description:
-          'Inline candidate fix source. Layer 1 only — surfaced in the returned `compare_url` for visual inspection; not used by Phase 3 auto-execute (`fix_url` is the executable input).',
+          'Inline candidate fix source. Layer 1 only — surfaced in the returned `compare_url` for visual inspection; not used by auto-execute (`fix_url` is the executable input).',
       },
       branch_image: {
         type: 'string' as const,
@@ -462,7 +462,7 @@ export const VERIFY_AND_REPORT_FIX_TOOL = {
         type: 'boolean' as const,
         default: true,
         description:
-          'Whether to actually run the verify_unfixed / verify_fixed action when the state machine selects one. Defaults to true. Set false to preserve the Phase 1 / 2 behaviour of returning commands without running anything.',
+          'Whether to actually run the verify_unfixed / verify_fixed action when the state machine selects one. Defaults to true. Set false to return the commands without running anything.',
       },
       workspace_path: {
         type: 'string' as const,

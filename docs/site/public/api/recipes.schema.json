@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://aletheia-works.github.io/vivarium/api/recipes.schema.json",
   "title": "Vivarium recipes index (v1)",
-  "description": "Machine-generated index of every reproduction this repository hosts. Built at docs build time by docs/scripts/generate-recipes-index.ts and deployed to https://aletheia-works.github.io/vivarium/api/recipes.json. Consumed by the Vivarium MCP server (ADR-0019, private memo) and any other programmatic tool that wants to list, filter, or look up reproductions. The `index` literal carries the format version; minor additive revisions follow ADR-0018's two-tier policy.",
+  "description": "Machine-generated index of every reproduction this repository hosts. Built at docs build time by docs/scripts/generate-recipes-index.ts and deployed to https://aletheia-works.github.io/vivarium/api/recipes.json. Consumed by the Vivarium MCP server and any other programmatic tool that wants to list, filter, or look up reproductions. The `index` literal carries the format version; minor additive revisions keep that literal.",
   "type": "object",
   "required": [
     "index",
@@ -139,7 +139,7 @@
         "language": {
           "type": "string",
           "minLength": 1,
-          "description": "Optional. Primary implementation language, lowercase (e.g. 'python', 'rust', 'shell'). Sourced from src/layer*_*/<slug>/recipe.json (the per-recipe metadata file; schema: docs/site/public/spec/recipe.schema.json). Added in the 2026-05-03 v1 revision; the 2026-05-18 revision moved the source from the retired docs/site/_data/recipe-facets.json overlay to the per-recipe file. Backwards-compatible, v1 consumers ignore."
+          "description": "Optional. Primary implementation language, lowercase (e.g. 'python', 'rust', 'shell'). Sourced from src/layer*_*/<slug>/recipe.json (the per-recipe metadata file; schema: docs/site/public/spec/recipe.schema.json). Added in the 2026-05-03 v1 revision. Backwards-compatible, v1 consumers ignore."
         },
         "symptom": {
           "type": "string",

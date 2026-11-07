@@ -142,10 +142,10 @@ const STRINGS: Record<Lang, Strings> = {
     pasteOriginal: 'original-verdict.json',
     pasteBranch: 'branch-fix-verdict.json',
     pasteApply: 'Apply pasted JSON',
-    slugLabel: 'Recipe slug',
-    slugPlaceholder: 'e.g. bash-local-shadows-exit',
+    slugLabel: 'Recipe path',
+    slugPlaceholder: 'e.g. bash/local-shadows-exit',
     slugHelp:
-      'When set, the original side is fetched from the deployed gallery snapshot.',
+      'The path of a Layer 2 recipe in its page URL. The button loads its deployed snapshot as the original side.',
     expectedLabel: 'Expected branch-fix verdict',
     expectedFailDesc:
       'unreproduced — bug does NOT reproduce on the fix (typical "fix works")',
@@ -186,7 +186,7 @@ const STRINGS: Record<Lang, Strings> = {
     helpStep3:
       'Download the artefact named `branch-fix-verdict-<slug>-<run_id>` from the run page.',
     helpStep4:
-      'Drop the zip onto this page. Original is fetched from the deployed snapshot automatically.',
+      'Drop the zip onto this page. It holds the original verdict too when one is deployed.',
     workflowDocs: 'Pipeline spec → /vivarium/spec/branch-fix-pipeline',
     semanticsHeader: '// VERDICT SEMANTICS',
     semanticsBody:
@@ -208,10 +208,10 @@ const STRINGS: Record<Lang, Strings> = {
     pasteOriginal: 'original-verdict.json',
     pasteBranch: 'branch-fix-verdict.json',
     pasteApply: 'ペーストした JSON を適用',
-    slugLabel: 'レシピ slug',
-    slugPlaceholder: '例: bash-local-shadows-exit',
+    slugLabel: 'レシピのパス',
+    slugPlaceholder: '例: bash/local-shadows-exit',
     slugHelp:
-      '指定するとオリジナル側はデプロイ済みギャラリースナップショットから取得される。',
+      'ページ URL にある Layer 2 レシピのパス。ボタンでデプロイ済みスナップショットを元の判定として読み込む。',
     expectedLabel: '期待する branch-fix の verdict',
     expectedFailDesc:
       'unreproduced — 修正によりバグが再現しなくなる (典型的な「修正成立」)',
@@ -253,7 +253,7 @@ const STRINGS: Record<Lang, Strings> = {
     helpStep3:
       '実行ページから `branch-fix-verdict-<slug>-<run_id>` という名前のアーティファクトをダウンロードする。',
     helpStep4:
-      'その zip をこのページにドロップする。オリジナルはデプロイ済みスナップショットから自動取得される。',
+      'その zip をこのページにドロップする。デプロイ済みの判定がある場合は、元の判定も zip に入っている。',
     workflowDocs: 'パイプライン仕様 → /vivarium/ja/spec/branch-fix-pipeline',
     semanticsHeader: '// VERDICT のセマンティクス',
     semanticsBody:

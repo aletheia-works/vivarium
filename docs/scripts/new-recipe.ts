@@ -12,18 +12,18 @@ function usage(msg?: string): never {
   if (msg) console.error(`Error: ${msg}`);
   console.error('');
   console.error(
-    'Usage: mise run recipes-new -- <project> <issue> [<title>] [--base <image>] [--repo <owner/repo>]',
+    'Usage: mise run recipes:new -- <project> <issue> [<title>] [--base <image>] [--repo <owner/repo>]',
   );
   console.error('');
   console.error('Examples:');
   console.error(
-    '  mise run recipes-new -- node 63041 "Intl.DateTimeFormat drops month"',
+    '  mise run recipes:new -- node 63041 "Intl.DateTimeFormat drops month"',
   );
   console.error(
-    '  mise run recipes-new -- python 149578 "tarfile empty PAX" --base python:3.15-rc-slim',
+    '  mise run recipes:new -- python 149578 "tarfile empty PAX" --base python:3.15-rc-slim',
   );
   console.error(
-    '  mise run recipes-new -- typescript 61717 "tsc --watch stray .js" --repo microsoft/TypeScript',
+    '  mise run recipes:new -- typescript 61717 "tsc --watch stray .js" --repo microsoft/TypeScript',
   );
   process.exit(1);
 }

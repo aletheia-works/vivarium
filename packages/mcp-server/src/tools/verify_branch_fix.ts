@@ -199,7 +199,7 @@ export async function verifyBranchFix(
 
   if (args.fix_url || args.fix_source) {
     notes.push(
-      'fix_url and fix_source are ignored for Layer 2 recipes — the contributor builds and pushes a Docker image themselves; see ADR-0020 §1 for the image-as-input boundary',
+      'fix_url and fix_source are ignored for Layer 2 recipes — the contributor builds and pushes a Docker image themselves',
     );
   }
   const compareBase = deriveCompareBaseFromPageUrl(recipe.page_url);

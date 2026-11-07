@@ -176,7 +176,7 @@ than just shape-valid.
 
 CI in `repro-regression.yml` validates every
 `src/external_examples/*/.vivarium/manifest.toml` against this
-schema on every push and pull request.
+schema when the regression suite runs.
 
 ## See also
 

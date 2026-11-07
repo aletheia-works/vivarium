@@ -8,7 +8,7 @@ on:
         type: string
         required: true
       branch_image:
-        description: 'Docker image ref to verify (e.g. ghcr.io/contributor/foo-fix:branch-x). Must be pullable by the runner without authentication, or pull credentials must be added by the maintainer in a follow-up.'
+        description: 'Docker image ref to verify (e.g. ghcr.io/contributor/foo-fix:branch-x). Must be pullable by the runner without authentication.'
         type: string
         required: true
       expected_verdict:

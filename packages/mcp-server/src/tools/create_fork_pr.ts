@@ -235,7 +235,7 @@ export async function createForkPr(
 export const CREATE_FORK_PR_TOOL = {
   name: 'create_fork_pr',
   description:
-    "Open a draft PR on the upstream repository from the contributor's already-pushed fork branch. The output side of the round-trip loop. Conservative by design: `dry_run` defaults to true (returns the gh command without executing); `--draft` is mandatory (caller cannot opt out); AI authorship is disclosed via a boilerplate footer appended to the PR body (the `ai: generated` LABEL from AGENTS.md §4.6 is Vivarium-internal and is intentionally NOT applied — upstream repos rarely carry it and contributors usually lack permission to create it). The tool refuses to run unless `computeNextAction(current_state) === 'open_fork_pr'` — that single check enforces all the round-trip preconditions in one place (verdicts captured with the expected polarity, the Vivarium-side PR already opened, no existing upstream PR, status not blocked/merged). The fork branch must already exist on GitHub — this tool does NOT clone, commit, or push on the caller's behalf, and does NOT create the fork (use `gh repo fork` manually first). Pair with `verify_and_report_fix` upstream of this call and with `prepare_fix_candidate` (Layer 1) when registering a fix-candidate spec.",
+    "Open a draft PR on the upstream repository from the contributor's already-pushed fork branch. The output side of the round-trip loop. Conservative by design: `dry_run` defaults to true (returns the gh command without executing); `--draft` is mandatory (caller cannot opt out); AI authorship is disclosed via a boilerplate footer appended to the PR body (no label is applied, because upstream repositories rarely have one). The tool refuses to run unless `computeNextAction(current_state) === 'open_fork_pr'` — that single check enforces all the round-trip preconditions in one place (verdicts captured with the expected polarity, the Vivarium-side PR already opened, no existing upstream PR, status not blocked/merged). The fork branch must already exist on GitHub — this tool does NOT clone, commit, or push on the caller's behalf, and does NOT create the fork (use `gh repo fork` manually first). Pair with `verify_and_report_fix` upstream of this call and with `prepare_fix_candidate` (Layer 1) when registering a fix-candidate spec.",
   inputSchema: {
     type: 'object' as const,
     properties: {
@@ -260,7 +260,7 @@ export const CREATE_FORK_PR_TOOL = {
       pr_body: {
         type: 'string' as const,
         description:
-          "PR body (Markdown). Defaults to empty. Include a link back to the Vivarium recipe and the upstream issue, and disclose AI authorship per AGENTS.md §4.6 (the `ai: generated` label is applied automatically; surfacing the disclosure in the body is good practice).",
+          "PR body (Markdown). Defaults to empty. Include a link back to the Vivarium recipe and the upstream issue, and disclose AI authorship (the tool appends a footer and applies no label).",
       },
       dry_run: {
         type: 'boolean' as const,

@@ -90,9 +90,8 @@ globalThis.__VIVARIUM_RESULT__: VivariumResultV1;  // 以下のエンベロー�
 </div>
 ```
 
-`#evidence` コンテナは**オプション**だ。リビジョン 2 以前のページはこれを省略する。
-v1 コンシューマーは不在を無視する。存在する場合、再現比較 UI がサイドバイサイドパネルを
-レンダリングするようなツールが使う機械可読な実行エビデンスを持つ。
+`#evidence` コンテナは**オプション**だ。現在これを出力するページはなく、比較ページは
+`verdict.json` を読む。存在する場合は機械可読な実行エビデンスを持つ。v1 コンシューマーは不在を無視する。
 
 | `[data-evidence]` 値 | コンテンツ | 典型的な出所 |
 |---|---|---|
@@ -106,8 +105,6 @@ v1 コンシューマーは不在を無視する。存在する場合、再現�
 `hidden` 属性でデフォルトレンダリングでは非表示になる。
 
 `stdout` / `stderr` テキストはページサイズを制限するために切り詰める場合がある。
-規約では Layer 1 ヘルパーは各々を 4 KiB に制限し、既存の Layer 2
-`verdict.json#stderr_tail` の切り詰めルールに合わせている。
 
 ## Result エンベロープ (`VivariumResultV1`)
 
@@ -143,7 +140,7 @@ interface VivariumResultV1 {
 }
 ```
 
-`runtime.name` は自由形式だが、ギャラリー全体で現在使用されている値は:
+`runtime.name` は自由形式だ。共有ヘルパーは次の値を使う。ただし現在のカタログに `php-wasm` と `rust-wasi` のレシピはない。
 
 | 値 | 意味 |
 |---|---|
@@ -196,10 +193,8 @@ Layer 1 は `verdict.json` を出荷しない。その verdict はページ内�
 
 ### ページ内 evidence サーフェスへのリフト（リビジョン 2+）
 
-Layer 2 ページは書き込み時にスナップショットの evidence フィールドを
-自身の DOM に複製しない——スナップショットがソースだ。
-ギャラリーローダーがページ読み込み時に [DOM evidence 要素](#dom-evidence-要素オプションリビジョン-2)
-にリフトする:
+[DOM evidence 要素](#dom-evidence-要素オプションリビジョン-2)を出力するページは、スナップショットから次のように埋める。
+現在の Layer 2 ページはこれを行わず、`verdict.json` のフィールドを直接読む。
 
 | `verdict.json` ソース | ページ内サーフェス |
 |---|---|
@@ -277,6 +272,7 @@ CI はこれらの条項を機械的に強制する——
 | 2 | 2026-04-30 | オプションの `#evidence` DOM コンテナ（`stdout`、`stderr`、`exit-code`、`duration-ms` の `[data-evidence]` 子要素）と対応する `__VIVARIUM_RESULT__.evidence` エンベロープフィールド。Layer 2 リフトはリフト境界で `verdict.json#stderr_tail` → `evidence.stderr` にリネーム。`verdict.schema.json` は変更なし。 |
 | 3 | 2026-05-05 | Verdict enum 値をリネーム: `"pass"` → `"reproduced"`、`"fail"` → `"unreproduced"`（`"pending"` は不変）。Contract バージョンリテラルは `v1` のまま。`verdict.schema.json` の enum も更新され、旧値（`"pass"` / `"fail"`）を持つスナップショットはバリデーションを通らなくなる。`#verdict` の CSS クラス名と `data-verdict` 属性値も同じくリネーム。 |
 | 4 | 2026-10-19 | `runtime.name` の表に `"formicarium"` を載せた。`runtime.name` は自由形式のままなので、surface とバージョンリテラルは変わらない。 |
+| 5 | 2026-11-07 | 現在 evidence サーフェスを出力するページがないこと、レシピが使う `runtime.name` の値を明記。形式の変更はなし。 |
 
 ## 参照
 

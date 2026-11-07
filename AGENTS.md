@@ -101,15 +101,15 @@ vivarium/
 │       ├── _generated/    # gitignored validators / derived site data
 │       ├── _styles/       # global docs CSS overrides
 │       ├── public/
-│       │   ├── api/       # machine-readable endpoints — recipes.json + projects.json (generated from _data/), recipes.schema.json (hand-written)
-│       │   └── spec/      # JSON Schemas — verdict.schema.json, manifest.schema.json
+│       │   ├── api/       # machine-readable endpoints — recipes.json + projects.json (generated), recipes.schema.json (hand-written)
+│       │   └── spec/      # JSON Schemas — verdict, manifest, recipe and roundtrip
 │       ├── en/            # English docs content
 │       └── ja/            # Japanese docs content
 ├── packages/
 │   └── mcp-server/        # @aletheia-works/vivarium-mcp (JSR + npm dual publish)
 ├── scripts/               # shell steps CI calls directly by path (image publishing, Pages bundling)
 ├── src/
-│   ├── layer1_wasm/       # Layer 1 reproductions (Pyodide, Ruby.wasm, php-wasm, Rust wasm32-wasip1)
+│   ├── layer1_wasm/       # Layer 1 reproductions (Pyodide, Ruby.wasm, formicarium)
 │   ├── layer2_docker/     # Layer 2 reproductions (Docker images, GHCR-published)
 │   ├── layer3_previews/   # Layer 3 live previews — one preview.json per upstream PR or pre-PR commit
 │   └── external_examples/ # reference Manifest v1 fixtures, one per shipping layer

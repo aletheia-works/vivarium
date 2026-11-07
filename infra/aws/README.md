@@ -6,10 +6,6 @@ a preview a reviewer opens in a browser. Each preview is a
 image built from that commit, reached at a host of its own through CloudFront
 and one Lambda Web Function.
 
-The first preview ran motionEye with four fake cameras. The approach was tried
-step by step in a spike first
-([aletheia-works/vivarium#615](https://github.com/aletheia-works/vivarium/pull/615)).
-
 ## What is managed
 
 | File | Resources |
@@ -168,7 +164,7 @@ site's Biome settings.
 
 ### Cost
 
-In the spike, an hour of one reviewer watching four cameras came to about
+An hour of one reviewer watching four cameras came to about
 $0.15. That figure is an estimate from third-party us-east-1 rates, not a
 bill. A suspended MicroVM costs no compute.
 

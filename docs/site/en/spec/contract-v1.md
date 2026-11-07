@@ -103,10 +103,9 @@ verdict.
 </div>
 ```
 
-The `#evidence` container is **optional**. Pages predating revision 2
-omit it; v1 consumers ignore the absence. When present, it carries
-machine-readable run evidence used by tooling such as the
-reproduction-comparison UI to render side-by-side panels.
+The `#evidence` container is **optional**. No page emits it today, and the
+comparison page reads `verdict.json` instead. When present, it carries
+machine-readable run evidence. v1 consumers ignore the absence.
 
 | `[data-evidence]` value | content | typical source |
 |---|---|---|
@@ -120,9 +119,7 @@ missing `[data-evidence="<key>"]` as `null` / absent, not as an
 error. The `hidden` attribute keeps the surface invisible in
 default rendering; presentation components style and reveal it.
 
-The `stdout` / `stderr` text MAY be truncated to bound page size; by
-convention, Layer 1 helpers cap each at 4 KiB to match the existing
-Layer 2 `verdict.json#stderr_tail` truncation rule.
+The `stdout` / `stderr` text MAY be truncated to bound page size.
 
 ## Result envelope (`VivariumResultV1`)
 
@@ -158,8 +155,8 @@ interface VivariumResultV1 {
 }
 ```
 
-`runtime.name` is free-form, but the values currently in use across
-the gallery are:
+`runtime.name` is free-form. The shared helpers use these values, although
+no recipe in the catalogue uses `php-wasm` or `rust-wasi` today:
 
 | value | meaning |
 |---|---|
@@ -218,10 +215,9 @@ a `verdict.json`; its verdict is live in-page.
 
 ### Lift to the in-page evidence surface (revision 2+)
 
-Layer 2 pages do not duplicate the snapshot's evidence
-fields into their own DOM at write time — the snapshot is the source.
-The gallery loader lifts them into the [DOM evidence element](#dom-evidence-element-optional-revision-2)
-on page load:
+A page that emits the [DOM evidence element](#dom-evidence-element-optional-revision-2)
+fills it from the snapshot as follows. No Layer 2 page does this today: they
+read the fields from `verdict.json` directly.
 
 | `verdict.json` source | in-page surface |
 |---|---|
@@ -312,6 +308,7 @@ pages stay conformant unchanged.
 | 2 | 2026-04-30 | Optional `#evidence` DOM container with `[data-evidence]` children (`stdout`, `stderr`, `exit-code`, `duration-ms`) and matching `__VIVARIUM_RESULT__.evidence` envelope field. Layer 2 lift renames `verdict.json#stderr_tail` → `evidence.stderr` at the lift boundary; `verdict.schema.json` is unchanged. |
 | 3 | 2026-05-05 | Verdict enum values renamed: `"pass"` → `"reproduced"`, `"fail"` → `"unreproduced"` (`"pending"` unchanged). The contract version literal stays `v1`. `verdict.schema.json` enum is updated; old snapshots that still carry `"pass"` / `"fail"` no longer validate. CSS class names on `#verdict` and the `data-verdict` attribute follow the same rename. |
 | 4 | 2026-10-19 | The `runtime.name` table lists `"formicarium"`. `runtime.name` stays free-form, so the surface and the version literal are unchanged. |
+| 5 | 2026-11-07 | States that no page emits the evidence surface today, and which `runtime.name` values recipes use. No format change. |
 
 ## References
 
@@ -320,7 +317,7 @@ pages stay conformant unchanged.
 - [`src/layer1_wasm/tests/repro.spec.ts`](https://github.com/aletheia-works/vivarium/blob/main/src/layer1_wasm/tests/repro.spec.ts)
   — Playwright assertions on the surface.
 - [`src/layer2_docker/_layer2-shared/layer2.js`](https://github.com/aletheia-works/vivarium/blob/main/src/layer2_docker/_layer2-shared/layer2.js)
-  — gallery-side `verdict.json` → in-page surface lift.
+  — gallery-side reading of `verdict.json`.
 - [`mise-tasks/verdict/capture-layer2.sh`](https://github.com/aletheia-works/vivarium/blob/main/mise-tasks/verdict/capture-layer2.sh)
   — `verdict.json` capture + schema validation (clause 4).
 - [`.github/workflows/deploy-docs.yml`](https://github.com/aletheia-works/vivarium/blob/main/.github/workflows/deploy-docs.yml)

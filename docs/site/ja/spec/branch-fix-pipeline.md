@@ -30,7 +30,7 @@ gh workflow run branch-fix-verdict.yml \
 | `slug` | 文字列 | ✅ | — | [`src/layer2_docker/`](https://github.com/aletheia-works/vivarium/tree/main/src/layer2_docker) 以下のレシピスラッグ（例: `bash-local-shadows-exit`）。スラッグはワークフローのチェックアウト時にツリー内に存在しなければならない。タイポがあればワークフローは早期に失敗する。 |
 | `branch_image` | 文字列 | ✅ | — | 検証する Docker イメージ参照（例: `ghcr.io/contributor/foo-fix:branch-x`）。ランナーが認証なしにプルできなければならない。プライベートレジストリには対応していない。 |
 | `expected_verdict` | 選択肢（`reproduced`\|`unreproduced`） | — | `unreproduced` | branch-fix イメージに対してコントリビューターが期待する verdict。`unreproduced`（バグが再現されない）が典型的な「修正が機能している」答えだ。ワークフローの最終ステップはキャプチャした verdict がこれと一致するかアサートし、一致しない場合はゼロ以外で終了する。 |
-| `original_image` | 文字列 | — | （空） | オプションのオーバーライド。デフォルトではワークフローは GitHub Pages からデプロイ済みの元の verdict をフェッチする——イメージを再実行するより安価で、ギャラリーが提供するものと同一だ。`original_image` を指定すると代わりにそのイメージから再キャプチャする。特定のタグへの比較をアンカーしたいときやプライベートフォークのテストに有用。 |
+| `original_image` | 文字列 | — | （空） | オプションのオーバーライド。デフォルトではワークフローは GitHub Pages からデプロイ済みの元の verdict をフェッチする——イメージを再実行するより安価で、ギャラリーが提供するものと同一だ。`original_image` を指定すると代わりにそのイメージから再キャプチャする。特定のタグへの比較をアンカーしたいときに有用。 |
 
 ## Verdict セマンティクス（リマインダー）
 

@@ -113,5 +113,5 @@ defined by [Vivarium Contract v1](../../docs/site/en/spec/contract-v1.md)
 `__VIVARIUM_VERDICT__` / `__VIVARIUM_RESULT__` JavaScript globals.
 The helper in [`_shared/verdict.ts`](./_shared/verdict.ts) keeps the
 DOM and globals in sync; the Playwright suite at [`tests/repro.spec.ts`](./tests/repro.spec.ts)
-asserts conformance on every PR. Layer 1 does not ship a
+asserts conformance. Layer 1 does not ship a
 `verdict.json` — its verdict is live in-page.

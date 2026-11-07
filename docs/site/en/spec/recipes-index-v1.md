@@ -67,6 +67,7 @@ URL: <https://aletheia-works.github.io/vivarium/api/recipes.json>
 | `language` | string | ⏳ | Optional. Primary implementation language, lowercase (e.g. `"python"`, `"rust"`, `"shell"`). Sourced from the per-recipe [`recipe.json`](https://aletheia-works.github.io/vivarium/spec/recipe.schema.json) under `src/layer*_*/<slug>/`. Added in the 2026-05-03 revision; the 2026-05-18 revision moved the source from the retired `docs/site/_data/recipe-facets.json` overlay to the per-recipe file. |
 | `symptom` | string (kebab-case) | ⏳ | Optional. Short symptom slug used by the error → recipe matcher (e.g. `"dtype-mismatch"`, `"ordering-non-transitive"`). Sourced from `recipe.json`. Added 2026-05-03. |
 | `severity` | string | ⏳ | Optional. Free-form severity bucket (e.g. `"bug"`, `"regression"`, `"spec-violation"`, `"footgun"`). Sourced from `recipe.json`. Added 2026-05-03. |
+| `roundtrip` | object | ⏳ | Optional. A recipe's fix-verification progress, from its `roundtrip.json` ([schema](https://aletheia-works.github.io/vivarium/spec/roundtrip.schema.json)). |
 | `tags` | array of strings | ⏳ | Optional. Free-form tag list scored by the matcher (e.g. `["sqlite3", "pragma", "foreign-keys"]`). Sourced from `recipe.json`. Added 2026-05-03. |
 | `expected_verdict` | string (enum) | ⏳ | Optional. Verdict the regression suite expects the recipe page to produce — `"reproduced"` or `"unreproduced"`. Sourced from `recipe.json`. Added in the 2026-05-18 revision. |
 | `expected_runtime` | string | ⏳ | Optional. Runtime identifier the recipe's verdict envelope reports in `__VIVARIUM_RESULT__.runtime.name` (e.g. `"pyodide"`, `"docker-snapshot"`). Sourced from `recipe.json`. Added 2026-05-18. |
@@ -108,8 +109,7 @@ wired into the rspress `dev` and `build` scripts in
 `docs/package.json`. The script walks the recipe directories, takes each
 recipe's title from `recipe.json` or else its README's first H1, and derives `project` / `issue`
 from the slug pattern (`<project>-<digits>` for slugs with a trailing
-issue number; first dash-segment otherwise, with a small override map for
-recipes whose slug shape diverges). A Layer 3 preview's slug ends in its
+issue number; first dash-segment otherwise). A Layer 3 preview's slug ends in its
 pull request number, or names a preview without one, so its `issue`,
 `pull` and `commit` come from the recipe's `preview.json` instead.
 

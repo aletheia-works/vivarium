@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://aletheia-works.github.io/vivarium/spec/verdict.schema.json",
   "title": "Vivarium verdict snapshot (contract v1)",
-  "description": "Verdict snapshot file shipped alongside Layer 2 (Docker catalogue) reproduction pages in the Vivarium gallery. Layer 1 (WASM in-page) reproductions do not ship this file — their verdict is published live in the page DOM and JS globals. As of Contract v1 Revision 3 (ADR-0029) the verdict enum values are 'reproduced' / 'unreproduced'; older snapshots that still carry 'pass' / 'fail' are no longer accepted by this schema. See https://aletheia-works.github.io/vivarium/spec/contract-v1 for the full contract.",
+  "description": "Verdict snapshot file shipped alongside Layer 2 (Docker catalogue) reproduction pages in the Vivarium gallery. Layer 1 (WASM in-page) reproductions do not ship this file — their verdict is published live in the page DOM and JS globals. As of Contract v1 Revision 3 the verdict enum values are 'reproduced' / 'unreproduced'; older snapshots that still carry 'pass' / 'fail' are no longer accepted by this schema. See https://aletheia-works.github.io/vivarium/spec/contract-v1 for the full contract.",
   "type": "object",
   "required": [
     "contract",
@@ -22,7 +22,7 @@
     },
     "verdict": {
       "enum": ["reproduced", "unreproduced"],
-      "description": "Snapshot verdict. 'reproduced' means the upstream bug was reproduced when this snapshot was captured; 'unreproduced' means it was not (either the runtime shipped a fix or the runtime regressed before producing a verdict). 'pending' is intentionally not allowed in the file form — the snapshot is written post-run. Renamed from 'pass'/'fail' in Contract v1 Revision 3 (ADR-0029); the contract version literal is unchanged."
+      "description": "Snapshot verdict. 'reproduced' means the upstream bug was reproduced when this snapshot was captured; 'unreproduced' means it was not (either the runtime shipped a fix or the runtime regressed before producing a verdict). 'pending' is intentionally not allowed in the file form — the snapshot is written post-run. Renamed from 'pass'/'fail' in Contract v1 Revision 3; the contract version literal is unchanged."
     },
     "exit_code": {
       "type": "integer",

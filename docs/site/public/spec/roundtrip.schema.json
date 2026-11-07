@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://aletheia-works.github.io/vivarium/spec/roundtrip.schema.json",
   "title": "Vivarium round-trip state (schema_version 1)",
-  "description": "Per-recipe round-trip workflow state. Tracked sibling of a recipe's tracked sources (README.md / repro.* / index.html / Dockerfile) under src/layer{1,2,3}_*/<slug>/roundtrip.json. Captures the workflow-level progress of the upstream → reproduction → fix → verification → PR loop that recipes.json (the static catalogue) intentionally does not carry. SSOT boundary: recipes.json holds catalogue facts that solidify at recipe-authoring time (slug existence, layer, page_url); roundtrip.json holds state that keeps moving after the recipe is authored (branch / PR URLs / verdict transitions). The generator at docs/scripts/generate-recipes-index.ts opt-in merges this file into the catalogue entry under a `roundtrip` field; the recipes.json schema literal stays index = 'v1' per the ADR-0018 minor-revision policy. AI agents write this file, guided by the prepare_new_recipe and verify_and_report_fix MCP tools; verify_and_report_fix reads `status` to decide the next action.",
+  "description": "Per-recipe round-trip workflow state. Tracked sibling of a recipe's tracked sources (README.md / repro.* / index.html / Dockerfile) under src/layer{1,2,3}_*/<slug>/roundtrip.json. Captures the workflow-level progress of the upstream → reproduction → fix → verification → PR loop that recipes.json (the static catalogue) intentionally does not carry. SSOT boundary: recipes.json holds catalogue facts that solidify at recipe-authoring time (slug existence, layer, page_url); roundtrip.json holds state that keeps moving after the recipe is authored (branch / PR URLs / verdict transitions). The generator at docs/scripts/generate-recipes-index.ts opt-in merges this file into the catalogue entry under a `roundtrip` field; the recipes.json schema literal stays index = 'v1'. AI agents write this file, guided by the prepare_new_recipe and verify_and_report_fix MCP tools; verify_and_report_fix reads `status` to decide the next action.",
   "type": "object",
   "required": [
     "schema_version",
@@ -15,7 +15,7 @@
   "properties": {
     "schema_version": {
       "const": 1,
-      "description": "Schema version literal. Always 1 for files validating against this schema; breaking changes ship as a sibling schema (roundtrip.v2.schema.json) per ADR-0018."
+      "description": "Schema version literal. Always 1 for files validating against this schema; breaking changes ship as a sibling schema (roundtrip.v2.schema.json)."
     },
     "slug": {
       "type": "string",
@@ -34,7 +34,7 @@
     },
     "fork": {
       "type": ["object", "null"],
-      "description": "Personal fork of the upstream repo where the candidate fix lives. Null until the round-trip reaches the open_fork_pr stage. AI agents create the fork against the user's account, not the aletheia-works org (see Plan §Phase 4 fork strategy).",
+      "description": "Personal fork of the upstream repo where the candidate fix lives. Null until the round-trip reaches the open_fork_pr stage. AI agents create the fork against the user's account, not the aletheia-works org.",
       "required": ["owner", "repo", "branch"],
       "additionalProperties": false,
       "properties": {
@@ -59,7 +59,7 @@
     "upstream_pr": {
       "type": ["string", "null"],
       "format": "uri",
-      "description": "URL of the upstream PR opened against the upstream repo from the fork branch. Always opened in draft mode by AI agents (see Plan §Phase 4 guardrail 4); a human moves it to ready-for-review. Null until the round-trip reaches the upstream_open stage."
+      "description": "URL of the upstream PR opened against the upstream repo from the fork branch. Always opened in draft mode by AI agents; a human moves it to ready-for-review. Null until the round-trip reaches the upstream_open stage."
     },
     "verdicts": {
       "type": "object",
@@ -84,7 +84,7 @@
     "updated_at": {
       "type": "string",
       "format": "date-time",
-      "description": "Wall-clock timestamp of the last write to this file, ISO-8601 with 'Z' suffix. Bumped on every state transition. Used by external tooling (round-trip dashboard, verdict-comment-bot) to detect stale state."
+      "description": "Wall-clock timestamp of the last write to this file, ISO-8601 with 'Z' suffix. Bumped on every state transition. Tools can use it to detect stale state."
     },
     "notes": {
       "type": "array",
@@ -121,7 +121,7 @@
       "upstream_issue": "https://github.com/lark-parser/lark/issues/1585",
       "vivarium_pr": "https://github.com/aletheia-works/vivarium/pull/263",
       "fork": {
-        "owner": "JamBalaya56562",
+        "owner": "your-user",
         "repo": "lark",
         "branch": "claude/fix-lark-1585-QLVa7"
       },
@@ -129,7 +129,7 @@
       "updated_at": "2026-05-17T22:45:00Z",
       "notes": [
         "scaffolded from upstream issue lark-parser/lark#1585",
-        "fix-candidate registered for JamBalaya56562/lark@claude/fix-lark-1585-QLVa7"
+        "fix-candidate registered for your-user/lark@claude/fix-lark-1585-QLVa7"
       ]
     }
   ]

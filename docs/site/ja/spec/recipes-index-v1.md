@@ -65,6 +65,7 @@ URL: <https://aletheia-works.github.io/vivarium/api/recipes.json>
 | `language` | 文字列 | ⏳ | オプション。主要な実装言語の小文字表記（例: `"python"`、`"rust"`、`"shell"`）。`src/layer*_*/<slug>/` 配下のレシピごとの [`recipe.json`](https://aletheia-works.github.io/vivarium/spec/recipe.schema.json) から供給される。2026-05-03 リビジョンで追加。2026-05-18 リビジョンで供給元を廃止された `docs/site/_data/recipe-facets.json` オーバーレイからレシピごとのファイルへ移行。 |
 | `symptom` | 文字列（ケバブケース） | ⏳ | オプション。エラー → レシピマッチャーが利用する短い症状スラッグ（例: `"dtype-mismatch"`、`"ordering-non-transitive"`）。`recipe.json` から供給。2026-05-03 追加。 |
 | `severity` | 文字列 | ⏳ | オプション。自由形式の重大度バケット（例: `"bug"`、`"regression"`、`"spec-violation"`、`"footgun"`）。`recipe.json` から供給。2026-05-03 追加。 |
+| `roundtrip` | オブジェクト | ⏳ | オプション。レシピの修正検証の進み具合で、`roundtrip.json` から取る（[スキーマ](https://aletheia-works.github.io/vivarium/spec/roundtrip.schema.json)）。 |
 | `tags` | 文字列の配列 | ⏳ | オプション。マッチャーがスコア計算に使う自由形式タグリスト（例: `["sqlite3", "pragma", "foreign-keys"]`）。`recipe.json` から供給。2026-05-03 追加。 |
 | `expected_verdict` | 文字列（enum） | ⏳ | オプション。リグレッションスイートが期待する verdict — `"reproduced"` または `"unreproduced"`。`recipe.json` から供給。2026-05-18 リビジョンで追加。 |
 | `expected_runtime` | 文字列 | ⏳ | オプション。レシピの verdict envelope が `__VIVARIUM_RESULT__.runtime.name` に報告するランタイム識別子（例: `"pyodide"`、`"docker-snapshot"`）。`recipe.json` から供給。2026-05-18 追加。 |
@@ -105,7 +106,7 @@ URL: <https://aletheia-works.github.io/vivarium/api/recipes.json>
 によってビルドされ、`docs/package.json` の rspress `dev` と `build` スクリプトに組み込まれている。
 スクリプトはレシピディレクトリを走査し、各レシピのタイトルを `recipe.json`、無ければ README の最初の H1 から取得し、
 slug パターン（末尾に Issue 番号を持つ slug の場合は `<project>-<digits>`。
-それ以外は最初のダッシュセグメント。形が異なるレシピには小さなオーバーライドマップ）から
+それ以外は最初のダッシュセグメント）から
 `project` / `issue` を導出する。Layer 3 のプレビューの slug はプルリクエスト番号で終わるか、プルリクエストの無いプレビューの名前なので、
 その `issue`・`pull`・`commit` はレシピの `preview.json` から取る。
 

@@ -93,8 +93,7 @@ python -m http.server -d _shared 8766
 
 Open `<pages-base>/repro/<project>/_shared/_test/` in a browser. Expected:
 
-- The verdict band shows `bug reproduced — _shared helpers wired
-  up.` and `data-verdict="reproduced"`.
+- The verdict band shows `REPRODUCED` and `data-verdict="reproduced"`.
 - `globalThis.__VIVARIUM_VERDICT__ === "reproduced"`.
 - `globalThis.__VIVARIUM_RESULT__.contract === "v1"`.
 - Network: only the smoke-test page itself plus `verdict.js` and

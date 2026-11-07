@@ -163,7 +163,7 @@ v1 コンシューマーが無視できるオプションのフィールドの�
 公開デプロイページと GHCR イメージを指しているため、形だけ有効なのではなく実際に
 実行可能なものとして書かれている。
 
-`repro-regression.yml` の CI は、毎回のプッシュとプルリクエストで
+`repro-regression.yml` の CI は、回帰テストの実行時に
 `src/external_examples/*/.vivarium/manifest.toml` をすべてこのスキーマに対して検証する。
 
 ## 関連情報

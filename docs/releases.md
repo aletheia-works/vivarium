@@ -1,8 +1,7 @@
 # Release automation
 
 Vivarium and all first-party packages use one version, stored in the root
-`package.json`. The migration baseline is **0.2.2**, matching the current
-MCP metadata. The docs and Layer 1 private packages use that version too.
+`package.json`. The docs and Layer 1 private packages use that version too.
 
 ## Release flow
 
@@ -23,10 +22,8 @@ produce a major after 1.0. Before 1.0, breaking changes produce a minor;
 features still produce a minor. Commits such as `docs`, `chore`, and `ci`
 do not trigger a release alone.
 
-`.github/release-please-manifest.json` contains one root entry, initialized
-at the shared 0.2.2 baseline. The bootstrap SHA is the `main` commit before
-this migration; initial release notes start with changes after that commit.
-After the first unified release, Release Please uses its tag as the next
+`.github/release-please-manifest.json` contains one root entry. Release Please
+uses the latest release tag as the next
 release boundary and updates the manifest automatically. Existing historical
 tags and registry versions retain their original contents.
 

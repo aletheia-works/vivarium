@@ -802,7 +802,7 @@ describe('verify_and_report_fix', () => {
         '--repo must NOT be the fork repo',
       );
       assert.match(ghCmd!, /--draft/);
-      assert.match(ghCmd!, /--label 'ai: generated'/);
+      assert.doesNotMatch(ghCmd!, /--label/);
     }
   });
 

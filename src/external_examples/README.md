@@ -36,7 +36,7 @@ them here.
 CI (`repro-regression.yml`) validates every
 `src/external_examples/*/.vivarium/manifest.toml` against
 [`docs/site/public/spec/manifest.schema.json`](../../docs/site/public/spec/manifest.schema.json)
-on every push and pull request. A schema mismatch fails the
+when the regression suite runs. A schema mismatch fails the
 workflow loudly.
 
 ## What this directory is **not**

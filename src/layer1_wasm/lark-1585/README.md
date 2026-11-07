@@ -125,8 +125,7 @@ A fork+branch carrying a proposed fix is rendered **side-by-side**
 with the baseline on the same page, so a reviewer can see the
 before/after verdict in one page load.
 
-- **Fix branch:**
-  <https://github.com/JamBalaya56562/lark/tree/claude/fix-lark-1585-QLVa7>
+- **Fix:** [lark-parser/lark#1594](https://github.com/lark-parser/lark/pull/1594)
   (lark ships its installable package at the repo root, so no
   `source.subdirectory` is needed in `fix-candidate.json`).
 - **What the page shows:**

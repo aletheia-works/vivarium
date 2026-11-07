@@ -1,5 +1,5 @@
 {
-  "$comment": "Project-level metadata overlay for /repro/<project>/ landing pages. Hand-curated and reviewed in PR diff (per-recipe metadata moved into src/layer*_*/<slug>/recipe.json on 2026-05-18; this remaining overlay is intentionally project-scoped, not recipe-scoped, because display_name / tagline / homepage are project facts not recipe facts). Project keys must match the `project` field generate-recipes-index.ts derives from each recipe slug. Recipes whose project has no row here fall back to slug-as-display-name with no description. Japanese renderings live alongside their English siblings as `tagline_ja` / `description_ja`; `display_name`, `homepage` and `github` are locale-invariant and have no _ja twin.",
+  "$comment": "Project-level metadata overlay for /repro/<project>/ landing pages. Hand-curated and reviewed in PR diff",
   "projects": {
     "cpython": {
       "display_name": "CPython",
