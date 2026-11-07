@@ -103,7 +103,7 @@ vivarium/
 │       ├── _styles/       # global docs CSS overrides
 │       ├── public/
 │       │   ├── api/       # machine-readable endpoints — recipes.json + projects.json (generated), recipes.schema.json (hand-written)
-│       │   └── spec/      # JSON Schemas — verdict, manifest, recipe and roundtrip
+│       │   └── spec/      # JSON Schemas — verdict, recipe and roundtrip
 │       ├── en/            # English docs content
 │       └── ja/            # Japanese docs content
 ├── packages/
@@ -112,8 +112,7 @@ vivarium/
 ├── src/
 │   ├── layer1_wasm/       # Layer 1 reproductions (Pyodide, Ruby.wasm, formicarium)
 │   ├── layer2_docker/     # Layer 2 reproductions (Docker images, GHCR-published)
-│   ├── layer3_previews/   # Layer 3 live previews — one preview.json per upstream PR or pre-PR commit
-│   └── external_examples/ # reference Manifest v1 fixtures, one per shipping layer
+│   └── layer3_previews/   # Layer 3 live previews — one preview.json per upstream PR or pre-PR commit
 └── tools/
     └── fixed-guest-builder/ # Bun/TypeScript builder the fixed-guest-* workflows run (CI only, not published)
 ```
@@ -255,7 +254,7 @@ shell CI calls directly by path, not through `mise run`.
 
 ### 4.9 Spec evolution policy
 
-Public specs (Contract v1, Manifest v1, Recipes index v1) follow a
+Public specs (Contract v1, Recipes index v1) follow a
 two-tier policy:
 
 | Change shape | Verdict |
@@ -264,8 +263,7 @@ two-tier policy:
 | Rename, remove, type change, semantics change, optional → required | **vN+1** — new spec page + JSON Schema sibling. Old spec page stays readable so consumers can dispatch on the version literal. |
 
 Every spec page carries its version literal in the file consumers
-read (`<meta name="vivarium-contract">`, `manifest = "v1"`,
-`index = "v1"`). Revisions never touch that literal; consumers
+read (`<meta name="vivarium-contract">`, `index = "v1"`). Revisions never touch that literal; consumers
 feature-detect new optional surface.
 
 While Vivarium has no known users, the human may let a breaking change
@@ -383,7 +381,7 @@ Python, Rust, shell, workflow YAML, OpenTofu, TOML configs, CSS, and
 recipe HTML. Markdown and MDX are prose and are out of scope.
 
 So are the reproduction scripts a recipe publishes — `repro.py` /
-`repro.sh` / `repro.rs`, and the `src/external_examples/` manifests. The recipe page renders them for
+`repro.sh` / `repro.rs`. The recipe page renders them for
 visitors, so their comments are page copy explaining the bug rather
 than notes about the implementation.
 

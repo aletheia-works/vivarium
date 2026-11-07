@@ -15,11 +15,6 @@ interface Target {
 
 const TARGETS: Target[] = [
   {
-    schema: 'manifest.schema.json',
-    output: 'manifest-validator.mjs',
-    label: 'Manifest v1',
-  },
-  {
     schema: 'verdict.schema.json',
     output: 'verdict-validator.mjs',
     label: 'Verdict v1 (Contract v1)',

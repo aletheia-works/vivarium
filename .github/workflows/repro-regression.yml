@@ -124,39 +124,6 @@ jobs:
           experimental: true
           install_args: bun jq jsonschema
 
-      - name: Validate external manifest examples (manifest v1)
-        working-directory: ${{ github.workspace }}
-        run: |
-          set -euo pipefail
-          shopt -s nullglob
-          manifests=(src/external_examples/*/.vivarium/manifest.toml)
-          if [ ${#manifests[@]} -eq 0 ]; then
-            echo "No src/external_examples/*/.vivarium/manifest.toml; skipping."
-            exit 0
-          fi
-          schema="docs/site/public/spec/manifest.schema.json"
-          if [ ! -f "$schema" ]; then
-            echo "::error::Manifest schema missing at ${schema}"
-            exit 1
-          fi
-          fail=0
-          tmp_json="$(mktemp --suffix=.json)"
-          trap 'rm -f "$tmp_json"' EXIT
-          for manifest in "${manifests[@]}"; do
-            example="$(basename "$(dirname "$(dirname "$manifest")")")"
-            echo "Validating ${example}: ${manifest}"
-            python3 -c "import json, sys, tomllib; sys.stdout.write(json.dumps(tomllib.load(open(sys.argv[1], 'rb'))))" "$manifest" > "$tmp_json"
-            if ! jsonschema validate --format-assertion "$schema" "$tmp_json"; then
-              echo "::error::Manifest validation failed for ${example} (${manifest})"
-              fail=$((fail + 1))
-            fi
-          done
-          if [ "$fail" -gt 0 ]; then
-            echo "::error::${fail} external manifest example(s) failed schema validation."
-            exit 1
-          fi
-          echo "All ${#manifests[@]} external manifest example(s) validated against manifest v1 schema."
-
       - name: Type-check + build Layer 1 (TS + Rust wasm)
         working-directory: ${{ github.workspace }}
         run: |

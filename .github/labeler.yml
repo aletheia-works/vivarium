@@ -65,8 +65,6 @@
           - "**/*.php"
           - "**/*.rb"
           - "src/layer1_wasm/**"
-          - "src/external_examples/**"
-          - "**/.vivarium/**"
 
 "scope: docker":
   - changed-files:

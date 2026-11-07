@@ -33,7 +33,7 @@ export const GET_RECIPE_TOOL = {
         type: 'string' as const,
         pattern: '^[a-z0-9]+(-[a-z0-9]+)*$',
         description:
-          "Kebab-case recipe slug (e.g. 'pandas-56679', 'bash-local-shadows-exit'). Same convention as Manifest v1's `slug`.",
+          "Kebab-case recipe slug (e.g. 'pandas-56679', 'bash-local-shadows-exit').",
       },
     },
     required: ['slug'],

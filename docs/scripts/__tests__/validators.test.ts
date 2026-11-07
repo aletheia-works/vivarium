@@ -2,7 +2,6 @@ import { describe, expect, test } from 'bun:test';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { Glob } from 'bun';
-import validateManifestRaw from '../../site/_generated/validators/manifest-validator.mjs';
 import validateRecipeRaw from '../../site/_generated/validators/recipe-validator.mjs';
 import validateVerdictRaw from '../../site/_generated/validators/verdict-validator.mjs';
 
@@ -18,7 +17,6 @@ interface AjvValidateFn {
   errors?: AjvErrorObject[] | null;
 }
 
-const validateManifest = validateManifestRaw as unknown as AjvValidateFn;
 const validateVerdict = validateVerdictRaw as unknown as AjvValidateFn;
 const validateRecipe = validateRecipeRaw as unknown as AjvValidateFn;
 
@@ -39,65 +37,6 @@ function loadSchemaExamples(filename: string): unknown[] {
   );
   return Array.isArray(schema.examples) ? schema.examples : [];
 }
-
-describe('Manifest v1 validator', () => {
-  test('schema example validates', () => {
-    const examples = loadSchemaExamples('manifest.schema.json');
-    expect(examples.length).toBeGreaterThan(0);
-    for (const example of examples) {
-      const ok = validateManifest(example);
-      if (!ok) {
-        console.error('Manifest example failed:', validateManifest.errors);
-      }
-      expect(ok).toBe(true);
-    }
-  });
-
-  test('rejects missing required field (slug)', () => {
-    const ok = validateManifest({
-      manifest: 'v1',
-      layer: 1,
-      bug: { project: 'x', issue: 0, upstream_url: 'https://example.org/' },
-      layer1: { page_url: 'https://example.org/' },
-    });
-    expect(ok).toBe(false);
-    expect(validateManifest.errors).toContainEqual(
-      expect.objectContaining({
-        keyword: 'required',
-        params: { missingProperty: 'slug' },
-      }),
-    );
-  });
-
-  test('rejects bad slug pattern', () => {
-    const ok = validateManifest({
-      manifest: 'v1',
-      slug: 'BadSlug_Name',
-      layer: 1,
-      bug: { project: 'x', issue: 0, upstream_url: 'https://example.org/' },
-      layer1: { page_url: 'https://example.org/' },
-    });
-    expect(ok).toBe(false);
-    expect(validateManifest.errors).toContainEqual(
-      expect.objectContaining({
-        keyword: 'pattern',
-        instancePath: '/slug',
-      }),
-    );
-  });
-
-  test('rejects layer 1 manifest carrying layer2 block (oneOf)', () => {
-    const ok = validateManifest({
-      manifest: 'v1',
-      slug: 'good-slug',
-      layer: 1,
-      bug: { project: 'x', issue: 0, upstream_url: 'https://example.org/' },
-      layer1: { page_url: 'https://example.org/' },
-      layer2: { image: 'ghcr.io/example/x' },
-    });
-    expect(ok).toBe(false);
-  });
-});
 
 describe('Verdict v1 (Contract v1) validator', () => {
   test('schema example validates', () => {

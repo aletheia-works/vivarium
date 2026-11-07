@@ -46,14 +46,6 @@ const jsonEndpoints: JsonEndpointCase[] = [
       });
     },
   },
-  {
-    url: '/vivarium/spec/manifest.schema.json',
-    assert: (body) => {
-      expect(body).toMatchObject({
-        $id: 'https://aletheia-works.github.io/vivarium/spec/manifest.schema.json',
-      });
-    },
-  },
 ];
 
 const staticAssets: StaticAssetCase[] = [
