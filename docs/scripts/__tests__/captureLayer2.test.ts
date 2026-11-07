@@ -1,5 +1,11 @@
 import { describe, expect, test } from 'bun:test';
-import { chmodSync, existsSync, mkdtempSync, writeFileSync } from 'node:fs';
+import {
+  chmodSync,
+  existsSync,
+  mkdtempSync,
+  readFileSync,
+  writeFileSync,
+} from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { REPO_ROOT } from '../site-paths';
@@ -28,6 +34,23 @@ function capture(exitCode: number) {
 }
 
 describe('verdict:capture-layer2', () => {
+  test.each([
+    [0, 'reproduced'],
+    [1, 'unreproduced'],
+  ])('exit code %d records %s', (exitCode, verdict) => {
+    const { run, output } = capture(exitCode);
+    expect(run.exitCode).toBe(0);
+    const written = JSON.parse(readFileSync(output, 'utf-8'));
+    expect(written).toMatchObject({
+      contract: 'v1',
+      verdict,
+      exit_code: exitCode,
+      image_tag: 'example/image:test',
+      stdout: 'repro-stdout',
+      stderr_tail: 'repro-stderr',
+    });
+  });
+
   test.each([2, 125, 137])(
     'exit code %d is an error, not a verdict',
     (exitCode) => {
