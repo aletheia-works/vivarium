@@ -67,8 +67,8 @@ the page. The service worker always answers with
 Worker under `credentialless`. A cross-origin request without a
 `Cross-Origin-Resource-Policy` header therefore fails on this page.
 
-formicarium's `LICENSE` and `THIRD_PARTY_NOTICES.md` are staged with it in
-the page's `_formicarium/<version>/` directory; `assets.json` there lists
+formicarium's `LICENSE` and paludarium's `assets/paludarium/LICENSE` are staged
+with it in the page's `_formicarium/<version>/` directory; `assets.json` there lists
 every staged file and its SHA256. jj's licence is in its repository at the
 commits above, and each guest Release carries it with the third-party notices
 of the crates it is built from.

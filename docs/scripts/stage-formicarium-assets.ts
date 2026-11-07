@@ -88,7 +88,7 @@ export const BUNDLE_ENTRIES = {
   wasm: 'assets/paludarium/paludarium.wasm',
   buildInfo: 'assets/paludarium/build-info.json',
   license: 'LICENSE',
-  notices: 'THIRD_PARTY_NOTICES.md',
+  coreLicense: 'assets/paludarium/LICENSE',
 } as const;
 
 export type StageErrorCode =
@@ -448,7 +448,7 @@ export function verifyArchiveAgainstPin(
         `${file.path}: SHA256 ${digest} differs from the pin`,
       );
   }
-  for (const notice of [BUNDLE_ENTRIES.license, BUNDLE_ENTRIES.notices]) {
+  for (const notice of [BUNDLE_ENTRIES.license, BUNDLE_ENTRIES.coreLicense]) {
     if ((byPath.get(notice)?.byteLength ?? 0) === 0)
       fail(
         'VERIFY_FAILED',
@@ -491,7 +491,7 @@ export function verifyArchiveAgainstPin(
 }
 
 export function isStagedBundlePath(path: string): boolean {
-  if (path === BUNDLE_ENTRIES.license || path === BUNDLE_ENTRIES.notices)
+  if (path === BUNDLE_ENTRIES.license || path === BUNDLE_ENTRIES.coreLicense)
     return true;
   if (path.startsWith('assets/')) return true;
   return path.startsWith('runtime/') && !path.startsWith('runtime/node/');
@@ -1137,7 +1137,7 @@ export async function checkSite(
           `${path}: SHA256 ${digest} differs from ${manifestPath}`,
         );
     }
-    for (const notice of [BUNDLE_ENTRIES.license, BUNDLE_ENTRIES.notices]) {
+    for (const notice of [BUNDLE_ENTRIES.license, BUNDLE_ENTRIES.coreLicense]) {
       if (
         !(manifest.files ?? []).some((file) => file.path.endsWith(`/${notice}`))
       )

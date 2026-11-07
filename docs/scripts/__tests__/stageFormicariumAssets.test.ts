@@ -143,7 +143,6 @@ function packageFiles(): Map<string, Uint8Array> {
   const files: Record<string, Uint8Array | string> = {
     LICENSE: 'Apache License 2.0\n',
     'README.md': '# formicarium\n',
-    'THIRD_PARTY_NOTICES.md': 'paludarium: Apache-2.0\n',
     'assets/paludarium/LICENSE': 'Apache License 2.0\n',
     'assets/paludarium/build-info.json': JSON.stringify({
       files: {
@@ -542,10 +541,10 @@ describe('pin and archive verification (BR2.1, NFR3.2)', () => {
       parsePin({
         ...pin,
         files: pin.files.filter(
-          (file) => file.path !== 'THIRD_PARTY_NOTICES.md',
+          (file) => file.path !== 'assets/paludarium/LICENSE',
         ),
       }),
-    ).toThrow('THIRD_PARTY_NOTICES.md');
+    ).toThrow('assets/paludarium/LICENSE');
   });
 
   test('refuses a changed file, an unlisted entry, a missing file and a stale build-info', () => {
@@ -578,15 +577,15 @@ describe('pin and archive verification (BR2.1, NFR3.2)', () => {
     ).toThrow('does not describe the shipped');
   });
 
-  test('refuses empty notices', () => {
+  test('refuses an empty paludarium license', () => {
     const empty = packageFiles();
-    empty.set('THIRD_PARTY_NOTICES.md', new Uint8Array());
+    empty.set('assets/paludarium/LICENSE', new Uint8Array());
     expect(() =>
       verifyArchiveAgainstPin(
         readNpmTarball(packageTarball(empty)),
         parsePin(pinFor(packageTarball(empty), empty)),
       ),
-    ).toThrow('THIRD_PARTY_NOTICES.md is missing or empty');
+    ).toThrow('assets/paludarium/LICENSE is missing or empty');
   });
 });
 
@@ -608,7 +607,7 @@ describe('stageAssets local mode (S5)', () => {
       `${VERSION}/runtime/web/package-worker.bundle.js`,
     );
     const staged = manifest.files.map((file: { path: string }) => file.path);
-    expect(staged).toContain(`${VERSION}/THIRD_PARTY_NOTICES.md`);
+    expect(staged).toContain(`${VERSION}/assets/paludarium/LICENSE`);
     expect(staged).not.toContain(`${VERSION}/runtime/node/api.js`);
     expect(staged).not.toContain(`${VERSION}/README.md`);
     for (const file of manifest.files)
