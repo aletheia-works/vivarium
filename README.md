@@ -1,89 +1,78 @@
 # Vivarium
 
-> A controlled environment for reproducing bugs — any language, any environment, any scale.
-> Part of [`aletheia-works`](https://github.com/aletheia-works): surfacing truth in the AI-generated code era.
+Run a real bug instead of reading about it. Vivarium is a catalogue of
+reproductions of real bugs in open-source projects. Open one and see for
+yourself whether the bug still happens.
 
-## Why This Project Exists
+**[Website](https://aletheia-works.github.io/vivarium)** ·
+**[Browse reproductions](https://aletheia-works.github.io/vivarium/repro/)** ·
+**[Guide](https://aletheia-works.github.io/vivarium/guide/getting-started)**
 
-In 2025-2026, open-source maintainers face a new crisis:
-**AI-generated bug reports and pull requests — "AI slop" — are flooding issue trackers.**
+## What you can do
 
-- cURL ended its bounty program in January 2026 after AI slop reached 95%
-- Ghostty, tldraw, Node.js, Godot, Fedora, and others adopted defensive policies
-- GitHub officially acknowledged the crisis in February 2026
+- **Check a bug.** Open a reproduction and read its verdict: `reproduced` or
+  `unreproduced`, with the output it is based on.
+- **Find a bug from an error.** [Paste an error message](https://aletheia-works.github.io/vivarium/repro/match)
+  to get matching reproductions.
+- **Compare a fix.** [Line up two verdicts](https://aletheia-works.github.io/vivarium/repro/compare)
+  to see whether a change made the bug go away.
+- **Ask from an AI agent.** Search the catalogue and read verdicts through the
+  [MCP server](packages/mcp-server/).
+- **Use the data.** Read the catalogue as
+  [JSON](https://aletheia-works.github.io/vivarium/api/recipes.json).
 
-The root cause: **there's no cheap, universal way to verify whether an AI claim is true.**
+## Try it
 
-This project aims to solve that by providing a unified platform where anyone can
-reproduce a bug — in any language, any environment, at any scale — and verify
-whether the claim holds.
+### In your browser
 
-## Vision
+Open the [pandas #56679 reproduction](https://aletheia-works.github.io/vivarium/repro/pandas/56679/).
+It runs in the page, with nothing to install. The first load can take a few
+tens of seconds while the runtime downloads.
 
-**Universal bug reproduction. Any language, any environment, any scale.**
+### With Docker
 
-We don't lock ourselves into a single technology. We combine:
+Reproductions that need a real system ship as images:
 
-- **WASM** for instant, browser-native reproduction (Pyodide, sqlite-wasm, etc.)
-- **Docker** for full-fidelity environment reproduction
-- **Live previews** on Lambda MicroVMs, where a reviewer uses a pull request's whole application in a browser
+```bash
+docker run --rm ghcr.io/aletheia-works/vivarium-bash-local-shadows-exit:latest
+```
 
-The goal is not to be "a WASM service" — the goal is to **reproduce bugs**.
-The technology is chosen by the problem, not the other way around.
+The last line of the output states the verdict.
+
+### From an AI agent
+
+Add the server to your MCP client. For Claude Code:
+
+```bash
+claude mcp add vivarium -- npx -y @aletheia-works/vivarium-mcp@latest
+```
+
+[Other clients and the full tool list](https://aletheia-works.github.io/vivarium/guide/use-from-ai-agent)
+are in the guide.
+
+## How reproductions run
+
+| Layer | Runs in | You need | Good for |
+|---|---|---|---|
+| 1 | Your browser, through WebAssembly | A browser | Parsers, data processing, command-line tools |
+| 2 | A Docker container | Docker | Bugs that need real processes, files or services |
+| 3 | A live preview of a whole application | An invitation and a GitHub sign-in | Changes a reviewer checks by using them |
 
 ## Documentation
 
-**[aletheia-works.github.io/vivarium](https://aletheia-works.github.io/vivarium)** — vision, roadmap, architecture, the public spec surface.
+- [Getting started](https://aletheia-works.github.io/vivarium/guide/getting-started)
+- [Glossary](https://aletheia-works.github.io/vivarium/guide/glossary)
+- [Verdict format (Contract v1)](https://aletheia-works.github.io/vivarium/spec/contract-v1)
+- [Catalogue format (Recipes index v1)](https://aletheia-works.github.io/vivarium/spec/recipes-index-v1)
 
-Public specs:
+The website is available in English and Japanese.
 
-- **[Contract v1](https://aletheia-works.github.io/vivarium/spec/contract-v1)** — the reproduction-verdict surface every gallery page emits (revision 2 adds an optional evidence surface). JSON Schema at [`verdict.schema.json`](https://aletheia-works.github.io/vivarium/spec/verdict.schema.json), CI-validated on every Layer 2 `verdict.json`.
-- **[Manifest v1](https://aletheia-works.github.io/vivarium/spec/manifest-v1)** — TOML manifest an external repo ships at `.vivarium/manifest.toml` to declare a Vivarium-runnable reproduction. JSON Schema at [`manifest.schema.json`](https://aletheia-works.github.io/vivarium/spec/manifest.schema.json).
-- **[Recipes index v1](https://aletheia-works.github.io/vivarium/spec/recipes-index-v1)** — machine-readable catalogue listing of every reproduction in this repo. Live endpoint: <https://aletheia-works.github.io/vivarium/api/recipes.json>.
+## Contributing
 
-Programmatic access:
-
-- **[`@aletheia-works/vivarium-mcp`](packages/mcp-server/)** — Model Context Protocol server exposing the catalogue + verdict-snapshot reads + branch-fix / fix-candidate scaffolding to AI agent clients (Claude Code, Cline, Cursor, Continue, …). Dual-published to JSR (canonical) and npm (fallback).
-
-The docs site is built with [rspress](https://rspress.rs) and deployed to
-GitHub Pages from [`docs/`](docs/) on every push to `main`. The rspress
-configuration, scripts, tests, and lockfile live in `docs/`; the site source
-itself lives in `docs/site/` (content, components, styles, hand-written data
-overlays, generated site-only modules, and public assets).
-
-## Getting Started
-
-### For Maintainers
-
-See [`infra/github/README.md`](infra/github/README.md) for how to manage
-repository settings via OpenTofu.
-
-See [`docs/releases.md`](docs/releases.md) for automated version updates,
-release PRs, tags, and MCP publication to npm and JSR.
-
-### For Contributors
-
-External contributions land most naturally as **Vivarium-runnable
-reproductions in your own repo**: ship a `.vivarium/manifest.toml`
-that points at a static page (Layer 1) or a published container image
-(Layer 2) per the [Manifest v1 spec](https://aletheia-works.github.io/vivarium/spec/manifest-v1).
-Reference manifests live under
-[`src/external_examples/`](src/external_examples/), one per shipping layer.
-
-Issue and PR contributions to this repo are also welcome.
-
-## Tech Stack
-
-| Area | Technology |
-|---|---|
-| Layer 1 (WASM) | Pyodide, Ruby.wasm, php-wasm, Rust `wasm32-wasip1` |
-| Layer 2 (Docker) | Docker images published to GHCR per recipe |
-| Docs site | rspress + Bun + GitHub Pages |
-| MCP server | TypeScript on Bun, dual-published to JSR + npm with OIDC + Sigstore provenance |
-| Infrastructure | OpenTofu, GitHub Actions (SHA-pinned), aletheia-works/.github reusables |
-| Local toolchain | mise-en-place pinning bun / opentofu / python / uv / php / ruby / rust |
-| AI agents | Claude Code (implementer and reviewer) |
+Bug reports and new reproductions are welcome. See
+[CONTRIBUTING.md](CONTRIBUTING.md). To report a vulnerability, see
+[SECURITY.md](SECURITY.md).
 
 ## License
 
-Apache License 2.0
+[Apache License 2.0](LICENSE)

@@ -77,6 +77,7 @@ If unsure whether an action crosses the line, stop and ask.
 vivarium/
 ├── AGENTS.md              # this file — standing AI instructions
 ├── README.md              # public project overview
+├── CONTRIBUTING.md        # contributor setup, checks and conventions
 ├── LICENSE                # Apache-2.0
 ├── package.json           # shared repository and package version (private root metadata)
 ├── mise.toml              # mise-en-place tool versions (bun, opentofu, etc.) + TOML tasks

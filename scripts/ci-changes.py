@@ -134,6 +134,7 @@ def self_test():
         "AGENTS.md": NONE,
         "README.md": NONE,
         "SECURITY.md": NONE,
+        "CONTRIBUTING.md": NONE,
         "infra/github/main.tf": NONE,
         "infra/aws/previews.tf": NONE,
         ".github/workflows/aws-terraform-plan.yml": NONE,

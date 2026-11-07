@@ -16,258 +16,120 @@ import {
 <Page>
   <PageHero
     eyebrow="// GUIDE · AI AGENT"
-    title="Drive the Vivarium MCP server from Claude Code, Cursor, or Cline."
-    sub="Vivarium ships an MCP (Model Context Protocol) server that lets an agent search the catalogue, read verdict snapshots, scaffold a new recipe, and scaffold branch-fix / fix-candidate verification end-to-end. No HTML scraping of the docs site required."
+    title="Connect your AI agent to Vivarium."
+    sub="The Vivarium MCP server lets an agent search the catalogue, match an error to a reproduction, and read verdicts without scraping the website."
   />
 
   <Section
-    eyebrow="// 0 · WHAT THIS GUIDE COVERS"
-    heading="Wiring an AI agent to Vivarium's catalogue via MCP."
+    eyebrow="// 1 · INSTALL"
+    heading="Add the server to your MCP client."
   >
-    <p>The Vivarium MCP server (<code>@aletheia-works/vivarium-mcp</code>) speaks{' '} <a href="https://modelcontextprotocol.io">Model Context Protocol</a>{' '} over stdio and exposes a set of tools (catalogue enumeration, recipe lookup, verdict snapshots, error-to-recipe matching, plus scaffolders for new recipes and for branch-fix / fix-candidate verification). An agent can browse the catalogue, fetch metadata for a given recipe, pull deployed Layer 2 verdict snapshots, and scaffold the AI-slop verification loop end-to-end. The full list and per-tool inputs are in the section below.</p>
-    <Callout>
-      <strong>The first JSR / npm publish is intentionally on hold</strong>.
-      Vivarium overall and the MCP server's feature surface are both
-      judged not yet finished — pushing v1 now would crystallise an
-      interface still under iteration. The maintainer will announce
-      timing separately. Until then, the working install path is{' '}
-      <strong>local clone</strong>.
-    </Callout>
-  </Section>
-
-  <Section
-    eyebrow="// 1 · BUILD LOCALLY"
-    heading="clone → bun install → bun run build."
-  >
-    <pre><code>{`git clone https://github.com/aletheia-works/vivarium.git
-cd vivarium/packages/mcp-server
-bun install
-bun run build
-# → produces dist/index.js (the entry point your client will spawn)
+    <p>You need Node.js. Your client starts the server with <code>npx</code>, so there is nothing else to install.</p>
+    <p>For <strong>Claude Code</strong>, run:</p>
+    <pre><code>{`claude mcp add vivarium -- npx -y @aletheia-works/vivarium-mcp@latest
 `}</code></pre>
-    <p>Note the <strong>absolute path</strong> to <code>dist/index.js</code>. The MCP client config will spawn it via <code>node</code>.</p>
-  </Section>
-
-  <Section
-    eyebrow="// 2 · REGISTER WITH YOUR MCP CLIENT"
-    heading="Same shape everywhere: command + args."
-  >
-    <p>Every MCP client takes essentially the same JSON snippet — a{' '} <code>command</code> and an <code>args</code> array:</p>
+    <p>Other clients use the same command in a JSON configuration:</p>
     <pre><code>{`{
   "mcpServers": {
     "vivarium": {
-      "command": "node",
-      "args": ["/abs/path/to/vivarium/packages/mcp-server/dist/index.js"]
+      "command": "npx",
+      "args": ["-y", "@aletheia-works/vivarium-mcp@latest"]
     }
   }
 }
 `}</code></pre>
-    <p>What differs is where you put it:</p>
     <NumberedList
       items={[
         {
-          lead: 'Claude Code (CLI).',
-          body: <><code>claude mcp add vivarium node /abs/path/to/...dist/index.js</code> registers it interactively. Equivalent: drop the JSON above into the <code>mcpServers</code> key of <code>~/.claude.json</code>.</>,
-        },
-        {
           lead: 'Cursor.',
-          body: <>Drop the JSON into <code>~/.cursor/mcp.json</code> (or <code>.cursor/mcp.json</code> at the project root for project-scoped registration).</>,
+          body: <>Add it to <code>~/.cursor/mcp.json</code>, or to <code>.cursor/mcp.json</code> in one project.</>,
         },
         {
-          lead: 'Cline (VS Code extension).',
-          body: <>VS Code → Cline sidebar → <code>MCP Servers</code> → <code>Configure MCP Servers</code> opens a JSON editor. Add the snippet there.</>,
-        },
-        {
-          lead: 'Continue.',
-          body: <>Translate the command + args into the YAML <code>mcpServers</code> section of <code>~/.continue/config.yaml</code> — same fields, just YAML syntax.</>,
+          lead: 'Cline.',
+          body: <>Open the Cline sidebar in VS Code, choose <code>MCP Servers</code>, then <code>Configure MCP Servers</code>.</>,
         },
       ]}
     />
     <Callout>
-      The authoritative client list is at{' '}
-      <a href="https://modelcontextprotocol.io/clients">modelcontextprotocol.io/clients</a>.
-      Per-client config paths drift over time; consult upstream when
-      anything looks off.
+      Configuration locations change between client versions. If one of these
+      does not work, check your client's documentation. See the{' '}
+      <a href="https://modelcontextprotocol.io/clients">list of MCP clients</a>.
     </Callout>
+  </Section>
+
+  <Section
+    eyebrow="// 2 · TRY IT"
+    heading="Ask your agent."
+  >
+    <NumberedList
+      items={[
+        {
+          lead: 'Find a reproduction from an error.',
+          body: <>"<em>Use Vivarium to find reproductions that match this stack trace: ...</em>"</>,
+        },
+        {
+          lead: 'Check a verdict.',
+          body: <>"<em>What is the Vivarium verdict for <code>bash-local-shadows-exit</code>?</em>"</>,
+        },
+        {
+          lead: 'Browse the catalogue.',
+          body: <>"<em>List the Vivarium reproductions that run in Docker.</em>"</>,
+        },
+      ]}
+    />
   </Section>
 
   <Section
     eyebrow="// 3 · TOOLS"
-    heading="Every tool goes through the same stdio transport."
+    heading="What the server provides."
   >
+    <h3>Find and read reproductions</h3>
     <ul>
-      <li>
-        <strong><code>list_recipes(layer?, project?, q?)</code></strong> —
-        filtered enumeration of the catalogue. <code>layer</code> is
-        the integer 1/2/3, <code>project</code> matches the upstream
-        project (e.g. <code>"pandas"</code>), <code>q</code> is a
-        substring search across slug, project, and title.
-      </li>
-      <li>
-        <strong><code>get_recipe(slug)</code></strong> — full metadata
-        for one recipe (title, project, issue, page URL, GitHub
-        source URL; the verdict snapshot URL for Layer 2 and the
-        upstream pull request number for Layer 3). Returns{' '}
-        <code>{`{ found: false, error }`}</code> on unknown slug.
-      </li>
-      <li>
-        <strong><code>lookup_verdict(slug)</code></strong> — Layer 1
-        returns <code>{`{ kind: "live", page_url, note }`}</code> (the
-        verdict is computed in-browser at view time). Layer 2 returns{' '}
-        <code>{`{ kind: "snapshot", snapshot: { verdict, exit_code, image_digest, stdout, stderr_tail, ... } }`}</code>.
-        A Layer 3 live preview has no verdict, so it returns{' '}
-        <code>{`{ kind: "preview", preview_url, pull_url, commit_url, note }`}</code>:
-        the running preview, which asks for a GitHub sign-in. `pull_url` is
-        absent for a commit previewed before it becomes a pull request.
-      </li>
-      <li>
-        <strong><code>match_error(text, limit?)</code></strong> — score
-        the catalogue against a pasted error message or stack trace by
-        mechanical token overlap. No LLM, no fuzzy matching — exact
-        token hits against symptom / tags / project / slug, weighted
-        per source.
-      </li>
-      <li>
-        <strong><code>verify_branch_fix(slug, fix_url? | fix_source?)</code></strong> —
-        scaffolding helper for the AI-slop verification loop (NOT an
-        execution engine). Layer 1 returns Path A: a recipe-page{' '}
-        <code>compare_url</code> with the fix pre-loaded via{' '}
-        <code>?fix_url=</code> or <code>?fix=&lt;base64url&gt;</code>.
-        Layer 2 returns Path B: a <code>/repro/compare</code> deep-link
-        plus the <code>gh workflow run branch-fix-verdict.yml</code>{' '}
-        command the contributor runs. A Layer 3 preview is rejected:
-        the previewed pull request is itself the fix. Full walkthrough:{' '}
-        <a href="/vivarium/guide/compare-branch-fix">Verify a branch-fix</a>.
-      </li>
-      <li>
-        <strong><code>prepare_new_recipe(project, issue, title, base_image?, repo_owner?, layer?)</code></strong> —
-        scaffolding helper for authoring a brand-new recipe in one step.
-        Returns the validated slug, the exact{' '}
-        <code>mise run recipes:new</code> /{' '}
-        <code>mise run recipes:verify</code> commands, a placeholder{' '}
-        <code>recipe.json</code> to drop into the recipe directory
-        (validates against{' '}
-        <code>docs/site/public/spec/recipe.schema.json</code>), an
-        optional{' '}
-        <code>docs/site/_data/projects.json</code> row (only when the
-        recipe debuts a new upstream project), the commit-subject
-        template, and a sequenced next-steps checklist.
-        Layer 2 has the canonical scaffolder; Layer 1 falls back to
-        copying from an existing recipe. Layer 3 is rejected: a preview
-        is written by hand, one per upstream pull request.
-      </li>
-      <li>
-        <strong><code>prepare_fix_candidate(slug, fork_url, branch, upstream_pr?, package?, purpose?)</code></strong> —
-        scaffolding helper for registering a fix-candidate spec on an
-        existing Layer 1 recipe so the page runs the fork branch's
-        wheel side-by-side with the released build (per ADR-0040).
-        Returns the <code>fix-candidate.json</code> content the agent
-        should write, the recommended commit subject + PR title, a
-        ready-to-paste PR body, and the exact <code>gh</code> /{' '}
-        <code>git</code> commands to fork-and-clone{' '}
-        <code>aletheia-works/vivarium</code>, branch off main, drop
-        the spec in, commit, push, and open the cross-repo PR. Layer 1
-        only (Layer 2 uses <code>verify_branch_fix</code>).
-      </li>
+      <li><strong><code>list_recipes(layer?, project?, q?)</code></strong>: lists reproductions, optionally filtered by layer (1, 2 or 3), project, or text in the slug, project or title.</li>
+      <li><strong><code>get_recipe(slug)</code></strong>: returns one reproduction's details and links.</li>
+      <li><strong><code>lookup_verdict(slug)</code></strong>: returns the saved verdict for Layer 2, the page to open for Layer 1 (its verdict is computed in the browser), or the preview link for Layer 3.</li>
+      <li><strong><code>match_error(text, limit?)</code></strong>: ranks reproductions against an error message or stack trace, using token overlap, synonyms and small typo tolerance. It gives the same ranking as the <a href="/vivarium/repro/match">error matcher</a> page. No LLM is involved.</li>
+      <li><strong><code>search_upstream_issues(project?, repo?, query?, ...)</code></strong>: searches a project's GitHub issues for bugs worth reproducing. Needs an authenticated <a href="https://cli.github.com"><code>gh</code></a>.</li>
+    </ul>
+
+    <h3>Verify a fix</h3>
+    <ul>
+      <li><strong><code>verify_branch_fix(slug, fix_url?, fix_source?)</code></strong>: for Layer 2, returns the workflow command and comparison link. Dispatching the workflow needs write access to the Vivarium repository. Other layers currently return an error. See <a href="/vivarium/guide/compare-branch-fix">Verify a branch fix</a>.</li>
+      <li><strong><code>verify_and_report_fix(slug, ...)</code></strong>: works out the next verification step and, unless <code>auto_execute</code> is <code>false</code>, runs it. Needs a Vivarium checkout and <code>gh</code>.</li>
+      <li><strong><code>create_fork_pr(slug, current_state, pr_title, ...)</code></strong>: opens a draft pull request from your pushed fork branch. By default, <code>dry_run</code> only returns the command. Needs <code>gh</code> for a real run.</li>
+    </ul>
+
+    <h3>Add to the catalogue</h3>
+    <ul>
+      <li><strong><code>prepare_new_recipe(project, issue, title, ...)</code></strong>: returns the commands and files for a new reproduction.</li>
+      <li><strong><code>prepare_fix_candidate(slug, fork_url, branch, ...)</code></strong>: returns the files and commands to run a fork's fix beside the released build on a Layer 1 page.</li>
     </ul>
   </Section>
 
   <Section
-    eyebrow="// 4 · SAMPLE PROMPTS"
-    heading="Three patterns that come up most."
-  >
-    <NumberedList
-      items={[
-        {
-          lead: 'Paste an error, find candidate recipes.',
-          body: <>"<em>Use <code>match_error</code> to find Vivarium recipes matching this stack trace, top 5: ...paste...</em>" → the agent calls <code>match_error</code> and shows ranked hits. Drill into one with <code>get_recipe</code>.</>,
-        },
-        {
-          lead: 'Check whether something still reproduces today.',
-          body: <>"<em>What does <code>lookup_verdict</code> say about <code>pandas-56679</code>?</em>" → Layer 1 returns a <code>kind: "live"</code> URL the agent can offer for a browser visit; Layer 2 returns the snapshot's verdict / exit code directly.</>,
-        },
-        {
-          lead: 'Filter by layer or project.',
-          body: <>"<em>Use <code>list_recipes</code> to enumerate all Layer 2 recipes</em>" → calls with <code>{`{ layer: 2 }`}</code> and returns only the Docker layer.</>,
-        },
-      ]}
-    />
-    <Callout>
-      The <code>match_error</code> scoring is bit-identical to the{' '}
-      <a href="/vivarium/repro/match">error → recipe matcher</a>{' '}
-      page. MCP and UI return the same ranked candidates.
-    </Callout>
-  </Section>
-
-  <Section
-    eyebrow="// 5 · COMMON SNAGS"
-    heading="Most setups stall on one of these."
+    eyebrow="// 4 · TROUBLESHOOTING"
+    heading="If something looks wrong."
   >
     <ul>
-      <li>
-        <strong>No <code>dist/index.js</code>.</strong> Means{' '}
-        <code>bun run build</code> wasn't run. Run{' '}
-        <code>bun install &amp;&amp; bun run build</code> in{' '}
-        <code>packages/mcp-server/</code> once.
-      </li>
-      <li>
-        <strong>Some clients can't expand the home-directory shortcut or
-        relative paths.</strong>{' '}
-        Use a fully-qualified absolute path —{' '}
-        <code>/Users/&lt;you&gt;/code/vivarium/.../dist/index.js</code>,
-        not <code>$HOME/code/vivarium/...</code>.
-      </li>
-      <li>
-        <strong>Recipes seem stale.</strong> The server caches{' '}
-        <code>https://aletheia-works.github.io/vivarium/api/recipes.json</code>{' '}
-        with a 5-minute TTL and falls back to a build-time snapshot
-        offline. Restart the MCP server to force a refetch.
-      </li>
-      <li>
-        <strong>"Layer 1 verdict isn't a snapshot."</strong> By design
-        — Layer 1's site of truth is the browser at view time
-        (<a href="/vivarium/spec/contract-v1">Contract v1</a>). The
-        agent should treat <code>kind: "live"</code> as "open this URL
-        for the human to verify."
-      </li>
+      <li><strong>A new reproduction is missing.</strong> The server caches the catalogue for five minutes and uses a bundled copy when it is offline. Restart the server to fetch it again.</li>
+      <li><strong>A Layer 1 verdict has no result.</strong> This is expected. Layer 1 verdicts are computed in the browser, so open the returned page to see the result.</li>
+      <li><strong>A <code>gh</code> tool fails.</strong> Install the <a href="https://cli.github.com">GitHub CLI</a> and run <code>gh auth login</code>.</li>
     </ul>
+    <p>Still stuck? <a href="https://github.com/aletheia-works/vivarium/issues/new/choose">Open an issue</a> with your client, operating system and the step that failed.</p>
   </Section>
-
-  <Section
-    eyebrow="// 6 · WHAT'S NEXT"
-    heading="Lines branching out from this surface."
-  >
-    <NumberedList
-      items={[
-        {
-          lead: 'Pair with consumer-side CI.',
-          body: <><a href="/vivarium/guide/integrate-with-your-repo">Integrate with your own repo</a> sets up the verdict-watch side from your own CI. The two sides — agent + CI — close the loop.</>,
-        },
-        {
-          lead: 'Verify a branch fix end-to-end.',
-          body: <>Confirming "did my candidate fix flip reproduced → unreproduced?" through the agent in one shot is wired up via <code>verify_branch_fix</code>. Full walkthrough: <a href="/vivarium/guide/compare-branch-fix">Verify a branch-fix</a>.</>,
-        },
-      ]}
-    />
-  </Section>
-
-  <Callout>
-    If a step here didn't work, that's a bug in this guide — file an
-    issue with your client name, OS, and the step number you got stuck on.
-  </Callout>
 </Page>
 
 <NextCta
   eyebrow="// NEXT"
   heading={
     <>
-      Integrate with your own repo{' '}
+      Learn the terms{' '}
       <span className="v-next-cta__heading-arrow">→</span>
     </>
   }
-  sub="With the agent side wired, adding the consumer-CI side closes the other half of the loop."
-  primary={{ label: 'Integrate guide →', href: '/vivarium/guide/integrate-with-your-repo' }}
-  ghost={{ label: 'Glossary', href: '/vivarium/guide/glossary' }}
+  sub="Layers, verdicts and recipes explained in one page."
+  primary={{ label: 'Glossary →', href: '/vivarium/guide/glossary' }}
+  ghost={{ label: 'Reproductions', href: '/vivarium/repro/' }}
 />
 
 <BottomNote

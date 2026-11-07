@@ -1,6 +1,6 @@
 ---
 pageType: doc
-title: AI エージェントから使う
+title: AI エージェントから Vivarium を使う
 ---
 
 import {
@@ -16,248 +16,122 @@ import {
 <Page>
   <PageHero
     eyebrow="// GUIDE · AI エージェント"
-    title="Vivarium MCP サーバを Claude Code / Cursor / Cline から呼ぶ。"
-    sub="Vivarium は MCP（Model Context Protocol）サーバを同梱しており、複数のツールでカタログ全体をエージェントから機械的に検索・取得し、新規レシピ作成や branch-fix / fix-candidate 検証も足場まで一気に組める。docs サイトを HTML スクレイプする必要はない。"
+    title="AI エージェントを Vivarium につなぐ。"
+    sub="Vivarium の MCP サーバを使うと、エージェントが Web サイトを解析しなくても、カタログの検索、エラーからの再現の検索、判定結果の取得を行えます。"
   />
 
   <Section
-    eyebrow="// 0 · このガイドが対象にするもの"
-    heading="MCP 経由でカタログにアクセスするエージェント設定。"
+    eyebrow="// 1 · インストール"
+    heading="MCP クライアントにサーバを追加する。"
   >
-    <p>Vivarium MCP サーバ (<code>@aletheia-works/vivarium-mcp</code>) は{' '} <a href="https://modelcontextprotocol.io">Model Context Protocol</a>{' '} の stdio トランスポート経由で一連のツールを提供します (カタログの列挙、レシピ単体のメタデータ取得、verdict スナップショット、 エラー → レシピのマッチング、加えて新規レシピと branch-fix / fix-candidate 検証用のスキャフォルダー)。 エージェント側からカタログを検索し、特定レシピのメタデータを取得し、 Layer 2 の verdict スナップショットを読み、候補修正の検証フローを 組み立てられます。各ツールの入出力詳細は下のセクションに一覧があります。</p>
-    <Callout>
-      <strong>JSR / npm への初回公開は現時点で意図的に保留中</strong>です。
-      Vivarium 全体およびサーバ機能サーフェスがまだ熟していない段階で公開すると、
-      まだ動かしたいインタフェースを v1 として固定してしまうため。
-      公開時期は維持者が別途アナウンスします。それまでは{' '}
-      <strong>ローカルクローン経由</strong>で動かすパスが標準です。
-    </Callout>
-  </Section>
-
-  <Section
-    eyebrow="// 1 · ローカルでビルドする"
-    heading="clone → bun install → bun run build。"
-  >
-    <pre><code>{`git clone https://github.com/aletheia-works/vivarium.git
-cd vivarium/packages/mcp-server
-bun install
-bun run build
-# → dist/index.js が出来る（クライアントが起動するエントリポイント）
+    <p>Node.js が必要です。クライアントが <code>npx</code> でサーバを起動するので、ほかにインストールするものはありません。</p>
+    <p><strong>Claude Code</strong> では、次のコマンドを実行します。</p>
+    <pre><code>{`claude mcp add vivarium -- npx -y @aletheia-works/vivarium-mcp@latest
 `}</code></pre>
-    <p><code>dist/index.js</code> の<strong>絶対パス</strong>を控えておきます。 MCP クライアント側の設定で、<code>node</code> 経由でこのファイルを起動する形になります。</p>
-  </Section>
-
-  <Section
-    eyebrow="// 2 · MCP クライアントに登録する"
-    heading="共通スキーマ: command + args。"
-  >
-    <p>MCP サーバの登録は、どのクライアントでも本質的に「<code>command</code>{' '} と <code>args</code> の組」を JSON で渡す形です:</p>
+    <p>他のクライアントでは、同じコマンドを JSON の設定に書きます。</p>
     <pre><code>{`{
   "mcpServers": {
     "vivarium": {
-      "command": "node",
-      "args": ["/abs/path/to/vivarium/packages/mcp-server/dist/index.js"]
+      "command": "npx",
+      "args": ["-y", "@aletheia-works/vivarium-mcp@latest"]
     }
   }
 }
 `}</code></pre>
-    <p>この snippet を貼る場所がクライアントごとに違うだけです:</p>
     <NumberedList
       items={[
-        {
-          lead: 'Claude Code（CLI）。',
-          body: <><code>claude mcp add vivarium node /abs/path/to/...dist/index.js</code> で対話的に登録できます。あるいは <code>~/.claude.json</code> の <code>mcpServers</code> キーに上の JSON を直接書いても等価です。</>,
-        },
         {
           lead: 'Cursor。',
-          body: <><code>~/.cursor/mcp.json</code>（プロジェクト局所なら <code>.cursor/mcp.json</code>）に上の JSON をそのまま置きます。</>,
+          body: <><code>~/.cursor/mcp.json</code> に追加します。1つのプロジェクトだけで使う場合は <code>.cursor/mcp.json</code> に追加します。</>,
         },
         {
-          lead: 'Cline（VS Code 拡張）。',
-          body: <>VS Code の Cline サイドバー → <code>MCP Servers</code> → <code>Configure MCP Servers</code> から JSON 編集 UI を開き、上のスキーマで追加します。</>,
-        },
-        {
-          lead: 'Continue。',
-          body: <><code>~/.continue/config.yaml</code> の <code>mcpServers</code> セクションで command+args を YAML 形式に転記します（YAML 表記は同じ意味）。</>,
+          lead: 'Cline。',
+          body: <>VS Code の Cline サイドバーで <code>MCP Servers</code> を開き、<code>Configure MCP Servers</code> を選びます。</>,
         },
       ]}
     />
     <Callout>
-      MCP クライアント側の正典のドキュメントは
-      <a href="https://modelcontextprotocol.io/clients">{' '}modelcontextprotocol.io/clients{' '}</a>
-      にあります。各クライアントの設定ファイルパスは更新されることがあるので、
-      迷ったら本家を参照してください。
+      設定ファイルの場所はクライアントのバージョンによって変わります。うまくいかない場合は、クライアントのドキュメントを確認してください。{' '}
+      <a href="https://modelcontextprotocol.io/clients">MCP クライアントの一覧</a>もあります。
     </Callout>
   </Section>
 
   <Section
-    eyebrow="// 3 · ツール一覧"
-    heading="どのツールも MCP の標準 stdio 経由で呼べる。"
-  >
-    <ul>
-      <li>
-        <strong><code>list_recipes(layer?, project?, q?)</code></strong> —
-        カタログをフィルタして列挙。<code>layer</code> は 1/2/3 の整数、
-        <code>project</code> は上流プロジェクト名（<code>"pandas"</code>等）、
-        <code>q</code> は slug / project / title 横断の部分文字列検索。
-      </li>
-      <li>
-        <strong><code>get_recipe(slug)</code></strong> — 1 つのレシピの全メタデータ
-        （title / project / issue / page URL / GitHub source URL。Layer 2 は verdict snapshot URL、Layer 3 は上流の pull request 番号も）。
-        slug が見つからなければ <code>{`{ found: false, error }`}</code>。
-      </li>
-      <li>
-        <strong><code>lookup_verdict(slug)</code></strong> — Layer 1 は{' '}
-        <code>{`{ kind: "live", page_url, note }`}</code>（verdict はブラウザ実行時に出る）、
-        Layer 2 は <code>{`{ kind: "snapshot", snapshot: { verdict, exit_code, image_digest, stdout, stderr_tail, ... } }`}</code>。
-        Layer 3 のライブプレビューには verdict がないので、{' '}
-        <code>{`{ kind: "preview", preview_url, pull_url, commit_url, note }`}</code> で、
-        GitHub へのサインインを求める動いているプレビューを返す。プルリクエストになる前のコミットの
-        プレビューでは `pull_url` は無い。
-      </li>
-      <li>
-        <strong><code>match_error(text, limit?)</code></strong> — エラー文字列・スタックトレースから
-        機械的トークンマッチで候補レシピをスコア順で返す。LLM もファジーマッチも使わず、
-        symptom / tags / project / slug への完全一致で重みづけ。
-      </li>
-      <li>
-        <strong><code>verify_branch_fix(slug, fix_url? | fix_source?)</code></strong> —
-        候補修正を検証するための足場ヘルパー（実行エンジンではない）。
-        Layer 1 は Path A — レシピページに <code>?fix_url=</code> / <code>?fix=</code> を
-        事前読み込みした <code>compare_url</code> を返す。Layer 2 は Path B —
-        <code>gh workflow run branch-fix-verdict.yml</code> コマンドと
-        <code>/repro/compare</code> deep-link を返す。Layer 3 のプレビューは、
-        プレビューする pull request そのものが修正なので受け付けない。フルウォークスルーは{' '}
-        <a href="/vivarium/ja/guide/compare-branch-fix">「ブランチ修正を検証する」</a>。
-      </li>
-      <li>
-        <strong><code>prepare_new_recipe(project, issue, title, base_image?, repo_owner?, layer?)</code></strong> —
-        新しいレシピを 1 ステップで起こすための足場ヘルパー。
-        検証済 slug、<code>mise run recipes:new</code> /{' '}
-        <code>mise run recipes:verify</code> の正確なコマンド、レシピ
-        ディレクトリに置く placeholder の{' '}
-        <code>recipe.json</code>（<code>docs/site/public/spec/recipe.schema.json</code>
-        で検証される）、新規プロジェクト時のみ追加する
-        <code>docs/site/_data/projects.json</code> の行、
-        コミットメッセージのテンプレート、順序付き next-steps チェックリストを返す。
-        Layer 2 にだけ専用スキャフォルダがあり、Layer 1 は既存レシピを
-        コピーする運用。Layer 3 は受け付けない（プレビューは上流の pull request
-        ごとに手で書く）。
-      </li>
-      <li>
-        <strong><code>prepare_fix_candidate(slug, fork_url, branch, upstream_pr?, package?, purpose?)</code></strong> —
-        既存の Layer 1 レシピに fix-candidate 仕様を登録するための足場ヘルパー
-        （ADR-0040）。レシピページが fork branch の wheel をリリース版と並べて
-        実行できるよう、エージェントが書き込むべき{' '}
-        <code>fix-candidate.json</code> の内容、推奨コミットメッセージ + PR タイトル、
-        貼ればそのまま使える PR 本文、そして{' '}
-        <code>aletheia-works/vivarium</code> を fork-clone → main から branch →
-        spec を置く → commit / push → cross-repo PR を開くまでの{' '}
-        <code>gh</code> / <code>git</code> コマンド一式を返す。Layer 1 専用
-        （Layer 2 は <code>verify_branch_fix</code> を使う）。
-      </li>
-    </ul>
-  </Section>
-
-  <Section
-    eyebrow="// 4 · サンプルプロンプト"
-    heading="3 つの典型的な使い方。"
+    eyebrow="// 2 · 試す"
+    heading="エージェントに聞いてみる。"
   >
     <NumberedList
       items={[
         {
-          lead: 'エラー文を貼って候補レシピを探す。',
-          body: <>「<em>このスタックトレースに合いそうな Vivarium レシピを <code>match_error</code> で 5 件出して: ...貼り付け...</em>」 → エージェントが <code>match_error</code> を呼び、上位を表示。気になったものを <code>get_recipe</code> で詳細取得。</>,
+          lead: 'エラーから再現を探す。',
+          body: <>「<em>このスタックトレースに合う再現を Vivarium で探して: ...</em>」</>,
         },
         {
-          lead: '今この瞬間に再現するか確認する。',
-          body: <>「<em><code>pandas-56679</code> の現在の verdict を <code>lookup_verdict</code> で見て</em>」→ Layer 1 は <code>kind: "live"</code> なので「ページを開いて確認するURLを返却」、Layer 2 はスナップショットの数値が直接出る。</>,
+          lead: '判定結果を確認する。',
+          body: <>「<em>Vivarium の <code>bash-local-shadows-exit</code> の判定結果は?</em>」</>,
         },
         {
-          lead: '層・プロジェクトでフィルタして列挙。',
-          body: <>「<em><code>list_recipes</code> で Layer 2 のものだけ全部出して</em>」→ <code>{`{ layer: 2 }`}</code> 引数で呼ばれ、Layer 2 (Docker) レシピだけが返る。</>,
-        },
-      ]}
-    />
-    <Callout>
-      <code>match_error</code> のスコアリングは
-      <a href="/vivarium/ja/repro/match"> 「エラーからレシピを探す」</a>{' '}
-      ページとビット同一です。MCP 経由でも UI 経由でも同じ候補順が出ます。
-    </Callout>
-  </Section>
-
-  <Section
-    eyebrow="// 5 · 詰まりやすい点"
-    heading="経験上、ここで止まる人が多い。"
-  >
-    <ul>
-      <li>
-        <strong><code>dist/index.js</code> が無い。</strong>
-        <code>bun run build</code> を流していない場合に起きる。
-        <code>packages/mcp-server</code> 直下で <code>bun install &amp;&amp; bun run build</code>{' '}
-        を 1 度走らせる必要があります。
-      </li>
-      <li>
-        <strong>絶対パスでないと一部クライアントが見つけられない。</strong>{' '}
-        ホームディレクトリ短縮表記や相対パスは展開されないことがあります。
-        <code>$HOME/code/vivarium/...</code> ではなく
-        <code>/Users/&lt;you&gt;/code/vivarium/.../dist/index.js</code>{' '}
-        のようにフルパスで書きます。
-      </li>
-      <li>
-        <strong>レシピが古い気がする。</strong> サーバは{' '}
-        <code>https://aletheia-works.github.io/vivarium/api/recipes.json</code>{' '}
-        を 5 分 TTL でキャッシュ、ネット切断時は build-time の snapshot にフォールバック。
-        最新を強制したいときは MCP サーバを再起動するのが早いです。
-      </li>
-      <li>
-        <strong>Layer 1 の verdict が「snapshot じゃない」と言われる。</strong>{' '}
-        Layer 1 はブラウザでの実行が確定の場で、サーバ側にスナップショットを置かない設計
-        （<a href="/vivarium/ja/spec/contract-v1">Contract v1</a>）。
-        エージェントには <code>kind: "live"</code> の page_url を提示して、
-        ブラウザで開いて確認させるのが正規ルートです。
-      </li>
-    </ul>
-  </Section>
-
-  <Section
-    eyebrow="// 6 · この先"
-    heading="MCP 経由で次にできること。"
-  >
-    <NumberedList
-      items={[
-        {
-          lead: '自分のリポジトリの CI と組み合わせる。',
-          body: <><a href="/vivarium/ja/guide/integrate-with-your-repo">自分のリポジトリに統合する</a> でCI 側の verdict 監視が立ち、エージェント側からは MCP でカタログを検索する、という両方向の組み合わせができます。</>,
-        },
-        {
-          lead: 'ブランチ修正を verdict で検証する。',
-          body: <>修正候補が本当に reproduced → unreproduced を起こしたかをエージェントから一発で確認するフローは <code>verify_branch_fix</code> に集約されています。フル手順は <a href="/vivarium/ja/guide/compare-branch-fix">「ブランチ修正を検証する」</a>を参照。</>,
+          lead: 'カタログを見る。',
+          body: <>「<em>Docker で動く Vivarium の再現を一覧にして</em>」</>,
         },
       ]}
     />
   </Section>
 
-  <Callout>
-    手順のどこかで詰まったら、それは use-from-ai-agent のバグです。
-    クライアント名・OS・詰まったステップ番号を Issue に残してください。
-  </Callout>
+  <Section
+    eyebrow="// 3 · ツール"
+    heading="サーバが提供するもの。"
+  >
+    <h3>再現を探す・読む</h3>
+    <ul>
+      <li><strong><code>list_recipes(layer?, project?, q?)</code></strong>: 再現を一覧にします。レイヤー(1、2、3)、プロジェクト、slug・プロジェクト・タイトル内の文字列で絞り込めます。</li>
+      <li><strong><code>get_recipe(slug)</code></strong>: 1つの再現の詳細とリンクを返します。</li>
+      <li><strong><code>lookup_verdict(slug)</code></strong>: Layer 2 は保存済みの判定結果を、Layer 1 は開くべきページを(判定はブラウザで行われるため)、Layer 3 はプレビューのリンクを返します。</li>
+      <li><strong><code>match_error(text, limit?)</code></strong>: エラーメッセージやスタックトレースに近い再現を順位付けします。トークンの一致、同義語、小さな入力ミスの許容を使います。順位は<a href="/vivarium/ja/repro/match">エラー検索</a>のページと同じです。LLM は使いません。</li>
+      <li><strong><code>search_upstream_issues(project?, repo?, query?, ...)</code></strong>: プロジェクトの GitHub Issue から、再現する価値のあるバグを探します。認証済みの <a href="https://cli.github.com"><code>gh</code></a> が必要です。</li>
+    </ul>
+
+    <h3>修正を検証する</h3>
+    <ul>
+      <li><strong><code>verify_branch_fix(slug, fix_url?, fix_source?)</code></strong>: Layer 2 では、ワークフローのコマンドと比較ページのリンクを返します。ワークフローの実行には Vivarium リポジトリへの書き込み権限が必要です。他のレイヤーでは今のところエラーを返します。詳しくは<a href="/vivarium/ja/guide/compare-branch-fix">修正の検証</a>を参照してください。</li>
+      <li><strong><code>verify_and_report_fix(slug, ...)</code></strong>: 検証の次の手順を判断し、<code>auto_execute</code> が <code>false</code> でなければ実行します。Vivarium のチェックアウトと <code>gh</code> が必要です。</li>
+      <li><strong><code>create_fork_pr(slug, current_state, pr_title, ...)</code></strong>: push 済みのフォークのブランチからドラフトの PR を開きます。既定では <code>dry_run</code> によりコマンドを返すだけです。実際に開くには <code>gh</code> が必要です。</li>
+    </ul>
+
+    <h3>カタログに追加する</h3>
+    <ul>
+      <li><strong><code>prepare_new_recipe(project, issue, title, ...)</code></strong>: 新しい再現に必要なコマンドとファイルを返します。</li>
+      <li><strong><code>prepare_fix_candidate(slug, fork_url, branch, ...)</code></strong>: Layer 1 のページで、フォークの修正をリリース版と並べて動かすためのファイルとコマンドを返します。</li>
+    </ul>
+  </Section>
+
+  <Section
+    eyebrow="// 4 · 困ったとき"
+    heading="うまくいかない場合。"
+  >
+    <ul>
+      <li><strong>新しい再現が見つからない。</strong> サーバはカタログを5分間キャッシュし、オフラインでは同梱のコピーを使います。サーバを再起動すると取得し直します。</li>
+      <li><strong>Layer 1 の判定結果が返ってこない。</strong> 正常な動作です。Layer 1 の判定はブラウザで行われるので、返されたページを開いて確認してください。</li>
+      <li><strong><code>gh</code> を使うツールが失敗する。</strong> <a href="https://cli.github.com">GitHub CLI</a> をインストールして、<code>gh auth login</code> を実行してください。</li>
+    </ul>
+    <p>解決しない場合は、クライアント、OS、失敗した手順を書いて <a href="https://github.com/aletheia-works/vivarium/issues/new/choose">Issue を開いて</a>ください。</p>
+  </Section>
 </Page>
 
 <NextCta
   eyebrow="// NEXT"
   heading={
     <>
-      自分のリポジトリに統合する{' '}
+      用語を確認する{' '}
       <span className="v-next-cta__heading-arrow">→</span>
     </>
   }
-  sub="MCP からカタログが見える状態になったら、自分の CI 側でも verdict を監視するともう片側が閉じます。"
-  primary={{ label: '統合ガイド →', href: '/vivarium/ja/guide/integrate-with-your-repo' }}
-  ghost={{ label: '用語集', href: '/vivarium/ja/guide/glossary' }}
+  sub="レイヤー、判定、レシピなどの用語を1ページで説明しています。"
+  primary={{ label: '用語集 →', href: '/vivarium/ja/guide/glossary' }}
+  ghost={{ label: '再現の一覧', href: '/vivarium/ja/repro/' }}
 />
 
 <BottomNote
-  text="VIVARIUM は ALETHEIA-WORKS の一部 · GitHub でソースを見る →"
+  text="VIVARIUM は ALETHEIA-WORKS の一部です · GITHUB でソースを見る →"
   href="https://github.com/aletheia-works/vivarium"
 />

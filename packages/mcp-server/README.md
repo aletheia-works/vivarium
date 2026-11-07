@@ -1,36 +1,23 @@
 # `@aletheia-works/vivarium-mcp`
 
-[Model Context Protocol](https://modelcontextprotocol.io) server that
-exposes the [Vivarium](https://github.com/aletheia-works/vivarium)
-reproduction catalogue to AI agent clients (Claude Code, Cline, Cursor,
-Continue, etc.).
-
-Vivarium is the universal bug-reproduction platform of the
-[`aletheia-works`](https://github.com/aletheia-works) organisation —
-"reproduce any bug, in any language, any environment, at any scale."
-This package is the agent-callable surface that lets AI tools
-*discover* what reproductions exist, look up their metadata, and read
-deployed verdict snapshots, without scraping the docs site.
-
-## Tools
-
-| Tool | Returns | Layer coverage |
-|---|---|---|
-| `list_recipes(layer?, project?, q?)` | Filtered list of catalogue entries. | All layers (1, 2, 3). |
-| `get_recipe(slug)` | Full metadata for one recipe (title, project, issue, page URL, GitHub source URL; the verdict snapshot URL for Layer 2 and the upstream pull request number for Layer 3). | All layers. |
-| `lookup_verdict(slug)` | Layer 1 → `kind: "live"` + page URL (verdicts run in the browser). Layer 2 → `kind: "snapshot"` with the deployed `verdict.json` contents (verdict, exit code, image digest, stdout, stderr tail). Layer 3 → `kind: "preview"` + the running preview's link, which asks for a GitHub sign-in, with `commit_url`, and `pull_url` when the preview is of a pull request; a preview has no verdict. | All layers (Layers 1 and 3 return a stub). |
-| `match_error(text, limit?)` | Mechanical token-overlap ranking of recipes against a pasted error message or stack trace. Synonym table + bounded fuzzy match + multi-language stopwords. | All layers. |
-| `verify_branch_fix(slug, fix_url? \| fix_source?)` | Scaffolding helper for the AI-slop verification loop. Layer 1 → Path A: a recipe-page `compare_url` with the fix pre-loaded. Layer 2 → Path B: a `/repro/compare` deep-link plus the `gh workflow run branch-fix-verdict.yml` command. NOT an execution engine — actual reproduction runs in the visitor's browser (Path A) or in GitHub Actions (Path B). | Layers 1 and 2. A Layer 3 preview is rejected: the previewed pull request is itself the fix. |
-| `prepare_new_recipe(project, issue, title, base_image?, repo_owner?, layer?)` | Scaffolding helper that bundles every artefact an agent needs to author a new recipe: validated slug, the exact `mise run recipes:new` and `mise run recipes:verify` commands, a placeholder `recipe.json` to drop into the recipe directory (validates against `docs/site/public/spec/recipe.schema.json`), an optional `projects.json` row (only when the recipe debuts a new upstream project), a commit-subject template, and a sequenced next-steps checklist. NOT an execution engine — the agent's shell tool runs the returned commands. | Layer 2 has the canonical scaffolder; Layer 1 falls back to copying from an existing recipe. Layer 3 is rejected: a preview is written by hand, one per upstream pull request. |
-| `prepare_fix_candidate(slug, fork_url, branch, upstream_pr?, package?, purpose?)` | Scaffolding helper that registers a fix-candidate spec on an existing Layer 1 recipe so the page runs the fork branch's wheel side-by-side with the released build (per ADR-0040). Returns the `fix-candidate.json` content, the recommended commit subject + PR title, a ready-to-paste PR body (with AI-authorship disclosure tucked inside a `<details>` block), and the exact `gh` / `git` commands to fork-and-clone aletheia-works/vivarium, branch off main, drop the spec in, commit, push, and open the cross-repo PR. NOT an execution engine — the agent's shell tool runs the returned commands. | Layer 1 only (Layer 2 uses `verify_branch_fix`). |
+[Model Context Protocol](https://modelcontextprotocol.io) server for
+[Vivarium](https://aletheia-works.github.io/vivarium), a catalogue of
+reproductions of real bugs. It lets an AI agent search the catalogue, match an
+error to a reproduction, and read verdicts without scraping the website.
 
 ## Install
 
-The exact MCP-config file location varies by client (Claude Code:
-`~/.claude/mcp.json`; Cline: its VS Code settings; Cursor:
-`~/.cursor/mcp.json`).
+You need Node.js. The server is also published on
+[JSR](https://jsr.io/@aletheia-works/vivarium-mcp).
 
-### npm (default for `npx`-based MCP launchers)
+For Claude Code:
+
+```bash
+claude mcp add vivarium -- npx -y @aletheia-works/vivarium-mcp@latest
+```
+
+For other clients, add this to their MCP configuration, such as
+`~/.cursor/mcp.json` for Cursor:
 
 ```json
 {
@@ -43,54 +30,44 @@ The exact MCP-config file location varies by client (Claude Code:
 }
 ```
 
-### JSR (Bun / Deno native install)
+## Tools
 
-```bash
-bunx jsr:@aletheia-works/vivarium-mcp
-# or
-deno run --allow-net --allow-read jsr:@aletheia-works/vivarium-mcp
-```
+### Find and read reproductions
 
-## Configuration
+| Tool | What it does |
+|---|---|
+| `list_recipes(layer?, project?, q?)` | Lists reproductions, optionally filtered. |
+| `get_recipe(slug)` | Returns one reproduction's details and links. |
+| `lookup_verdict(slug)` | Returns the saved verdict for Layer 2, the page to open for Layer 1 (its verdict is computed in the browser), or the preview link for Layer 3. |
+| `match_error(text, limit?)` | Ranks reproductions against an error message or stack trace, using token overlap, synonyms and small typo tolerance. No LLM is involved. |
+| `search_upstream_issues(project?, repo?, query?, ...)` | Searches a project's GitHub issues for bugs worth reproducing. Needs an authenticated [`gh`](https://cli.github.com). |
 
-The server reads no environment variables and accepts no command-line
-flags in v1. It fetches the catalogue index from
-<https://aletheia-works.github.io/vivarium/api/recipes.json> with a
-5-minute in-process TTL, falling back to a build-time bundled snapshot
-when the network is unavailable.
+### Verify a fix
+
+| Tool | What it does |
+|---|---|
+| `verify_branch_fix(slug, fix_url?, fix_source?)` | For Layer 2, returns the workflow command and comparison link. Dispatching the workflow needs write access to the Vivarium repository. Other layers currently return an error. |
+| `verify_and_report_fix(slug, ...)` | Works out the next verification step and, unless `auto_execute` is `false`, runs it. Needs a Vivarium checkout and `gh`. |
+| `create_fork_pr(slug, current_state, pr_title, ...)` | Opens a draft pull request from your pushed fork branch. By default, `dry_run` only returns the command. Needs `gh` for a real run. |
+
+### Add to the catalogue
+
+| Tool | What it does |
+|---|---|
+| `prepare_new_recipe(project, issue, title, ...)` | Returns the commands and files for a new reproduction. |
+| `prepare_fix_candidate(slug, fork_url, branch, ...)` | Returns the files and commands to run a fork's fix beside the released build on a Layer 1 page. |
+
+## Catalogue data
+
+The server needs no configuration. It reads the
+[catalogue](https://aletheia-works.github.io/vivarium/api/recipes.json) and
+caches it for five minutes. Offline, it uses a copy bundled with the package.
 
 ## Versioning
 
-The MCP server's tool surface (the tools listed above and their input
-schemas) is locked at v1. Optional additive changes ship as minor
-revisions; breaking changes require a v2 release.
-
-The recipes index format consumed by this server is locked separately
-at `index = "v1"` — see
-<https://aletheia-works.github.io/vivarium/spec/recipes-index-v1>.
+The tools and their arguments may change before version 1.0. Pin a version in
+your client's configuration if you need them to stay fixed.
 
 ## License
 
 Apache-2.0 — see [LICENSE](./LICENSE).
-
-## Releasing
-
-All first-party packages use the version in the root `package.json`.
-Release Please updates every package's `package.json` and the MCP
-`jsr.json` in one release PR from Conventional Commits merged into `main`;
-the release notes go to the GitHub release. The MCP handshake reads its
-version from `jsr.json`; `bun run check:version` checks the MCP manifests
-before tests and builds.
-
-Merge the release PR after its required checks pass to create one shared
-`v<version>` tag and GitHub release. That tag triggers `publish-mcp`, which
-checks out the tag and rejects mismatched versions before publishing to
-npm and JSR. To resume a partial publication, run the same workflow manually
-with the existing `v<version>` tag. It checks both registries, skips versions
-already published, and stops on HTTP or network errors. Only HTTP 404 means
-unpublished.
-
-This workflow uses OIDC trusted publishing. Keep its filename
-`publish-mcp.yml` aligned with the npm trusted publisher configuration.
-See [release automation](../../docs/releases.md) for version rules,
-repository-wide releases, and recovery.
