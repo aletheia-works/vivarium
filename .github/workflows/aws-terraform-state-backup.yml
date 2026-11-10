@@ -22,7 +22,7 @@ jobs:
       vars.LATEST_AWS_APPLY_RUN_ID != '' &&
       (github.event_name != 'workflow_run' ||
        github.event.workflow_run.conclusion == 'success')
-    uses: aletheia-works/.github/.github/workflows/terraform-state-backup.yml@0ab4b956b12760b3926ac8f768e04432404a5182 # v1.3.4
+    uses: aletheia-works/.github/.github/workflows/terraform-state-backup.yml@2d85c4ddca01b35127a16915f0000bc54fdc85a6 # v1.4.0
     with:
       state_artifact_name: terraform-state-aws
       state_run_id_variable: LATEST_AWS_APPLY_RUN_ID
