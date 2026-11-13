@@ -1,8 +1,9 @@
-import { dirname } from 'node:path';
+import { basename, dirname } from 'node:path';
 import { gunzipSync } from 'node:zlib';
 import type { FormicariumPin } from './pin';
 import {
   BUNDLE_ENTRIES,
+  CORE_NOTICES,
   checkedAdd,
   fail,
   isRecord,
@@ -266,7 +267,7 @@ export function verifyArchiveAgainstPin(
       (path) =>
         dirname(path) === coreDir &&
         path !== BUNDLE_ENTRIES.buildInfo &&
-        path !== `${coreDir}/LICENSE`,
+        !CORE_NOTICES.includes(basename(path)),
     )
     .map((path) => path.slice(coreDir.length + 1))
     .sort();
