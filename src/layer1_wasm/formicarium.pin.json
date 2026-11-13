@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "package": "@aletheia-works/formicarium",
-  "packageVersion": "0.13.0",
-  "tarballSha256": "0ab65100c31989e869b240fa45f8986ab54850ff4969dfda858f2ba2e51534c4",
-  "sourceCommit": "48567cc9d57e5b2c1bc04c4a170249e3a7f52dd9",
+  "packageVersion": "0.14.0",
+  "tarballSha256": "39ee434dd92b5f65270c8b9bfda841b4d180672cad866df446d2c3e41a796f86",
+  "sourceCommit": "7991bdecd42d17f37bfe86fcde4a5bd0b8f6eea8",
   "files": [
     {
       "path": "LICENSE",
@@ -11,19 +11,23 @@
     },
     {
       "path": "README.md",
-      "sha256": "4d6eee57eaf53d6be60e58ea404f4963ba0942756091c2d40190ed579519206d"
+      "sha256": "020bffdb1234cf82a41d95e3eca8c5ea3bb318646d80f770fb26473a0b652087"
     },
     {
       "path": "assets/paludarium/LICENSE",
       "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
     },
     {
+      "path": "assets/paludarium/THIRD-PARTY-NOTICES.txt",
+      "sha256": "0988e6eb233a957d566e0a1bcff48307a3377ec5dcc9fe1f2138bcafff570c7f"
+    },
+    {
       "path": "assets/paludarium/build-info.json",
-      "sha256": "ca9582974e9a71b912d3084128c1eda45b4bf1302e8698eb494478cef07f003f"
+      "sha256": "174a2faed77fe9d49fe4c2a058a74cb1b51c289878a4584b906fd785e6806517"
     },
     {
       "path": "assets/paludarium/coordinator.mjs",
-      "sha256": "effb8f1b5f6615e9b19f6f4b4b822354dd9a9403c7614c9857099fe36074e0bb"
+      "sha256": "72559e7a1b0917e1dbe347667f32bbdd1f5e72ddac2224977ebf6dc25fd4cd81"
     },
     {
       "path": "assets/paludarium/execution.mjs",
@@ -43,7 +47,7 @@
     },
     {
       "path": "assets/paludarium/paludarium.wasm",
-      "sha256": "de04424cf856a11767aa3ac2818d3ceb30bdfaaff289b8c18a7c801ad4e0adac"
+      "sha256": "54c4a046afb63e614845a058a19bac85ca4a94efc03ba254dcca16a22b31fd4f"
     },
     {
       "path": "assets/paludarium/relay-protocol.mjs",
@@ -51,11 +55,15 @@
     },
     {
       "path": "assets/paludarium/worker-support.mjs",
-      "sha256": "b945da3a7590a6740640a73961a829aa14fa9195f994ef7edd13cde20b7ba380"
+      "sha256": "a54fe7ce37c18e0e429633a8ebe59646cd578067aeb81fef139112a146387be4"
+    },
+    {
+      "path": "jsr.json",
+      "sha256": "988fad3f9cc2e5297b70b3d6f7b4a30d4755db9279e469ace4ab71b0f182d1f6"
     },
     {
       "path": "package.json",
-      "sha256": "2590bebb56346116ef528ef3354d2ca68fc0d2dd4c3ec0c6d263327df07b99bb"
+      "sha256": "f18e11b03f4c682b8c36c93d6712703366d23880212cba599e62d3d8fe588eb6"
     },
     {
       "path": "runtime/command-parse.js",
@@ -83,7 +91,7 @@
     },
     {
       "path": "runtime/guest-validation.js",
-      "sha256": "b5b6b78d61bab0e1502309bf6e911f9ad72adde58b5b3e2b88b0fd3d98a2d364"
+      "sha256": "b89714f574945e18b2d60be0fbc5b912e69c612a555cf516f8fd18614c1efdf2"
     },
     {
       "path": "runtime/install-archive.js",
@@ -107,11 +115,11 @@
     },
     {
       "path": "runtime/lifecycle.js",
-      "sha256": "ccebc3533ea008e8e78a1129548f3cc89153f62549943ac5618cc764f6a9a2fd"
+      "sha256": "4a2e88ceaab65cdc8a865205616ca612971cd6d7b6a97482b5978fcf507c4cca"
     },
     {
       "path": "runtime/node/api.js",
-      "sha256": "814541573a2d9a74f3c3677a69975f2ba0de441193f2cc59e810df8a167f07ba"
+      "sha256": "477b87384484c2eb8e0ba00542e09f0128099fbc52052c8692aa2a78ac5ddb36"
     },
     {
       "path": "runtime/node/package-worker.js",
@@ -123,7 +131,7 @@
     },
     {
       "path": "runtime/public.js",
-      "sha256": "7c0772ae3fb57a341ecb6153d1a0212fab5c60413ee36f13940773fb59e205c0"
+      "sha256": "694306d99e9c60c895e817c9c57f32339d65069510713c80ef648628ca6bc548"
     },
     {
       "path": "runtime/session-port.js",
@@ -131,19 +139,19 @@
     },
     {
       "path": "runtime/state.js",
-      "sha256": "75cee25aab8f8b2ea9473c95faedfc25b293107f6ad78ec78136eb565da31097"
+      "sha256": "050fa971cf15a41bc80ae251d23801a089bb270228962e062ab0af275de9489c"
     },
     {
       "path": "runtime/validation.js",
-      "sha256": "facb2642f26273e5662304d9e51a519442730d61afc194139fd027653858edda"
+      "sha256": "0ee0b87b0770facc10b82eae7f153bd8fcb095bba0db813e7e1eae7762dc3718"
     },
     {
       "path": "runtime/web/api.js",
-      "sha256": "a1aa065a5776895dc0221a9b951c9cbd068b27c6ba3ec665f0d58a6375e89e86"
+      "sha256": "c04321b5145fc87fbbf50d9670b851305c26f3dacb714206bac6759087420172"
     },
     {
       "path": "runtime/web/package-worker.bundle.js",
-      "sha256": "56307723f2f885c1cd15f0bf692349fbbcc85ed4dbc5c7b3d6843786ee7e906b"
+      "sha256": "d6fbe76c7661b693e30b9313373dd06cb83c1413ccfb7d804a4182ee33ff6e81"
     },
     {
       "path": "runtime/web/package-worker.js",
@@ -151,7 +159,7 @@
     },
     {
       "path": "runtime/worker-execution.js",
-      "sha256": "02b5c6d7ec7d0ce652be1924ce317cbda5f9af3364a5675a6b076b666e29386b"
+      "sha256": "4eba46736c4ba0e56d0c5ecbb25f854f9626af2d16e018a139188f038782c2eb"
     },
     {
       "path": "types/browser.d.ts",
@@ -159,7 +167,7 @@
     },
     {
       "path": "types/index.d.ts",
-      "sha256": "94ed3a967de8e405008523959ca1c2970bf30d602f55617fbb71a458a253a85e"
+      "sha256": "5d6d3efe233d315f967a83a14cb49dc69c7958cedc55306c310d7b270dc1a625"
     },
     {
       "path": "types/node.d.ts",
