@@ -50,6 +50,11 @@ export const BUNDLE_ENTRIES = {
   coreLicense: 'assets/paludarium/LICENSE',
 } as const;
 
+export const CORE_NOTICES: readonly string[] = [
+  'LICENSE',
+  'THIRD-PARTY-NOTICES.txt',
+];
+
 export type StageErrorCode =
   | 'INVALID_INPUT'
   | 'LIMIT_EXCEEDED'

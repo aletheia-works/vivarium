@@ -582,6 +582,20 @@ describe('pin and archive verification (BR2.1, NFR3.2)', () => {
     ).toThrow('does not describe the shipped');
   });
 
+  test('accepts a third-party notices file that build-info does not list', () => {
+    const noticed = packageFiles();
+    noticed.set(
+      'assets/paludarium/THIRD-PARTY-NOTICES.txt',
+      encoder.encode('Third-party notices\n'),
+    );
+    expect(() =>
+      verifyArchiveAgainstPin(
+        readNpmTarball(packageTarball(noticed)),
+        parsePin(pinFor(packageTarball(noticed), noticed)),
+      ),
+    ).not.toThrow();
+  });
+
   test('refuses an empty paludarium license', () => {
     const empty = packageFiles();
     empty.set('assets/paludarium/LICENSE', new Uint8Array());
