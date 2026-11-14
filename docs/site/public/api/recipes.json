@@ -274,27 +274,6 @@
       "verdict_url": "https://aletheia-works.github.io/vivarium/repro/postgres/lost-update/verdict.json"
     },
     {
-      "slug": "motioneye-3523",
-      "layer": 3,
-      "project": "motioneye",
-      "issue": 0,
-      "pull": 3523,
-      "pull_url": "https://github.com/motioneye-project/motioneye/pull/3523",
-      "commit": "d330b199d0adfb7a6a33aa076af7b307ef0fe7db",
-      "commit_url": "https://github.com/motioneye-project/motioneye/commit/d330b199d0adfb7a6a33aa076af7b307ef0fe7db",
-      "title": "motionEye #3523 — the session cookie is SameSite=Lax, for installed web apps",
-      "preview_url": "https://sign-in.kokohore56562wanwan.xyz/motioneye-3523/",
-      "source_url": "https://github.com/aletheia-works/vivarium/tree/main/src/layer3_previews/motioneye-3523",
-      "language": "python",
-      "tags": [
-        "motioneye",
-        "login",
-        "session",
-        "pwa"
-      ],
-      "severity": "bug"
-    },
-    {
       "slug": "motioneye-3524",
       "layer": 3,
       "project": "motioneye",
@@ -313,25 +292,6 @@
         "api-keys"
       ],
       "severity": "enhancement"
-    },
-    {
-      "slug": "motioneye-dev-7b7ab1c",
-      "layer": 3,
-      "project": "motioneye",
-      "issue": 3364,
-      "commit": "7b7ab1c97ff7c89e55f615826aec835a6269c7aa",
-      "commit_url": "https://github.com/motioneye-project/motioneye/commit/7b7ab1c97ff7c89e55f615826aec835a6269c7aa",
-      "title": "motionEye dev at 7b7ab1c — does the Android app keep its sign-in?",
-      "preview_url": "https://sign-in.kokohore56562wanwan.xyz/motioneye-dev-7b7ab1c/",
-      "source_url": "https://github.com/aletheia-works/vivarium/tree/main/src/layer3_previews/motioneye-dev-7b7ab1c",
-      "language": "python",
-      "tags": [
-        "motioneye",
-        "login",
-        "session",
-        "pwa"
-      ],
-      "severity": "bug"
     }
   ]
 }
